@@ -49,7 +49,7 @@ namespace ExtraSongUI {
 		void OnGUI() {
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null) {
 				var style = new GUIStyle {
-					fontSize = 50,
+					fontSize = 12,
 					alignment = TextAnchor.MiddleRight,
 					normal = new GUIStyleState {
 						textColor = Color.white
@@ -84,7 +84,13 @@ namespace ExtraSongUI {
 				GUI.Label(new Rect(800f, 980f, 0.1f, 0.1f), new GUIContent($"{hitNotes} / {passedNotes} / {notes.Count} ({(hitNotes * 100.0 / notes.Count).ToString("0.00")}%, -{passedNotes - hitNotes})"), style);
 				//GUI.Label(new Rect(800f, 1040f, 0.1f, 0.1f), new GUIContent($"{basePlayers[0].StarPowersHit} / 9999 ({(basePlayers[0].StarPowersHit * 100.0 / 9999).ToString("0.00")}%)"), style);
 
-				GUI.Label(new Rect(800f, 1100f, 0.1f, 0.1f), new GUIContent($"{notes.Count} ({notes1} / {notes2} / {notes3} / {passedNotes})"), style);
+				//GUI.Label(new Rect(800f, 1100f, 0.1f, 0.1f), new GUIContent($"{notes.Count} ({notes1} / {notes2} / {notes3} / {passedNotes})"), style);
+
+				var profile = gameManager.BasePlayers[0].Player.PlayerProfile;
+				var song = gameManager.Song;
+				var chart = gameManager.Song.GetChart(profile.Instrument, profile.Difficulty);
+				//var song = chart.Song;
+				GUI.Label(new Rect(800f, 1100f, 0.1f, 0.1f), new GUIContent($"1 - {SongWrapper.QUOTEVALIDATE} | 2 - {song.Genre} | 3 - {SongWrapper.FLOATSEARCH} | 4 - {song.UnknownString4} | 5 - {song.UnknownString5} | 6 - {song.UnknownString6} | 7 - {song.MediaType} | 8 - {song.UnknownString8} | 9 - {song.Player2} | 10 - {SongWrapper.QUOTESEARCH}"), style);
 			}
 		}
 

@@ -31,6 +31,10 @@ namespace ExtraSongUI.Wrappers {
 		private static FieldInfo starProgressField;
 		private const string starProgressFieldName = "starProgress";
 
+		public SongWrapper Song => new SongWrapper(songField.GetValue(gameManager));
+		private static FieldInfo songField;
+		private const string songFieldName = "̛̛̛̗̙̖̑̎̒̏̚";
+
 		/// <summary>
 		/// Seems to create a brand new list of notes based on the chart. It probably shouldn't be called mid-game
 		/// because performance is iffy and it has side effects.
@@ -56,6 +60,7 @@ namespace ExtraSongUI.Wrappers {
 			RegisterField(ref songLengthField, typeof(GameManager), songLengthFieldName);
 			RegisterField(ref songTimeField, typeof(GameManager), songTimeFieldName);
 			RegisterField(ref starProgressField, typeof(GameManager), starProgressFieldName);
+			RegisterField(ref songField, typeof(GameManager), songFieldName);
 			RegisterMethod(ref getNotesFromChartMethod, typeof(GameManager), getNotesFromChartMethodName);
 		}
 	}

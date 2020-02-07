@@ -61,6 +61,7 @@
     <Compile Include="Wrappers\BasePlayerWrapper.cs" />
     <Compile Include="Wrappers\GlobalVariablesWrapper.cs" />
     <Compile Include="Wrappers\MoonChartWrapper.cs" />
+    <Compile Include="Wrappers\MoonNoteWrapper.cs" />
     <Compile Include="Wrappers\NoteWrapper.cs" />
     <Compile Include="Wrappers\PlayerProfileWrapper.cs" />
     <Compile Include="Wrappers\SongWrapper.cs" />

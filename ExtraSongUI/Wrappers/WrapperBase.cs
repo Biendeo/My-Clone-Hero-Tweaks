@@ -32,6 +32,18 @@ namespace ExtraSongUI.Wrappers {
 		}
 
 		/// <summary>
+		/// A helper method that initialises a PropertyInfo if it is null. Useful for singleton knowledge of reflected fields.
+		/// </summary>
+		/// <param name="property"></param>
+		/// <param name="owningType"></param>
+		/// <param name="propertyName"></param>
+		protected static void RegisterProperty(ref PropertyInfo property, Type owningType, string propertyName) {
+			if (property == null) {
+				property = owningType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			}
+		}
+
+		/// <summary>
 		/// A helper method that initialises a MethodInfo if it is null. Useful for singleton knowledge of reflected methods.
 		/// </summary>
 		/// <param name="method"></param>
@@ -53,6 +65,16 @@ namespace ExtraSongUI.Wrappers {
 		protected static void RegisterMethod(ref MethodInfo method, Type owningType, string methodName) {
 			if (method == null) {
 				method = owningType.GetMethod(methodName);
+			}
+		}
+	}
+
+	internal static class StringExtensions {
+		public static string DecodeUnicode(this string s) {
+			if (s.Any(c => c >= '\u0300')) {
+				return string.Join("", s.Select(c => $"\\u{((int)c).ToString("X4")}"));
+			} else {
+				return s;
 			}
 		}
 	}
