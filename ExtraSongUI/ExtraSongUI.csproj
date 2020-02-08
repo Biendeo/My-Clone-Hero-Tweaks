@@ -72,6 +72,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) "F:\Clone Hero\Tweaks" /Y
-copy $(TargetPath) "F:\Clone Hero\Clone Hero Debug Environment\Tweaks" /Y</PostBuildEvent>
+copy "$(TargetDir)$(TargetName).pdb" "F:\Clone Hero\Tweaks" /Y
+copy $(TargetPath) "F:\Clone Hero\Clone Hero Debug Environment\Tweaks" /Y
+copy "$(TargetDir)$(TargetName).pdb" "F:\Clone Hero\Clone Hero Debug Environment\Tweaks" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

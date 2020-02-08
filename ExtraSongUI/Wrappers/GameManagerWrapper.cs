@@ -13,19 +13,19 @@ namespace ExtraSongUI.Wrappers {
 
 		public BasePlayerWrapper[] BasePlayers => ((BasePlayer[])basePlayersField.GetValue(gameManager)).Select(bp => new BasePlayerWrapper(bp)).ToArray();
 		private static FieldInfo basePlayersField;
-		private const string basePlayersFieldName = "̖̙̖̜̔̓̑̒̕̕̕";
+		private const string basePlayersFieldName = "\u0316\u0319\u0314\u0316\u0315\u0313\u0311\u0315\u031C\u0312\u0315";
 
 		public BasePlayerWrapper UnknownBasePlayer => new BasePlayerWrapper((BasePlayer)unknownBasePlayerField.GetValue(gameManager)); //? It's null for me. 🤷‍
 		private static FieldInfo unknownBasePlayerField;
-		private const string unknownBasePlayerFieldName = "̖̜̜̗̒̒̔̐̔̕̚";
+		private const string unknownBasePlayerFieldName = "\u0316\u031C\u0312\u0312\u031C\u0315\u0314\u0310\u031A\u0314\u0317";
 
 		public double SongLength => (double)songLengthField.GetValue(gameManager);
 		private static FieldInfo songLengthField;
-		private const string songLengthFieldName = "̜̘̜̗̒̔̒̏̒̓̎";
+		private const string songLengthFieldName = "\u031C\u0312\u0314\u0318\u0312\u030F\u0312\u031C\u0313\u030E\u0317";
 
 		public double SongTime => (double)songTimeField.GetValue(gameManager);
 		private static FieldInfo songTimeField;
-		private const string songTimeFieldName = "̛̜̗̗̜̘̍̍̒̒̎";
+		private const string songTimeFieldName = "\u031C\u030D\u030D\u0317\u0317\u0312\u031B\u031C\u0318\u0312\u030E";
 
 		public StarProgressWrapper StarProgress => new StarProgressWrapper((StarProgress)starProgressField.GetValue(gameManager));
 		private static FieldInfo starProgressField;
@@ -33,7 +33,7 @@ namespace ExtraSongUI.Wrappers {
 
 		public SongWrapper Song => new SongWrapper(songField.GetValue(gameManager));
 		private static FieldInfo songField;
-		private const string songFieldName = "̛̛̛̗̙̖̑̎̒̏̚";
+		private const string songFieldName = "\u031A\u0311\u031B\u0317\u0319\u031B\u0316\u030E\u0312\u030F\u031B";
 
 		/// <summary>
 		/// Seems to create a brand new list of notes based on the chart. It probably shouldn't be called mid-game
@@ -47,14 +47,13 @@ namespace ExtraSongUI.Wrappers {
 			return notes.Cast<object>().Select(o => new NoteWrapper(o)).ToList();
 		}
 		private static MethodInfo getNotesFromChartMethod;
-		private const string getNotesFromChartMethodName = "̛̛̘̜̍̐̏̍̔̚̚";
+		private const string getNotesFromChartMethodName = "\u0318\u030D\u031A\u031C\u031B\u0310\u031A\u030F\u030D\u0314\u031B";
 
 		public GameManagerWrapper(GameManager gameManager) {
-			InitializeSingletonFields();
 			this.gameManager = gameManager;
 		}
 
-		private static void InitializeSingletonFields() {
+		public static void InitializeSingletonFields() {
 			RegisterField(ref basePlayersField, typeof(GameManager), basePlayersFieldName);
 			RegisterField(ref unknownBasePlayerField, typeof(GameManager), unknownBasePlayerFieldName);
 			RegisterField(ref songLengthField, typeof(GameManager), songLengthFieldName);

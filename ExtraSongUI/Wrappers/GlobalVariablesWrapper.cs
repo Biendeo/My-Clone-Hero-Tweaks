@@ -9,11 +9,10 @@ namespace ExtraSongUI.Wrappers {
 		public readonly GlobalVariables globalVariables;
 
 		public GlobalVariablesWrapper(GlobalVariables globalVariables) {
-			InitializeSingletonFields();
 			this.globalVariables = globalVariables;
 		}
 
-		private static void InitializeSingletonFields() {
+		public static void InitializeSingletonFields() {
 
 		}
 	}
