@@ -69,7 +69,7 @@ namespace ExtraSongUI.Wrappers {
 		}
 	}
 
-	internal static class StringExtensions {
+	public static class StringExtensions {
 		public static string DecodeUnicode(this string s) {
 			if (s.Any(c => c >= '\u0300')) {
 				return string.Join("", s.Select(c => $"\\u{((int)c).ToString("X4")}"));

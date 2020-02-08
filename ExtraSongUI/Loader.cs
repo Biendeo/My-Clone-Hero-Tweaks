@@ -33,6 +33,7 @@ namespace ExtraSongUI {
 			//TODO: If there was a neat way to do this in one go with reflection instead of manually listing every type, sweet. Otherwise, darn.
 			BasePlayerWrapper.InitializeSingletonFields();
 			CHPlayerWrapper.InitializeSingletonFields();
+			FrameRateWrapper.InitializeSingletonFields();
 			GameManagerWrapper.InitializeSingletonFields();
 			GlobalVariablesWrapper.InitializeSingletonFields();
 			MoonChartWrapper.InitializeSingletonFields();
@@ -40,7 +41,7 @@ namespace ExtraSongUI {
 			NoteWrapper.InitializeSingletonFields();
 			PlayerProfileWrapper.InitializeSingletonFields();
 			SongWrapper.InitializeSingletonFields();
-			//StarPowerWrapper.InitializeSingletonFields();
+			StarPowerWrapper.InitializeSingletonFields();
 			StarProgressWrapper.InitializeSingletonFields();
 		}
 

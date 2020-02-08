@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace ExtraSongUI {
 	public class SongUI : MonoBehaviour {
@@ -18,9 +20,13 @@ namespace ExtraSongUI {
 		// Star progress
 		private StarProgressWrapper starProgress;
 
-		// Base player
+		// Note count
 		private BasePlayerWrapper[] basePlayers;
-		private List<NoteWrapper> notes;
+		private int totalNoteCount;
+		private int totalStarPowers;
+		private List<NoteWrapper> noteSet;
+
+		private Font uiFont;
 
 		#region Unity Methods
 
@@ -32,6 +38,21 @@ namespace ExtraSongUI {
 		}
 
 		void LateUpdate() {
+			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
+				//var queue = new Queue<GameObject>(SceneManager.GetActiveScene().GetRootGameObjects());
+				//var objects = new List<GameObject>(SceneManager.GetActiveScene().GetRootGameObjects());
+				//while (queue.Count > 0) {
+				//	var o = queue.Dequeue();
+				//	for (int i = 0; i < o.transform.childCount; ++i) {
+				//		queue.Enqueue(o.transform.GetChild(i).gameObject);
+				//		objects.Add(o.transform.GetChild(i).gameObject);
+				//	}
+				//}
+				//foreach (var o in objects.Where(o => o.GetComponent<Text>() != null)) {
+				//	Debug.LogError($"Object name: {o.name}, text: {o.GetComponent<Text>().text}");
+				//}
+				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
+			}
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
 				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
@@ -40,7 +61,11 @@ namespace ExtraSongUI {
 					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
 					starProgress = gameManager.StarProgress;
 					basePlayers = gameManager.BasePlayers;
-					notes = gameManager.GetNotesFromChart(gameManager.BasePlayers[0].Player, false);
+					//? The player difficulty seems to go easy to expert rather than expert to easy, so this 3 - inverts that for this usage only. That should be looked into.
+					var chart = gameManager.Song.GetChart(gameManager.BasePlayers[0].Player.PlayerProfile.Instrument, (sbyte)(3 - gameManager.BasePlayers[0].Player.PlayerProfile.Difficulty));
+					totalNoteCount = chart.UnknownInt1;
+					totalStarPowers = chart.StarPower.Length;
+					noteSet = new List<NoteWrapper>();
 				}
 			}
 		}
@@ -49,10 +74,12 @@ namespace ExtraSongUI {
 		void OnGUI() {
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null) {
 				var style = new GUIStyle {
-					fontSize = 12,
+					font = uiFont,
+					fontStyle = FontStyle.Bold,
+					fontSize = 50,
 					alignment = TextAnchor.MiddleRight,
 					normal = new GUIStyleState {
-						textColor = Color.white
+						textColor = Color.white,
 					}
 				};
 
@@ -71,26 +98,21 @@ namespace ExtraSongUI {
 				GUI.Label(new Rect(800f, 860f, 0.1f, 0.1f), new GUIContent($"{currentScore - previousStarScore} / {nextStarScore - previousStarScore} ({nextStarPercentage.ToString("0.00")}%)"), style);
 				GUI.Label(new Rect(160f, 920f, 0.1f, 0.1f), new GUIContent($"0 → 7:"), style);
 				GUI.Label(new Rect(800f, 920f, 0.1f, 0.1f), new GUIContent($"{currentScore} / {sevenStarScore} ({sevenStarPercentage.ToString("0.00")}%)"), style);
-				//GUI.Label(new Rect(800f, 1040f, 0.1f, 0.1f), new GUIContent($"{gameManager.StarProgress.BaseScore}"), style);
 
-				// BasePlayer?
-				//int hitNotes = notes.Count(n => n.WasHit);
-				int hitNotes = basePlayers[0].HitNotes;
-				//int passedNotes = notes.Count(n => n.WasHit || n.WasMissed);
-				int passedNotes = notes.Count(n => n.Time < gameManager.SongTime); // Maybe more accurate.
-				int notes1 = notes.Count(n => n.WasHit);
-				int notes2 = notes.Count(n => n.WasMissed);
-				int notes3 = notes.Count(n => n.ThirdBool);
-				GUI.Label(new Rect(800f, 980f, 0.1f, 0.1f), new GUIContent($"{hitNotes} / {passedNotes} / {notes.Count} ({(hitNotes * 100.0 / notes.Count).ToString("0.00")}%, -{passedNotes - hitNotes})"), style);
-				//GUI.Label(new Rect(800f, 1040f, 0.1f, 0.1f), new GUIContent($"{basePlayers[0].StarPowersHit} / 9999 ({(basePlayers[0].StarPowersHit * 100.0 / 9999).ToString("0.00")}%)"), style);
-
-				GUI.Label(new Rect(800f, 1100f, 0.1f, 0.1f), new GUIContent($"{notes.Count} ({notes1} / {notes2} / {notes3} / {passedNotes})"), style);
-
-				var profile = gameManager.BasePlayers[0].Player.PlayerProfile;
-				var song = gameManager.Song;
-				//var chart = gameManager.Song.GetChart(profile.Instrument, profile.Difficulty);
-				//var song = chart.Song;
-				//GUI.Label(new Rect(800f, 1100f, 0.1f, 0.1f), new GUIContent($"1 - {SongWrapper.QUOTEVALIDATE} | 2 - {song.Genre} | 3 - {SongWrapper.FLOATSEARCH} | 4 - {song.UnknownString4} | 5 - {song.UnknownString5} | 6 - {song.UnknownString6} | 7 - {song.MediaType} | 8 - {song.UnknownString8} | 9 - {song.Player2} | 10 - {SongWrapper.QUOTESEARCH}"), style);
+				// Note count
+				var newNotes = gameManager.BasePlayers[0].HittableNotes.ToList();
+				foreach (var nonNull in newNotes.Where(n => !(n.note is null))) {
+					if (!noteSet.Exists(n => n.note == nonNull.note)) {
+						noteSet.Add(nonNull);
+					}
+				}
+				int hitNotes = noteSet.Count(n => n.WasHit);
+				int missedNotes = noteSet.Count(n => n.WasMissed);
+				int seenNotes = hitNotes + missedNotes;
+				GUI.Label(new Rect(160f, 980f, 0.1f, 0.1f), new GUIContent($"Notes:"), style);
+				GUI.Label(new Rect(800f, 980f, 0.1f, 0.1f), new GUIContent($"{hitNotes} / {seenNotes} / {totalNoteCount} ({(hitNotes * 100.0 / totalNoteCount).ToString("0.00")}%{(seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? ", FC": string.Empty) : $", -{missedNotes}")})"), style);
+				GUI.Label(new Rect(160f, 1040f, 0.1f, 0.1f), new GUIContent($"SP:"), style);
+				GUI.Label(new Rect(800f, 1040f, 0.1f, 0.1f), new GUIContent($"{basePlayers[0].StarPowersHit} / {totalStarPowers} ({(basePlayers[0].StarPowersHit * 100.0 / totalStarPowers).ToString("0.00")}%)"), style);
 			}
 		}
 

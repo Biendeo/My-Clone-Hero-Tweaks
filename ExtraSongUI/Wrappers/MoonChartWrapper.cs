@@ -30,6 +30,10 @@ namespace ExtraSongUI.Wrappers {
 		private static PropertyInfo unknownInt3Property;
 		private const string unknownInt3PropertyName = "\u0314\u0316\u030F\u0319\u0315\u031B\u0318\u0318\u031B\u0315\u031B";
 
+		public StarPowerWrapper[] StarPower => ((object[])starPowerProperty.GetValue(moonChart)).Select(o => new StarPowerWrapper(o)).ToArray();
+		private static PropertyInfo starPowerProperty;
+		private const string starPowerPropertyName = "\u0314\u0312\u0318\u031C\u031A\u0313\u0314\u0317\u030E\u0315\u031C";
+
 		public MoonChartWrapper(object moonChart) {
 			this.moonChart = moonChart;
 		}
@@ -40,6 +44,7 @@ namespace ExtraSongUI.Wrappers {
 			RegisterField(ref unknownInt2Field, MoonChartType, unknownInt2FieldName);
 			RegisterProperty(ref songProperty, MoonChartType, songPropertyName);
 			RegisterProperty(ref unknownInt3Property, MoonChartType, unknownInt3PropertyName);
+			RegisterProperty(ref starPowerProperty, MoonChartType, starPowerPropertyName);
 		}
 
 	}

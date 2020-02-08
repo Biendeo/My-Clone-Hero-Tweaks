@@ -94,6 +94,11 @@ namespace ExtraSongUI.Wrappers {
 		private static FieldInfo playerField;
 		private const string playerFieldName = "\u0317\u0319\u0316\u030E\u031A\u030E\u031A\u031A\u0319\u0311\u0318";
 
+		// This seems to always be of size 20, but will definitely contain nulls. Filter the nulls out before operating.
+		public NoteWrapper[] HittableNotes => ((object[])hittableNotesField.GetValue(basePlayer)).Select(o => new NoteWrapper(o)).ToArray();
+		private static FieldInfo hittableNotesField;
+		private const string hittableNotesFieldName = "\u0315\u0318\u0315\u030F\u0310\u031A\u0310\u031B\u0316\u0312\u0315";
+
 		public BasePlayerWrapper(BasePlayer basePlayer) {
 			this.basePlayer = basePlayer;
 		}
@@ -120,6 +125,7 @@ namespace ExtraSongUI.Wrappers {
 			RegisterField(ref multiplierField, typeof(BasePlayer), multiplierFieldName);
 			RegisterField(ref comboField, typeof(BasePlayer), comboFieldName);
 			RegisterField(ref playerField, typeof(BasePlayer), playerFieldName);
+			RegisterField(ref hittableNotesField, typeof(BasePlayer), hittableNotesFieldName);
 		}
 	}
 }
