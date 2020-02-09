@@ -78,6 +78,7 @@
     <Compile Include="Wrappers\MoonNoteWrapper.cs" />
     <Compile Include="Wrappers\NoteWrapper.cs" />
     <Compile Include="Wrappers\PlayerProfileWrapper.cs" />
+    <Compile Include="Wrappers\PracticeUIWrapper.cs" />
     <Compile Include="Wrappers\SongWrapper.cs" />
     <Compile Include="Wrappers\StarPowerWrapper.cs" />
     <Compile Include="Wrappers\StarProgressWrapper.cs" />

@@ -40,6 +40,7 @@ namespace ExtraSongUI {
 			//MoonNoteWrapper.InitializeSingletonFields();
 			NoteWrapper.InitializeSingletonFields();
 			PlayerProfileWrapper.InitializeSingletonFields();
+			PracticeUIWrapper.InitializeSingletonFields();
 			SongWrapper.InitializeSingletonFields();
 			StarPowerWrapper.InitializeSingletonFields();
 			StarProgressWrapper.InitializeSingletonFields();

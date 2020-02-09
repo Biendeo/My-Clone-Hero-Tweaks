@@ -31,6 +31,10 @@ namespace ExtraSongUI.Wrappers {
 		private static FieldInfo starProgressField;
 		private const string starProgressFieldName = "starProgress";
 
+		public PracticeUIWrapper PracticeUI => new PracticeUIWrapper((PracticeUI)practiceUIField.GetValue(gameManager));
+		private static FieldInfo practiceUIField;
+		private const string practiceUIFieldName = "practiceUI";
+
 		public SongWrapper Song => new SongWrapper(songField.GetValue(gameManager));
 		private static FieldInfo songField;
 		private const string songFieldName = "\u031A\u0311\u031B\u0317\u0319\u031B\u0316\u030E\u0312\u030F\u031B";
@@ -59,6 +63,7 @@ namespace ExtraSongUI.Wrappers {
 			RegisterField(ref songLengthField, typeof(GameManager), songLengthFieldName);
 			RegisterField(ref songTimeField, typeof(GameManager), songTimeFieldName);
 			RegisterField(ref starProgressField, typeof(GameManager), starProgressFieldName);
+			RegisterField(ref practiceUIField, typeof(GameManager), practiceUIFieldName);
 			RegisterField(ref songField, typeof(GameManager), songFieldName);
 			RegisterMethod(ref getNotesFromChartMethod, typeof(GameManager), getNotesFromChartMethodName);
 		}

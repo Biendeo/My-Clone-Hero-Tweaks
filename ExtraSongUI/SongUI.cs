@@ -359,7 +359,7 @@ namespace ExtraSongUI {
 				//config.ConfigX = newRect.x;
 				//config.ConfigY = newRect.y;
 			}
-			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null) {
+			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
 				//var style = new GUIStyle {
 				//	font = uiFont,
 				//	fontStyle = FontStyle.Bold,
@@ -407,7 +407,7 @@ namespace ExtraSongUI {
 					}
 				}
 				int hitNotes = noteSet.Count(n => n.WasHit);
-				int missedNotes = noteSet.Count(n => n.WasMissed);
+				int missedNotes = noteSet.Count(n => n.WasMissed && !n.WasHit);
 				int seenNotes = hitNotes + missedNotes;
 
 				if (!config.HideAll && config.NotesName.Visible) GUI.Label(config.NotesName.Rect, new GUIContent(config.NotesName.Content), config.NotesName.Style(uiFont));

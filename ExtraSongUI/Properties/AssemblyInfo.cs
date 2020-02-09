@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ExtraSongUI")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Shows some extra stuff on-screen while you play!")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Biendeo")]
 [assembly: AssemblyProduct("ExtraSongUI")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
