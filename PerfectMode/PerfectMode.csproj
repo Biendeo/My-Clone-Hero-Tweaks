@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6BA711CB-ED1D-49E7-B371-D06CCC215E2C}</ProjectGuid>
+    <ProjectGuid>{1B27BFCC-1305-439E-B304-9F215B75CB16}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ExtraSongUI</RootNamespace>
-    <AssemblyName>ExtraSongUI</AssemblyName>
+    <RootNamespace>PerfectMode</RootNamespace>
+    <AssemblyName>PerfectMode</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -48,34 +48,22 @@
     <Reference Include="UnityEngine">
       <HintPath>..\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\UnityEngine.TextRenderingModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>..\UnityEngine.UI.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Settings\Config.cs" />
-    <Compile Include="Settings\EditableLabelSettings.cs" />
-    <Compile Include="Settings\FormattedLabelSettings.cs" />
-    <Compile Include="Settings\LabelSettings.cs" />
-    <Compile Include="SongUI.cs" />
-    <Compile Include="Loader.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="..\Common\Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) "F:\Clone Hero\Tweaks" /Y
-copy "$(TargetDir)$(TargetName).pdb" "F:\Clone Hero\Tweaks" /Y
-copy $(TargetPath) "F:\Clone Hero\Clone Hero Debug Environment\Tweaks" /Y
-copy "$(TargetDir)$(TargetName).pdb" "F:\Clone Hero\Clone Hero Debug Environment\Tweaks" /Y</PostBuildEvent>
-  </PropertyGroup>
 </Project>

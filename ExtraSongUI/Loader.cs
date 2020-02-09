@@ -10,7 +10,7 @@ using UnityEngine;
 namespace ExtraSongUI {
 	public class Loader {
 		public void LoadTweak() {
-			InitializeLoaders();
+			WrapperBase.InitializeLoaders();
 			if (this.gameObject != null) {
 				return;
 			}
@@ -27,23 +27,6 @@ namespace ExtraSongUI {
 				UnityEngine.Object.DestroyImmediate(this.gameObject);
 				this.gameObject = null;
 			}
-		}
-
-		private void InitializeLoaders() {
-			//TODO: If there was a neat way to do this in one go with reflection instead of manually listing every type, sweet. Otherwise, darn.
-			BasePlayerWrapper.InitializeSingletonFields();
-			CHPlayerWrapper.InitializeSingletonFields();
-			FrameRateWrapper.InitializeSingletonFields();
-			GameManagerWrapper.InitializeSingletonFields();
-			GlobalVariablesWrapper.InitializeSingletonFields();
-			MoonChartWrapper.InitializeSingletonFields();
-			//MoonNoteWrapper.InitializeSingletonFields();
-			NoteWrapper.InitializeSingletonFields();
-			PlayerProfileWrapper.InitializeSingletonFields();
-			PracticeUIWrapper.InitializeSingletonFields();
-			SongWrapper.InitializeSingletonFields();
-			StarPowerWrapper.InitializeSingletonFields();
-			StarProgressWrapper.InitializeSingletonFields();
 		}
 
 		private GameObject gameObject;

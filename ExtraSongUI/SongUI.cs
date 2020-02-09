@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -32,35 +33,33 @@ namespace ExtraSongUI {
 		private Font uiFont;
 
 		private bool configWindowEnabled;
-		private FileInfo configFilePath;
+		private readonly FileInfo configFilePath;
 		private Config config;
 
-		private WindowFunction setingsOnWindow;
+		private WindowFunction settingsOnWindow;
 		private LabelSettings settingsCurrentlyEditing;
 		private WindowFunction settingsCurrentBack;
 
-		private Rect r;
+		private GUIStyle settingsStyle;
 
 		public SongUI() {
-			r = new Rect(2000.0f, 100.0f, 250.0f, 0.1f);
 			configWindowEnabled = false;
 			configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "ExtraSongUIConfig.xml"));
-			if (!configFilePath.Exists) {
-				WriteDefaultConfig();
-			} else {
-				var serializer = new XmlSerializer(typeof(Config));
-				using (var configIn = configFilePath.OpenRead()) {
-					config = serializer.Deserialize(configIn) as Config;
-				}
-			}
 		}
 
 		private void WriteDefaultConfig() {
+			// These original numbers were designed with 1440p in mind so this'll sort it out.
+			float widthScale = Screen.width / 2560.0f;
+			float heightScale = Screen.height / 1440.0f;
+			int smallFontSize = (int)(30 * widthScale);
+			int largeFontSize = (int)(50 * widthScale);
+			int extraLargeFontSize = (int)(150 * widthScale);
+
 			config = new Config {
 				TimeName = new EditableLabelSettings {
-					X = 100.0f,
-					Y = 750.0f,
-					Size = 30,
+					X = 100.0f * widthScale,
+					Y = 750.0f * heightScale,
+					Size = smallFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -69,9 +68,9 @@ namespace ExtraSongUI {
 					Content = "Time:",
 				},
 				SongTime = new FormattedLabelSettings {
-					X = 400.0f,
-					Y = 750.0f,
-					Size = 50,
+					X = 400.0f * widthScale,
+					Y = 750.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -80,9 +79,9 @@ namespace ExtraSongUI {
 					Format = "{0} /"
 				},
 				SongLength = new FormattedLabelSettings {
-					X = 670.0f,
-					Y = 750.0f,
-					Size = 50,
+					X = 670.0f * widthScale,
+					Y = 750.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -91,9 +90,9 @@ namespace ExtraSongUI {
 					Format = "{0}"
 				},
 				CurrentStarProgressName = new FormattedLabelSettings {
-					X = 100.0f,
-					Y = 810.0f,
-					Size = 30,
+					X = 100.0f * widthScale,
+					Y = 810.0f * heightScale,
+					Size = smallFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -102,9 +101,9 @@ namespace ExtraSongUI {
 					Format = "{0} → {1}:"
 				},
 				CurrentStarProgressScore = new FormattedLabelSettings {
-					X = 400.0f,
-					Y = 810.0f,
-					Size = 50,
+					X = 400.0f * widthScale,
+					Y = 810.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -113,9 +112,9 @@ namespace ExtraSongUI {
 					Format = "{0} /"
 				},
 				CurrentStarProgressEndScore = new FormattedLabelSettings {
-					X = 670.0f,
-					Y = 810.0f,
-					Size = 50,
+					X = 670.0f * widthScale,
+					Y = 810.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -124,9 +123,9 @@ namespace ExtraSongUI {
 					Format = "{0}"
 				},
 				CurrentStarProgressPercentage = new FormattedLabelSettings {
-					X = 700.0f,
-					Y = 810.0f,
-					Size = 50,
+					X = 700.0f * widthScale,
+					Y = 810.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerLeft,
 					Bold = true,
 					Italic = false,
@@ -135,9 +134,9 @@ namespace ExtraSongUI {
 					Format = "({0}%)"
 				},
 				SevenStarProgressName = new FormattedLabelSettings {
-					X = 100.0f,
-					Y = 870.0f,
-					Size = 30,
+					X = 100.0f * widthScale,
+					Y = 870.0f * heightScale,
+					Size = smallFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -146,9 +145,9 @@ namespace ExtraSongUI {
 					Format = "{0} → {1}:"
 				},
 				SevenStarProgressScore = new FormattedLabelSettings {
-					X = 400.0f,
-					Y = 870.0f,
-					Size = 50,
+					X = 400.0f * widthScale,
+					Y = 870.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -157,9 +156,9 @@ namespace ExtraSongUI {
 					Format = "{0} /"
 				},
 				SevenStarProgressEndScore = new FormattedLabelSettings {
-					X = 670.0f,
-					Y = 870.0f,
-					Size = 50,
+					X = 670.0f * widthScale,
+					Y = 870.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -168,9 +167,9 @@ namespace ExtraSongUI {
 					Format = "{0}"
 				},
 				SevenStarProgressPercentage = new FormattedLabelSettings {
-					X = 700.0f,
-					Y = 870.0f,
-					Size = 50,
+					X = 700.0f * widthScale,
+					Y = 870.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerLeft,
 					Bold = true,
 					Italic = false,
@@ -179,9 +178,9 @@ namespace ExtraSongUI {
 					Format = "({0}%)"
 				},
 				NotesName = new EditableLabelSettings {
-					X = 100.0f,
-					Y = 930.0f,
-					Size = 30,
+					X = 100.0f * widthScale,
+					Y = 930.0f * heightScale,
+					Size = smallFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -190,9 +189,9 @@ namespace ExtraSongUI {
 					Content = "Notes:"
 				},
 				NotesHitCounter = new FormattedLabelSettings {
-					X = 330.0f,
-					Y = 930.0f,
-					Size = 50,
+					X = 330.0f * widthScale,
+					Y = 930.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -201,9 +200,9 @@ namespace ExtraSongUI {
 					Format = "{0} /"
 				},
 				NotesPassedCounter = new FormattedLabelSettings {
-					X = 530.0f,
-					Y = 930.0f,
-					Size = 50,
+					X = 530.0f * widthScale,
+					Y = 930.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -212,9 +211,9 @@ namespace ExtraSongUI {
 					Format = "{0} /"
 				},
 				TotalNotesCounter = new FormattedLabelSettings {
-					X = 680.0f,
-					Y = 930.0f,
-					Size = 50,
+					X = 680.0f * widthScale,
+					Y = 930.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -223,9 +222,9 @@ namespace ExtraSongUI {
 					Format = "{0}"
 				},
 				NotesHitPercentage = new FormattedLabelSettings {
-					X = 700.0f,
-					Y = 930.0f,
-					Size = 50,
+					X = 700.0f * widthScale,
+					Y = 930.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerLeft,
 					Bold = true,
 					Italic = false,
@@ -234,9 +233,9 @@ namespace ExtraSongUI {
 					Format = "({0}%)"
 				},
 				NotesMissedCounter = new FormattedLabelSettings {
-					X = 780.0f,
-					Y = 1070.0f,
-					Size = 150,
+					X = 780.0f * widthScale,
+					Y = 1070.0f * heightScale,
+					Size = extraLargeFontSize,
 					Alignment = TextAnchor.MiddleRight,
 					Bold = true,
 					Italic = false,
@@ -245,9 +244,9 @@ namespace ExtraSongUI {
 					Format = "{0}"
 				},
 				StarPowerName = new EditableLabelSettings {
-					X = 100.0f,
-					Y = 990.0f,
-					Size = 30,
+					X = 100.0f * widthScale,
+					Y = 990.0f * heightScale,
+					Size = smallFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -256,9 +255,9 @@ namespace ExtraSongUI {
 					Content = "SP:"
 				},
 				StarPowersGottenCounter = new FormattedLabelSettings {
-					X = 400.0f,
-					Y = 990.0f,
-					Size = 50,
+					X = 400.0f * widthScale,
+					Y = 990.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -267,9 +266,9 @@ namespace ExtraSongUI {
 					Format = "{0} /"
 				},
 				TotalStarPowersCounter = new FormattedLabelSettings {
-					X = 520.0f,
-					Y = 990.0f,
-					Size = 50,
+					X = 520.0f * widthScale,
+					Y = 990.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerRight,
 					Bold = true,
 					Italic = false,
@@ -278,9 +277,9 @@ namespace ExtraSongUI {
 					Format = "{0}"
 				},
 				StarPowerPercentage = new FormattedLabelSettings {
-					X = 700.0f,
-					Y = 990.0f,
-					Size = 50,
+					X = 700.0f * widthScale,
+					Y = 990.0f * heightScale,
+					Size = largeFontSize,
 					Alignment = TextAnchor.LowerLeft,
 					Bold = true,
 					Italic = false,
@@ -288,8 +287,8 @@ namespace ExtraSongUI {
 					Visible = true,
 					Format = "({0}%)"
 				},
-				ConfigX = 100.0f,
-				ConfigY = 100.0f,
+				ConfigX = Screen.width - 350.0f,
+				ConfigY = 100.0f * heightScale,
 				HideAll = false
 			};
 			var serializer = new XmlSerializer(typeof(Config));
@@ -301,6 +300,14 @@ namespace ExtraSongUI {
 		#region Unity Methods
 
 		void Start() {
+			if (!configFilePath.Exists) {
+				WriteDefaultConfig();
+			} else {
+				var serializer = new XmlSerializer(typeof(Config));
+				using (var configIn = configFilePath.OpenRead()) {
+					config = serializer.Deserialize(configIn) as Config;
+				}
+			}
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __)
 			{
 				sceneChanged = true;
@@ -309,18 +316,7 @@ namespace ExtraSongUI {
 
 		void LateUpdate() {
 			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
-				//var queue = new Queue<GameObject>(SceneManager.GetActiveScene().GetRootGameObjects());
-				//var objects = new List<GameObject>(SceneManager.GetActiveScene().GetRootGameObjects());
-				//while (queue.Count > 0) {
-				//	var o = queue.Dequeue();
-				//	for (int i = 0; i < o.transform.childCount; ++i) {
-				//		queue.Enqueue(o.transform.GetChild(i).gameObject);
-				//		objects.Add(o.transform.GetChild(i).gameObject);
-				//	}
-				//}
-				//foreach (var o in objects.Where(o => o.GetComponent<Text>() != null)) {
-				//	Debug.LogError($"Object name: {o.name}, text: {o.GetComponent<Text>().text}");
-				//}
+				//TODO: Get the font directly from the bundle?
 				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 			}
 			if (this.sceneChanged) {
@@ -338,10 +334,10 @@ namespace ExtraSongUI {
 					noteSet = new List<NoteWrapper>();
 				}
 			}
-			if (Input.GetKeyDown(KeyCode.F5) && Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift)) {
+			if (Input.GetKeyDown(KeyCode.F5) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) {
 				configWindowEnabled = !configWindowEnabled;
 				if (configWindowEnabled) {
-					setingsOnWindow = OnWindowHead;
+					settingsOnWindow = OnWindowHead;
 				} else {
 					var serializer = new XmlSerializer(typeof(Config));
 					using (var configOut = configFilePath.OpenWrite()) {
@@ -351,31 +347,21 @@ namespace ExtraSongUI {
 			}
 		}
 
-
 		void OnGUI() {
-			if (configWindowEnabled) {
-				GUILayout.Window(0, r, setingsOnWindow, new GUIContent("Extra Song UI Settings"));
-				//Debug.LogError($"X: {config.ConfigX} -> {newRect.x}, Y: {config.ConfigY} -> {newRect.y}");
-				//config.ConfigX = newRect.x;
-				//config.ConfigY = newRect.y;
+			if (settingsStyle is null) {
+				settingsStyle = new GUIStyle(GUI.skin.window);
 			}
-			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
-				//var style = new GUIStyle {
-				//	font = uiFont,
-				//	fontStyle = FontStyle.Bold,
-				//	fontSize = 50,
-				//	alignment = TextAnchor.MiddleRight,
-				//	normal = new GUIStyleState {
-				//		textColor = Color.white,
-				//	}
-				//};
+			if (configWindowEnabled) {
+				var outputRect = GUILayout.Window(5318008, new Rect(config.ConfigX, config.ConfigY, 250.0f, 0.1f), settingsOnWindow, new GUIContent("Extra Song UI Settings"), settingsStyle);
+				config.ConfigX = outputRect.x;
+				config.ConfigY = outputRect.y;
+			}
 
+			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
 				// Song length
-				// TODO: The times are a bit incorrect for practice mode (they're offset by the timestamp at the beginning of the practise section).
 				if (!config.HideAll && config.TimeName.Visible) GUI.Label(config.TimeName.Rect, new GUIContent(config.TimeName.Content), config.TimeName.Style(uiFont));
 				if (!config.HideAll && config.SongTime.Visible) GUI.Label(config.SongTime.Rect, new GUIContent(string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime))), config.SongTime.Style(uiFont));
 				if (!config.HideAll && config.SongLength.Visible) GUI.Label(config.SongLength.Rect, new GUIContent(string.Format(config.SongLength.Format, DoubleToTimeString(gameManager.SongLength))), config.SongLength.Style(uiFont));
-				//GUI.Label(new Rect(800f, 800f, 0.1f, 0.1f), new GUIContent($"{DoubleToTimeString(gameManager.SongTime)} / {DoubleToTimeString(gameManager.SongLength)}"), style);
 
 				// Star progress
 				int currentScore = starProgress.LastScore;
@@ -394,10 +380,6 @@ namespace ExtraSongUI {
 				if (!config.HideAll && config.SevenStarProgressScore.Visible) GUI.Label(config.SevenStarProgressScore.Rect, new GUIContent(string.Format(config.SevenStarProgressScore.Format, currentScore)), config.SevenStarProgressScore.Style(uiFont));
 				if (!config.HideAll && config.SevenStarProgressEndScore.Visible) GUI.Label(config.SevenStarProgressEndScore.Rect, new GUIContent(string.Format(config.SevenStarProgressEndScore.Format, sevenStarScore)), config.SevenStarProgressEndScore.Style(uiFont));
 				if (!config.HideAll && config.SevenStarProgressPercentage.Visible) GUI.Label(config.SevenStarProgressPercentage.Rect, new GUIContent(string.Format(config.SevenStarProgressPercentage.Format, sevenStarPercentage.ToString("0.00"))), config.SevenStarProgressPercentage.Style(uiFont));
-				//GUI.Label(new Rect(160f, 860f, 0.1f, 0.1f), new GUIContent($"{starProgress.CurrentStar} → {Math.Min(7, starProgress.CurrentStar + 1)}:"), style);
-				//GUI.Label(new Rect(800f, 860f, 0.1f, 0.1f), new GUIContent($"{currentScore - previousStarScore} / {nextStarScore - previousStarScore} ({nextStarPercentage.ToString("0.00")}%)"), style);
-				//GUI.Label(new Rect(160f, 920f, 0.1f, 0.1f), new GUIContent($"0 → 7:"), style);
-				//GUI.Label(new Rect(800f, 920f, 0.1f, 0.1f), new GUIContent($"{currentScore} / {sevenStarScore} ({sevenStarPercentage.ToString("0.00")}%)"), style);
 
 				// Note count
 				var newNotes = gameManager.BasePlayers[0].HittableNotes.ToList();
@@ -421,30 +403,29 @@ namespace ExtraSongUI {
 				if (!config.HideAll && config.StarPowersGottenCounter.Visible) GUI.Label(config.StarPowersGottenCounter.Rect, new GUIContent(string.Format(config.StarPowersGottenCounter.Format, basePlayers[0].StarPowersHit)), config.StarPowersGottenCounter.Style(uiFont));
 				if (!config.HideAll && config.TotalStarPowersCounter.Visible) GUI.Label(config.TotalStarPowersCounter.Rect, new GUIContent(string.Format(config.TotalStarPowersCounter.Format, totalStarPowers)), config.TotalStarPowersCounter.Style(uiFont));
 				if (!config.HideAll && config.StarPowerPercentage.Visible) GUI.Label(config.StarPowerPercentage.Rect, new GUIContent(string.Format(config.StarPowerPercentage.Format, (basePlayers[0].StarPowersHit * 100.0 / totalStarPowers).ToString("0.00"))), config.StarPowerPercentage.Style(uiFont));
-				//GUI.Label(new Rect(160f, 980f, 0.1f, 0.1f), new GUIContent($"Notes:"), style);
-				//GUI.Label(new Rect(800f, 980f, 0.1f, 0.1f), new GUIContent($"{hitNotes} / {seenNotes} / {totalNoteCount} ({(hitNotes * 100.0 / totalNoteCount).ToString("0.00")}%{(seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? ", FC": string.Empty) : $", -{missedNotes}")})"), style);
-				//GUI.Label(new Rect(160f, 1040f, 0.1f, 0.1f), new GUIContent($"SP:"), style);
-				//GUI.Label(new Rect(800f, 1040f, 0.1f, 0.1f), new GUIContent($"{basePlayers[0].StarPowersHit} / {totalStarPowers} ({(basePlayers[0].StarPowersHit * 100.0 / totalStarPowers).ToString("0.00")}%)"), style);
 			}
 		}
 
 		#endregion
 
+		#region OnWindow Methods
+
 		private void OnWindowHead(int id) {
+			GUI.DragWindow();
 			if (GUILayout.Button("Time")) {
-				setingsOnWindow = OnWindowTime;
+				settingsOnWindow = OnWindowTime;
 			}
 			if (GUILayout.Button("Current Star")) {
-				setingsOnWindow = OnWindowCurrentStar;
+				settingsOnWindow = OnWindowCurrentStar;
 			}
 			if (GUILayout.Button("Seven Star")) {
-				setingsOnWindow = OnWindowSevenStar;
+				settingsOnWindow = OnWindowSevenStar;
 			}
 			if (GUILayout.Button("Notes")) {
-				setingsOnWindow = OnWindowNotes;
+				settingsOnWindow = OnWindowNotes;
 			}
 			if (GUILayout.Button("Star Power")) {
-				setingsOnWindow = OnWindowStarPower;
+				settingsOnWindow = OnWindowStarPower;
 			}
 
 			GUILayout.Space(10.0f);
@@ -458,151 +439,158 @@ namespace ExtraSongUI {
 					textColor = Color.white,
 				}
 			};
+			GUILayout.Label($"Extra Song UI v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}");
 			GUILayout.Label("Tweak by Biendeo");
 			GUILayout.Label("Thankyou for using this!");
 		}
 
 		private void OnWindowTime(int id) {
+			GUI.DragWindow();
 			if (GUILayout.Button("Name Label")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.TimeName;
 				settingsCurrentBack = OnWindowTime;
 			}
 			if (GUILayout.Button("Song Time")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SongTime;
 				settingsCurrentBack = OnWindowTime;
 			}
 			if (GUILayout.Button("Song Length")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SongLength;
 				settingsCurrentBack = OnWindowTime;
 			}
 			GUILayout.Space(50.0f);
 			if (GUILayout.Button("Back")) {
-				setingsOnWindow = OnWindowHead;
+				settingsOnWindow = OnWindowHead;
 			}
 		}
 
 		private void OnWindowCurrentStar(int id) {
+			GUI.DragWindow();
 			if (GUILayout.Button("Name Label")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressName;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			if (GUILayout.Button("Current Score")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressScore;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			if (GUILayout.Button("End Score")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressEndScore;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			if (GUILayout.Button("Percentage")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressPercentage;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			GUILayout.Space(50.0f);
 			if (GUILayout.Button("Back")) {
-				setingsOnWindow = OnWindowHead;
+				settingsOnWindow = OnWindowHead;
 			}
 		}
 
 		private void OnWindowSevenStar(int id) {
+			GUI.DragWindow();
 			if (GUILayout.Button("Name Label")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressName;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			if (GUILayout.Button("Current Score")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressScore;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			if (GUILayout.Button("End Score")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressEndScore;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			if (GUILayout.Button("Percentage")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressPercentage;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			GUILayout.Space(50.0f);
 			if (GUILayout.Button("Back")) {
-				setingsOnWindow = OnWindowHead;
+				settingsOnWindow = OnWindowHead;
 			}
 		}
 
 		private void OnWindowNotes(int id) {
+			GUI.DragWindow();
 			if (GUILayout.Button("Name Label")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesName;
 				settingsCurrentBack = OnWindowNotes;
 			}
 			if (GUILayout.Button("Hit Counter")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesHitCounter;
 				settingsCurrentBack = OnWindowNotes;
 			}
 			if (GUILayout.Button("Passed Counter")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesPassedCounter;
 				settingsCurrentBack = OnWindowNotes;
 			}
 			if (GUILayout.Button("Total Counter")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.TotalNotesCounter;
 				settingsCurrentBack = OnWindowNotes;
 			}
 			if (GUILayout.Button("Hit Percentage")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesHitPercentage;
 				settingsCurrentBack = OnWindowNotes;
 			}
 			if (GUILayout.Button("Missed Counter")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesMissedCounter;
 				settingsCurrentBack = OnWindowNotes;
 			}
 			GUILayout.Space(50.0f);
 			if (GUILayout.Button("Back")) {
-				setingsOnWindow = OnWindowHead;
+				settingsOnWindow = OnWindowHead;
 			}
 		}
 
 		private void OnWindowStarPower(int id) {
+			GUI.DragWindow();
 			if (GUILayout.Button("Name Label")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.StarPowerName;
 				settingsCurrentBack = OnWindowStarPower;
 			}
 			if (GUILayout.Button("Hit Counter")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.StarPowersGottenCounter;
 				settingsCurrentBack = OnWindowStarPower;
 			}
 			if (GUILayout.Button("Total Counter")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.TotalStarPowersCounter;
 				settingsCurrentBack = OnWindowStarPower;
 			}
 			if (GUILayout.Button("Percentage")) {
-				setingsOnWindow = OnWindowEdit;
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.StarPowerPercentage;
 				settingsCurrentBack = OnWindowStarPower;
 			}
 			GUILayout.Space(50.0f);
 			if (GUILayout.Button("Back")) {
-				setingsOnWindow = OnWindowHead;
+				settingsOnWindow = OnWindowHead;
 			}
 		}
 
 		private void OnWindowEdit(int id) {
+			GUI.DragWindow();
 			var style = new GUIStyle {
 				fontSize = 14,
 				alignment = TextAnchor.UpperLeft,
@@ -648,10 +636,12 @@ namespace ExtraSongUI {
 			settingsCurrentlyEditing.Italic = GUILayout.Toggle(settingsCurrentlyEditing.Italic, "Italic");
 			settingsCurrentlyEditing.Visible = GUILayout.Toggle(settingsCurrentlyEditing.Visible, "Visible");
 			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back", new GUILayoutOption[0])) {
-				setingsOnWindow = settingsCurrentBack;
+			if (GUILayout.Button("Back")) {
+				settingsOnWindow = settingsCurrentBack;
 			}
 		}
+
+		#endregion
 
 		/// <summary>
 		/// Converts a time into a displayable string (m:ss.ms)
