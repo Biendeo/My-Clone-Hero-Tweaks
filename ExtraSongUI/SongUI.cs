@@ -40,7 +40,15 @@ namespace ExtraSongUI {
 		private LabelSettings settingsCurrentlyEditing;
 		private WindowFunction settingsCurrentBack;
 
-		private GUIStyle settingsStyle;
+		private GUIStyle settingsWindowStyle;
+		private GUIStyle settingsToggleStyle;
+		private GUIStyle settingsButtonStyle;
+		private GUIStyle settingsTextAreaStyle;
+		private GUIStyle settingsTextFieldStyle;
+		private GUIStyle settingsLabelStyle;
+		private GUIStyle settingsBoxStyle;
+		private GUIStyle settingsHorizontalSliderStyle;
+		private GUIStyle settingsHorizontalSliderThumbStyle;
 
 		public SongUI() {
 			configWindowEnabled = false;
@@ -348,11 +356,19 @@ namespace ExtraSongUI {
 		}
 
 		void OnGUI() {
-			if (settingsStyle is null) {
-				settingsStyle = new GUIStyle(GUI.skin.window);
+			if (settingsWindowStyle is null) {
+				settingsWindowStyle = new GUIStyle(GUI.skin.window);
+				settingsToggleStyle = new GUIStyle(GUI.skin.toggle);
+				settingsButtonStyle = new GUIStyle(GUI.skin.button);
+				settingsTextAreaStyle = new GUIStyle(GUI.skin.textArea);
+				settingsTextFieldStyle = new GUIStyle(GUI.skin.textField);
+				settingsLabelStyle = new GUIStyle(GUI.skin.label);
+				settingsBoxStyle = new GUIStyle(GUI.skin.box);
+				settingsHorizontalSliderStyle = new GUIStyle(GUI.skin.horizontalSlider);
+				settingsHorizontalSliderThumbStyle = new GUIStyle(GUI.skin.horizontalSliderThumb);
 			}
 			if (configWindowEnabled) {
-				var outputRect = GUILayout.Window(5318008, new Rect(config.ConfigX, config.ConfigY, 250.0f, 0.1f), settingsOnWindow, new GUIContent("Extra Song UI Settings"), settingsStyle);
+				var outputRect = GUILayout.Window(5318008, new Rect(config.ConfigX, config.ConfigY, 250.0f, 0.1f), settingsOnWindow, new GUIContent("Extra Song UI Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
@@ -411,25 +427,24 @@ namespace ExtraSongUI {
 		#region OnWindow Methods
 
 		private void OnWindowHead(int id) {
-			GUI.DragWindow();
-			if (GUILayout.Button("Time")) {
+			if (GUILayout.Button("Time", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowTime;
 			}
-			if (GUILayout.Button("Current Star")) {
+			if (GUILayout.Button("Current Star", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowCurrentStar;
 			}
-			if (GUILayout.Button("Seven Star")) {
+			if (GUILayout.Button("Seven Star", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowSevenStar;
 			}
-			if (GUILayout.Button("Notes")) {
+			if (GUILayout.Button("Notes", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowNotes;
 			}
-			if (GUILayout.Button("Star Power")) {
+			if (GUILayout.Button("Star Power", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowStarPower;
 			}
 
 			GUILayout.Space(10.0f);
-			config.HideAll = GUILayout.Toggle(config.HideAll, "Hide all extra UI");
+			config.HideAll = GUILayout.Toggle(config.HideAll, "Hide all extra UI", settingsToggleStyle);
 			GUILayout.Space(50.0f);
 
 			var style = new GUIStyle {
@@ -442,155 +457,155 @@ namespace ExtraSongUI {
 			GUILayout.Label($"Extra Song UI v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}");
 			GUILayout.Label("Tweak by Biendeo");
 			GUILayout.Label("Thankyou for using this!");
+			GUI.DragWindow();
 		}
 
 		private void OnWindowTime(int id) {
-			GUI.DragWindow();
-			if (GUILayout.Button("Name Label")) {
+			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.TimeName;
 				settingsCurrentBack = OnWindowTime;
 			}
-			if (GUILayout.Button("Song Time")) {
+			if (GUILayout.Button("Song Time", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SongTime;
 				settingsCurrentBack = OnWindowTime;
 			}
-			if (GUILayout.Button("Song Length")) {
+			if (GUILayout.Button("Song Length", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SongLength;
 				settingsCurrentBack = OnWindowTime;
 			}
 			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back")) {
+			if (GUILayout.Button("Back", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowHead;
 			}
+			GUI.DragWindow();
 		}
 
 		private void OnWindowCurrentStar(int id) {
-			GUI.DragWindow();
-			if (GUILayout.Button("Name Label")) {
+			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressName;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
-			if (GUILayout.Button("Current Score")) {
+			if (GUILayout.Button("Current Score", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressScore;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
-			if (GUILayout.Button("End Score")) {
+			if (GUILayout.Button("End Score", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressEndScore;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
-			if (GUILayout.Button("Percentage")) {
+			if (GUILayout.Button("Percentage", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressPercentage;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back")) {
+			if (GUILayout.Button("Back", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowHead;
 			}
+			GUI.DragWindow();
 		}
 
 		private void OnWindowSevenStar(int id) {
-			GUI.DragWindow();
-			if (GUILayout.Button("Name Label")) {
+			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressName;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
-			if (GUILayout.Button("Current Score")) {
+			if (GUILayout.Button("Current Score", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressScore;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
-			if (GUILayout.Button("End Score")) {
+			if (GUILayout.Button("End Score", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressEndScore;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
-			if (GUILayout.Button("Percentage")) {
+			if (GUILayout.Button("Percentage", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressPercentage;
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back")) {
+			if (GUILayout.Button("Back", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowHead;
 			}
+			GUI.DragWindow();
 		}
 
 		private void OnWindowNotes(int id) {
-			GUI.DragWindow();
-			if (GUILayout.Button("Name Label")) {
+			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesName;
 				settingsCurrentBack = OnWindowNotes;
 			}
-			if (GUILayout.Button("Hit Counter")) {
+			if (GUILayout.Button("Hit Counter", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesHitCounter;
 				settingsCurrentBack = OnWindowNotes;
 			}
-			if (GUILayout.Button("Passed Counter")) {
+			if (GUILayout.Button("Passed Counter", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesPassedCounter;
 				settingsCurrentBack = OnWindowNotes;
 			}
-			if (GUILayout.Button("Total Counter")) {
+			if (GUILayout.Button("Total Counter", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.TotalNotesCounter;
 				settingsCurrentBack = OnWindowNotes;
 			}
-			if (GUILayout.Button("Hit Percentage")) {
+			if (GUILayout.Button("Hit Percentage", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesHitPercentage;
 				settingsCurrentBack = OnWindowNotes;
 			}
-			if (GUILayout.Button("Missed Counter")) {
+			if (GUILayout.Button("Missed Counter", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesMissedCounter;
 				settingsCurrentBack = OnWindowNotes;
 			}
 			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back")) {
+			if (GUILayout.Button("Back", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowHead;
 			}
+			GUI.DragWindow();
 		}
 
 		private void OnWindowStarPower(int id) {
-			GUI.DragWindow();
-			if (GUILayout.Button("Name Label")) {
+			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.StarPowerName;
 				settingsCurrentBack = OnWindowStarPower;
 			}
-			if (GUILayout.Button("Hit Counter")) {
+			if (GUILayout.Button("Hit Counter", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.StarPowersGottenCounter;
 				settingsCurrentBack = OnWindowStarPower;
 			}
-			if (GUILayout.Button("Total Counter")) {
+			if (GUILayout.Button("Total Counter", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.TotalStarPowersCounter;
 				settingsCurrentBack = OnWindowStarPower;
 			}
-			if (GUILayout.Button("Percentage")) {
+			if (GUILayout.Button("Percentage", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.StarPowerPercentage;
 				settingsCurrentBack = OnWindowStarPower;
 			}
 			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back")) {
+			if (GUILayout.Button("Back", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowHead;
 			}
+			GUI.DragWindow();
 		}
 
 		private void OnWindowEdit(int id) {
-			GUI.DragWindow();
 			var style = new GUIStyle {
 				fontSize = 14,
 				alignment = TextAnchor.UpperLeft,
@@ -600,45 +615,46 @@ namespace ExtraSongUI {
 			};
 			if (settingsCurrentlyEditing is EditableLabelSettings) {
 				GUILayout.Label("Content", style);
-				((EditableLabelSettings)settingsCurrentlyEditing).Content = GUILayout.TextField(((EditableLabelSettings)settingsCurrentlyEditing).Content);
+				((EditableLabelSettings)settingsCurrentlyEditing).Content = GUILayout.TextField(((EditableLabelSettings)settingsCurrentlyEditing).Content, settingsTextFieldStyle);
 			}
 			if (settingsCurrentlyEditing is FormattedLabelSettings) {
 				GUILayout.Label("Format", style);
-				((FormattedLabelSettings)settingsCurrentlyEditing).Format = GUILayout.TextField(((FormattedLabelSettings)settingsCurrentlyEditing).Format);
+				((FormattedLabelSettings)settingsCurrentlyEditing).Format = GUILayout.TextField(((FormattedLabelSettings)settingsCurrentlyEditing).Format, settingsTextFieldStyle);
 			}
 			GUILayout.Label("X", style);
-			settingsCurrentlyEditing.X = GUILayout.HorizontalSlider(settingsCurrentlyEditing.X, -2160, 2160.0f);
-			if (float.TryParse(GUILayout.TextField(settingsCurrentlyEditing.X.ToString()), out float x)) settingsCurrentlyEditing.X = x;
+			settingsCurrentlyEditing.X = GUILayout.HorizontalSlider(settingsCurrentlyEditing.X, -2160, 2160.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
+			if (float.TryParse(GUILayout.TextField(settingsCurrentlyEditing.X.ToString(), settingsTextFieldStyle), out float x)) settingsCurrentlyEditing.X = x;
 			GUILayout.Label("Y", style);
-			settingsCurrentlyEditing.Y = GUILayout.HorizontalSlider(settingsCurrentlyEditing.Y, -2160, 2160.0f);
-			if (float.TryParse(GUILayout.TextField(settingsCurrentlyEditing.Y.ToString()), out float y)) settingsCurrentlyEditing.Y = y;
+			settingsCurrentlyEditing.Y = GUILayout.HorizontalSlider(settingsCurrentlyEditing.Y, -2160, 2160.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
+			if (float.TryParse(GUILayout.TextField(settingsCurrentlyEditing.Y.ToString(), settingsTextFieldStyle), out float y)) settingsCurrentlyEditing.Y = y;
 			GUILayout.Label("Size", style);
-			settingsCurrentlyEditing.Size = (int)GUILayout.HorizontalSlider(settingsCurrentlyEditing.Size, 0.0f, 500.0f);
-			if (int.TryParse(GUILayout.TextField(settingsCurrentlyEditing.Size.ToString()), out int size)) settingsCurrentlyEditing.Size = size;
+			settingsCurrentlyEditing.Size = (int)GUILayout.HorizontalSlider(settingsCurrentlyEditing.Size, 0.0f, 500.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
+			if (int.TryParse(GUILayout.TextField(settingsCurrentlyEditing.Size.ToString(), settingsTextFieldStyle), out int size)) settingsCurrentlyEditing.Size = size;
 			var color = LabelSettings.ARGBToColor(settingsCurrentlyEditing.ColorARGB);
 			GUILayout.Label("Red", style);
-			color.r = GUILayout.HorizontalSlider(color.r, 0.0f, 1.0f);
-			if (float.TryParse(GUILayout.TextField(color.r.ToString()), out float r)) color.r = r;
+			color.r = GUILayout.HorizontalSlider(color.r, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
+			if (float.TryParse(GUILayout.TextField(color.r.ToString(), settingsTextFieldStyle), out float r)) color.r = r;
 			GUILayout.Label("Green", style);
-			color.g = GUILayout.HorizontalSlider(color.g, 0.0f, 1.0f);
-			if (float.TryParse(GUILayout.TextField(color.g.ToString()), out float g)) color.g = g;
+			color.g = GUILayout.HorizontalSlider(color.g, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
+			if (float.TryParse(GUILayout.TextField(color.g.ToString(), settingsTextFieldStyle), out float g)) color.g = g;
 			GUILayout.Label("Blue", style);
-			color.b = GUILayout.HorizontalSlider(color.b, 0.0f, 1.0f);
-			if (float.TryParse(GUILayout.TextField(color.b.ToString()), out float b)) color.b = b;
+			color.b = GUILayout.HorizontalSlider(color.b, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
+			if (float.TryParse(GUILayout.TextField(color.b.ToString(), settingsTextFieldStyle), out float b)) color.b = b;
 			GUILayout.Label("Alpha", style);
-			color.a = GUILayout.HorizontalSlider(color.a, 0.0f, 1.0f);
-			if (float.TryParse(GUILayout.TextField(color.a.ToString()), out float a)) color.a = a;
+			color.a = GUILayout.HorizontalSlider(color.a, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
+			if (float.TryParse(GUILayout.TextField(color.a.ToString(), settingsTextFieldStyle), out float a)) color.a = a;
 			settingsCurrentlyEditing.ColorARGB = LabelSettings.ColorToARGB(color);
-			if (GUILayout.Button($"Alignment: {settingsCurrentlyEditing.Alignment.ToString()}")) {
+			if (GUILayout.Button($"Alignment: {settingsCurrentlyEditing.Alignment.ToString()}", settingsButtonStyle)) {
 				settingsCurrentlyEditing.Alignment = (TextAnchor)((int)(settingsCurrentlyEditing.Alignment + 1) % 9);
 			}
-			settingsCurrentlyEditing.Bold = GUILayout.Toggle(settingsCurrentlyEditing.Bold, "Bold");
-			settingsCurrentlyEditing.Italic = GUILayout.Toggle(settingsCurrentlyEditing.Italic, "Italic");
-			settingsCurrentlyEditing.Visible = GUILayout.Toggle(settingsCurrentlyEditing.Visible, "Visible");
+			settingsCurrentlyEditing.Bold = GUILayout.Toggle(settingsCurrentlyEditing.Bold, "Bold", settingsToggleStyle);
+			settingsCurrentlyEditing.Italic = GUILayout.Toggle(settingsCurrentlyEditing.Italic, "Italic", settingsToggleStyle);
+			settingsCurrentlyEditing.Visible = GUILayout.Toggle(settingsCurrentlyEditing.Visible, "Visible", settingsToggleStyle);
 			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back")) {
+			if (GUILayout.Button("Back", settingsButtonStyle)) {
 				settingsOnWindow = settingsCurrentBack;
 			}
+			GUI.DragWindow();
 		}
 
 		#endregion
