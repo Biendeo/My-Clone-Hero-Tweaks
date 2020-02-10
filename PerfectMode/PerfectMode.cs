@@ -39,6 +39,8 @@ namespace PerfectMode {
 		private string target;
 		private bool isStillFC;
 		private int missedNotes;
+		private int totalNoteCount;
+		private int currentNoteIndex;
 
 		public PerfectMode() {
 			configWindowEnabled = false;
@@ -89,13 +91,23 @@ namespace PerfectMode {
 					var gameManagerObject = GameObject.Find("Game Manager");
 					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
 					notes = gameManager.BasePlayers[0].Notes;
+					totalNoteCount = notes.Count;
+					missedNotes = 0;
 				}
 			}
 			if (config.Enabled) {
 				if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null && !failedObjective) {
 					target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
 					isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
-					missedNotes = notes.Count(n => n.WasMissed && !n.WasHit);
+					while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
+						if (!notes[currentNoteIndex].WasHit && notes[currentNoteIndex].WasMissed) {
+							++missedNotes;
+						}
+						++currentNoteIndex;
+					}
+					//hitNotes = notes.Count(n => n.WasHit);
+					//missedNotes = notes.Count(n => !n.WasHit && n.WasMissed);
+					//missedNotes = notes.Count(n => n.WasMissed && !n.WasHit);
 					if (config.FC && !isStillFC || config.NotesMissed < missedNotes) {
 						failedObjective = true;
 						remainingTimeBeforeRestart = Math.Min(config.FailDelay, (float)(gameManager.SongLength - gameManager.SongTime));
@@ -115,12 +127,6 @@ namespace PerfectMode {
 			}
 			if (Input.GetKeyDown(KeyCode.F6) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) {
 				configWindowEnabled = !configWindowEnabled;
-				if (!configWindowEnabled) {
-					var serializer = new XmlSerializer(typeof(Config));
-					using (var configOut = configFilePath.OpenWrite()) {
-						serializer.Serialize(configOut, config);
-					}
-				}
 			}
 		}
 
@@ -215,7 +221,14 @@ namespace PerfectMode {
 			if (float.TryParse(GUILayout.TextField(color.a.ToString(), settingsTextFieldStyle), out float a)) color.a = a;
 			config.DisplayImageColorARGB = Config.ColorToARGB(color);
 
-			GUILayout.Space(50.0f);
+			GUILayout.Space(25.0f);
+			if (GUILayout.Button("Save Config", settingsButtonStyle)) {
+				var serializer = new XmlSerializer(typeof(Config));
+				using (var configOut = configFilePath.OpenWrite()) {
+					serializer.Serialize(configOut, config);
+				}
+			}
+			GUILayout.Space(25.0f);
 
 			GUILayout.Label($"Perfect Mode v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}");
 			GUILayout.Label("Tweak by Biendeo");

@@ -70,6 +70,8 @@ namespace ExtraSongUI {
 		private int starPowersGotten;
 		private double starPowerPercentage;
 
+		private int currentNoteIndex;
+
 		public SongUI() {
 			configWindowEnabled = false;
 			configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "ExtraSongUIConfig.xml"));
@@ -356,6 +358,7 @@ namespace ExtraSongUI {
 					totalStarPowers = notes.Count(n => n.IsStarPowerEnd);
 					hitNotes = 0;
 					missedNotes = 0;
+					currentNoteIndex = 0;
 				}
 			}
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
@@ -373,8 +376,16 @@ namespace ExtraSongUI {
 				sevenStarPercentage = currentScore * 100.0 / sevenStarScore;
 
 				// Note count
-				hitNotes = notes.Count(n => n.WasHit);
-				missedNotes = notes.Count(n => !n.WasHit && n.WasMissed);
+				while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
+					if (notes[currentNoteIndex].WasHit) {
+						++hitNotes;
+					} else if (notes[currentNoteIndex].WasMissed) {
+						++missedNotes;
+					}
+					++currentNoteIndex;
+				}
+				//hitNotes = notes.Count(n => n.WasHit);
+				//missedNotes = notes.Count(n => !n.WasHit && n.WasMissed);
 				seenNotes = hitNotes + missedNotes;
 				hitNotesPercentage = hitNotes * 100.0 / totalNoteCount;
 				fcIndicator = seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes}";
@@ -390,11 +401,6 @@ namespace ExtraSongUI {
 				configWindowEnabled = !configWindowEnabled;
 				if (configWindowEnabled) {
 					settingsOnWindow = OnWindowHead;
-				} else {
-					var serializer = new XmlSerializer(typeof(Config));
-					using (var configOut = configFilePath.OpenWrite()) {
-						serializer.Serialize(configOut, config);
-					}
 				}
 			}
 		}
@@ -471,8 +477,15 @@ namespace ExtraSongUI {
 				settingsOnWindow = OnWindowStarPower;
 			}
 
-			GUILayout.Space(10.0f);
+			GUILayout.Space(20.0f);
 			config.HideAll = GUILayout.Toggle(config.HideAll, "Hide all extra UI", settingsToggleStyle);
+			GUILayout.Space(20.0f);
+			if (GUILayout.Button("Save Config", settingsButtonStyle)) {
+				var serializer = new XmlSerializer(typeof(Config));
+				using (var configOut = configFilePath.OpenWrite()) {
+					serializer.Serialize(configOut, config);
+				}
+			}
 			GUILayout.Space(50.0f);
 
 			var style = new GUIStyle {
