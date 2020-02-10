@@ -36,6 +36,10 @@ namespace PerfectMode {
 		private GUIStyle settingsHorizontalSliderStyle;
 		private GUIStyle settingsHorizontalSliderThumbStyle;
 
+		private string target;
+		private bool isStillFC;
+		private int missedNotes;
+
 		public PerfectMode() {
 			configWindowEnabled = false;
 			configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "PerfectModeConfig.xml"));
@@ -79,11 +83,28 @@ namespace PerfectMode {
 		}
 
 		void LateUpdate() {
-			if (failedObjective && !gameManager.PauseMenu.activeInHierarchy) {
-				remainingTimeBeforeRestart -= Time.deltaTime;
-				if (remainingTimeBeforeRestart < 0.0f) {
-					//TODO: I can guarantee there's more going on that just this. Multiplayer is a concern.
-					SceneManager.LoadScene("Gameplay");
+			if (config.Enabled) {
+				if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
+					var newNotes = gameManager.BasePlayers[0].HittableNotes.ToList();
+					foreach (var nonNull in newNotes.Where(n => !(n.note is null))) {
+						if (!noteSet.Exists(n => n.note == nonNull.note)) {
+							noteSet.Add(nonNull);
+						}
+					}
+					target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
+					isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
+					missedNotes = noteSet.Count(n => n.WasMissed && !n.WasHit);
+					if (config.FC && !isStillFC || config.NotesMissed < missedNotes) {
+						failedObjective = true;
+						remainingTimeBeforeRestart = Math.Min(config.FailDelay, (float)(gameManager.SongLength - gameManager.SongTime));
+					}
+				}
+				if (failedObjective && !gameManager.PauseMenu.activeInHierarchy) {
+					remainingTimeBeforeRestart -= Time.deltaTime;
+					if (remainingTimeBeforeRestart < 0.0f) {
+						//TODO: I can guarantee there's more going on that just this. Multiplayer is a concern.
+						SceneManager.LoadScene("Gameplay");
+					}
 				}
 			}
 			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
@@ -109,17 +130,6 @@ namespace PerfectMode {
 			}
 		}
 
-		void FixedUpdate() {
-			if (DateTime.Now.Second == 0) ++count;
-			if (DateTime.Now.Second == 1 && !done) {
-				done = true;
-				Debug.LogError($"Counted: {count} frames");
-			}
-		}
-
-		private int count = 0;
-		private bool done = false;
-
 		void OnGUI() {
 			if (settingsWindowStyle is null) {
 				settingsWindowStyle = new GUIStyle(GUI.skin.window);
@@ -140,15 +150,7 @@ namespace PerfectMode {
 			}
 
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
-				var newNotes = gameManager.BasePlayers[0].HittableNotes.ToList();
-				foreach (var nonNull in newNotes.Where(n => !(n.note is null))) {
-					if (!noteSet.Exists(n => n.note == nonNull.note)) {
-						noteSet.Add(nonNull);
-					}
-				}
-
 				if (config.Enabled) {
-					string target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
 					if (config.DisplayImage) {
 						var displayImageStyle = new GUIStyle {
 							font = uiFont,
@@ -171,13 +173,6 @@ namespace PerfectMode {
 							}
 						};
 						GUI.Label(new Rect(Screen.width / 2, Screen.height / 5 * 4, 0.1f, 0.1f), new GUIContent($"{target} failed, restarting in {(int)remainingTimeBeforeRestart + 1}"), failedStyle);
-					} else {
-						bool isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
-						int missedNotes = noteSet.Count(n => n.WasMissed && !n.WasHit);
-						if (config.FC && !isStillFC || config.NotesMissed < missedNotes) {
-							failedObjective = true;
-							remainingTimeBeforeRestart = Math.Min(config.FailDelay, (float)(gameManager.SongLength - gameManager.SongTime));
-						}
 					}
 				}
 			}

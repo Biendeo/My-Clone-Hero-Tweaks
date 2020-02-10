@@ -50,6 +50,26 @@ namespace ExtraSongUI {
 		private GUIStyle settingsHorizontalSliderStyle;
 		private GUIStyle settingsHorizontalSliderThumbStyle;
 
+		private string formattedSongTime;
+		private string formattedSongLength;
+
+		private int currentStarCount;
+		private int currentScore;
+		private int previousStarScore;
+		private int nextStarScore;
+		private double nextStarPercentage;
+		private int sevenStarScore;
+		private double sevenStarPercentage;
+
+		private int hitNotes;
+		private int missedNotes;
+		private int seenNotes;
+		private double hitNotesPercentage;
+		private string fcIndicator;
+
+		private int starPowersGotten;
+		private double starPowerPercentage;
+
 		public SongUI() {
 			configWindowEnabled = false;
 			configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "ExtraSongUIConfig.xml"));
@@ -323,6 +343,36 @@ namespace ExtraSongUI {
 		}
 
 		void LateUpdate() {
+			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
+				// Song length
+				formattedSongTime = string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime));
+				formattedSongLength = string.Format(config.SongLength.Format, DoubleToTimeString(gameManager.SongLength));
+
+				// Star progress
+				currentStarCount = starProgress.CurrentStar;
+				currentScore = starProgress.LastScore; //TODO: Migrate to ScoreManager 'cause this stops after a while.
+				previousStarScore = starProgress.CurrentStar == 0 ? 0 : starProgress.StarScores[starProgress.CurrentStar - 1];
+				nextStarScore = starProgress.StarScores[starProgress.CurrentStar];
+				nextStarPercentage = starProgress.CurrentStar < 7 ? (currentScore - previousStarScore) * 100.0 / (nextStarScore - previousStarScore) : 100.0;
+				sevenStarScore = starProgress.StarScores[6];
+				sevenStarPercentage = currentScore * 100.0 / sevenStarScore;
+
+				// Note count
+				var newNotes = gameManager.BasePlayers[0].HittableNotes.ToList();
+				foreach (var nonNull in newNotes.Where(n => !(n.note is null))) {
+					if (!noteSet.Exists(n => n.note == nonNull.note)) {
+						noteSet.Add(nonNull);
+					}
+				}
+				hitNotes = noteSet.Count(n => n.WasHit);
+				missedNotes = noteSet.Count(n => n.WasMissed && !n.WasHit);
+				seenNotes = hitNotes + missedNotes;
+				hitNotesPercentage = hitNotes * 100.0 / totalNoteCount;
+				fcIndicator = seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes}";
+
+				starPowersGotten = basePlayers[0].StarPowersHit;
+				starPowerPercentage = starPowersGotten * 100.0 / totalStarPowers;
+			}
 			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
 				//TODO: Get the font directly from the bundle?
 				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
@@ -374,51 +424,36 @@ namespace ExtraSongUI {
 			}
 
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
-				// Song length
-				if (!config.HideAll && config.TimeName.Visible) GUI.Label(config.TimeName.Rect, new GUIContent(config.TimeName.Content), config.TimeName.Style(uiFont));
-				if (!config.HideAll && config.SongTime.Visible) GUI.Label(config.SongTime.Rect, new GUIContent(string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime))), config.SongTime.Style(uiFont));
-				if (!config.HideAll && config.SongLength.Visible) GUI.Label(config.SongLength.Rect, new GUIContent(string.Format(config.SongLength.Format, DoubleToTimeString(gameManager.SongLength))), config.SongLength.Style(uiFont));
+				if (!config.HideAll) {
+					// Song length
+					if (config.TimeName.Visible) GUI.Label(config.TimeName.Rect, new GUIContent(config.TimeName.Content), config.TimeName.Style(uiFont));
+					if (config.SongTime.Visible) GUI.Label(config.SongTime.Rect, new GUIContent(formattedSongTime), config.SongTime.Style(uiFont));
+					if (config.SongLength.Visible) GUI.Label(config.SongLength.Rect, new GUIContent(formattedSongLength), config.SongLength.Style(uiFont));
 
-				// Star progress
-				int currentScore = starProgress.LastScore;
-				int previousStarScore = starProgress.CurrentStar == 0 ? 0 : starProgress.StarScores[starProgress.CurrentStar - 1];
-				int nextStarScore = starProgress.StarScores[starProgress.CurrentStar];
-				double nextStarPercentage = starProgress.CurrentStar < 7 ? (currentScore - previousStarScore) * 100.0 / (nextStarScore - previousStarScore) : 100.0;
-				int sevenStarScore = starProgress.StarScores[6];
-				double sevenStarPercentage = Math.Min(100.0, currentScore * 100.0 / sevenStarScore);
+					// Star progress
+					if (config.CurrentStarProgressName.Visible) GUI.Label(config.CurrentStarProgressName.Rect, new GUIContent(string.Format(config.CurrentStarProgressName.Format, currentStarCount, Math.Min(7, currentStarCount + 1))), config.CurrentStarProgressName.Style(uiFont));
+					if (config.CurrentStarProgressScore.Visible) GUI.Label(config.CurrentStarProgressScore.Rect, new GUIContent(string.Format(config.CurrentStarProgressScore.Format, currentScore - previousStarScore)), config.CurrentStarProgressScore.Style(uiFont));
+					if (config.CurrentStarProgressEndScore.Visible) GUI.Label(config.CurrentStarProgressEndScore.Rect, new GUIContent(string.Format(config.CurrentStarProgressEndScore.Format, nextStarScore - previousStarScore)), config.CurrentStarProgressEndScore.Style(uiFont));
+					if (config.CurrentStarProgressPercentage.Visible) GUI.Label(config.CurrentStarProgressPercentage.Rect, new GUIContent(string.Format(config.CurrentStarProgressPercentage.Format, nextStarPercentage.ToString("0.00"))), config.CurrentStarProgressPercentage.Style(uiFont));
 
-				if (!config.HideAll && config.CurrentStarProgressName.Visible) GUI.Label(config.CurrentStarProgressName.Rect, new GUIContent(string.Format(config.CurrentStarProgressName.Format, starProgress.CurrentStar, Math.Min(7, starProgress.CurrentStar + 1))), config.CurrentStarProgressName.Style(uiFont));
-				if (!config.HideAll && config.CurrentStarProgressScore.Visible) GUI.Label(config.CurrentStarProgressScore.Rect, new GUIContent(string.Format(config.CurrentStarProgressScore.Format, currentScore - previousStarScore)), config.CurrentStarProgressScore.Style(uiFont));
-				if (!config.HideAll && config.CurrentStarProgressEndScore.Visible) GUI.Label(config.CurrentStarProgressEndScore.Rect, new GUIContent(string.Format(config.CurrentStarProgressEndScore.Format, nextStarScore - previousStarScore)), config.CurrentStarProgressEndScore.Style(uiFont));
-				if (!config.HideAll && config.CurrentStarProgressPercentage.Visible) GUI.Label(config.CurrentStarProgressPercentage.Rect, new GUIContent(string.Format(config.CurrentStarProgressPercentage.Format, nextStarPercentage.ToString("0.00"))), config.CurrentStarProgressPercentage.Style(uiFont));
+					if (config.SevenStarProgressName.Visible) GUI.Label(config.SevenStarProgressName.Rect, new GUIContent(string.Format(config.SevenStarProgressName.Format, 0, 7)), config.SevenStarProgressName.Style(uiFont));
+					if (config.SevenStarProgressScore.Visible) GUI.Label(config.SevenStarProgressScore.Rect, new GUIContent(string.Format(config.SevenStarProgressScore.Format, currentScore)), config.SevenStarProgressScore.Style(uiFont));
+					if (config.SevenStarProgressEndScore.Visible) GUI.Label(config.SevenStarProgressEndScore.Rect, new GUIContent(string.Format(config.SevenStarProgressEndScore.Format, sevenStarScore)), config.SevenStarProgressEndScore.Style(uiFont));
+					if (config.SevenStarProgressPercentage.Visible) GUI.Label(config.SevenStarProgressPercentage.Rect, new GUIContent(string.Format(config.SevenStarProgressPercentage.Format, sevenStarPercentage.ToString("0.00"))), config.SevenStarProgressPercentage.Style(uiFont));
 
-				if (!config.HideAll && config.SevenStarProgressName.Visible) GUI.Label(config.SevenStarProgressName.Rect, new GUIContent(string.Format(config.SevenStarProgressName.Format, 0, 7)), config.SevenStarProgressName.Style(uiFont));
-				if (!config.HideAll && config.SevenStarProgressScore.Visible) GUI.Label(config.SevenStarProgressScore.Rect, new GUIContent(string.Format(config.SevenStarProgressScore.Format, currentScore)), config.SevenStarProgressScore.Style(uiFont));
-				if (!config.HideAll && config.SevenStarProgressEndScore.Visible) GUI.Label(config.SevenStarProgressEndScore.Rect, new GUIContent(string.Format(config.SevenStarProgressEndScore.Format, sevenStarScore)), config.SevenStarProgressEndScore.Style(uiFont));
-				if (!config.HideAll && config.SevenStarProgressPercentage.Visible) GUI.Label(config.SevenStarProgressPercentage.Rect, new GUIContent(string.Format(config.SevenStarProgressPercentage.Format, sevenStarPercentage.ToString("0.00"))), config.SevenStarProgressPercentage.Style(uiFont));
+					// Note count
+					if (config.NotesName.Visible) GUI.Label(config.NotesName.Rect, new GUIContent(config.NotesName.Content), config.NotesName.Style(uiFont));
+					if (config.NotesHitCounter.Visible) GUI.Label(config.NotesHitCounter.Rect, new GUIContent(string.Format(config.NotesHitCounter.Format, hitNotes)), config.NotesHitCounter.Style(uiFont));
+					if (config.NotesPassedCounter.Visible) GUI.Label(config.NotesPassedCounter.Rect, new GUIContent(string.Format(config.NotesPassedCounter.Format, seenNotes)), config.NotesPassedCounter.Style(uiFont));
+					if (config.TotalNotesCounter.Visible) GUI.Label(config.TotalNotesCounter.Rect, new GUIContent(string.Format(config.TotalNotesCounter.Format, totalNoteCount)), config.TotalNotesCounter.Style(uiFont));
+					if (config.NotesHitPercentage.Visible) GUI.Label(config.NotesHitPercentage.Rect, new GUIContent(string.Format(config.NotesHitPercentage.Format, hitNotesPercentage.ToString("0.00"))), config.NotesHitPercentage.Style(uiFont));
+					if (config.NotesMissedCounter.Visible) GUI.Label(config.NotesMissedCounter.Rect, new GUIContent(string.Format(config.NotesMissedCounter.Format, fcIndicator)), config.NotesMissedCounter.Style(uiFont));
 
-				// Note count
-				var newNotes = gameManager.BasePlayers[0].HittableNotes.ToList();
-				foreach (var nonNull in newNotes.Where(n => !(n.note is null))) {
-					if (!noteSet.Exists(n => n.note == nonNull.note)) {
-						noteSet.Add(nonNull);
-					}
+					if (config.StarPowerName.Visible) GUI.Label(config.StarPowerName.Rect, new GUIContent(config.StarPowerName.Content), config.StarPowerName.Style(uiFont));
+					if (config.StarPowersGottenCounter.Visible) GUI.Label(config.StarPowersGottenCounter.Rect, new GUIContent(string.Format(config.StarPowersGottenCounter.Format, starPowersGotten)), config.StarPowersGottenCounter.Style(uiFont));
+					if (config.TotalStarPowersCounter.Visible) GUI.Label(config.TotalStarPowersCounter.Rect, new GUIContent(string.Format(config.TotalStarPowersCounter.Format, totalStarPowers)), config.TotalStarPowersCounter.Style(uiFont));
+					if (config.StarPowerPercentage.Visible) GUI.Label(config.StarPowerPercentage.Rect, new GUIContent(string.Format(config.StarPowerPercentage.Format, starPowerPercentage.ToString("0.00"))), config.StarPowerPercentage.Style(uiFont));
 				}
-				int hitNotes = noteSet.Count(n => n.WasHit);
-				int missedNotes = noteSet.Count(n => n.WasMissed && !n.WasHit);
-				int seenNotes = hitNotes + missedNotes;
-
-				if (!config.HideAll && config.NotesName.Visible) GUI.Label(config.NotesName.Rect, new GUIContent(config.NotesName.Content), config.NotesName.Style(uiFont));
-				if (!config.HideAll && config.NotesHitCounter.Visible) GUI.Label(config.NotesHitCounter.Rect, new GUIContent(string.Format(config.NotesHitCounter.Format, hitNotes)), config.NotesHitCounter.Style(uiFont));
-				if (!config.HideAll && config.NotesPassedCounter.Visible) GUI.Label(config.NotesPassedCounter.Rect, new GUIContent(string.Format(config.NotesPassedCounter.Format, seenNotes)), config.NotesPassedCounter.Style(uiFont));
-				if (!config.HideAll && config.TotalNotesCounter.Visible) GUI.Label(config.TotalNotesCounter.Rect, new GUIContent(string.Format(config.TotalNotesCounter.Format, totalNoteCount)), config.TotalNotesCounter.Style(uiFont));
-				if (!config.HideAll && config.NotesHitPercentage.Visible) GUI.Label(config.NotesHitPercentage.Rect, new GUIContent(string.Format(config.NotesHitPercentage.Format, (hitNotes * 100.0 / totalNoteCount).ToString("0.00"))), config.NotesHitPercentage.Style(uiFont));
-				if (!config.HideAll && config.NotesMissedCounter.Visible) GUI.Label(config.NotesMissedCounter.Rect, new GUIContent(string.Format(config.NotesMissedCounter.Format, seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes}")), config.NotesMissedCounter.Style(uiFont));
-
-				if (!config.HideAll && config.StarPowerName.Visible) GUI.Label(config.StarPowerName.Rect, new GUIContent(config.StarPowerName.Content), config.StarPowerName.Style(uiFont));
-				if (!config.HideAll && config.StarPowersGottenCounter.Visible) GUI.Label(config.StarPowersGottenCounter.Rect, new GUIContent(string.Format(config.StarPowersGottenCounter.Format, basePlayers[0].StarPowersHit)), config.StarPowersGottenCounter.Style(uiFont));
-				if (!config.HideAll && config.TotalStarPowersCounter.Visible) GUI.Label(config.TotalStarPowersCounter.Rect, new GUIContent(string.Format(config.TotalStarPowersCounter.Format, totalStarPowers)), config.TotalStarPowersCounter.Style(uiFont));
-				if (!config.HideAll && config.StarPowerPercentage.Visible) GUI.Label(config.StarPowerPercentage.Rect, new GUIContent(string.Format(config.StarPowerPercentage.Format, (basePlayers[0].StarPowersHit * 100.0 / totalStarPowers).ToString("0.00"))), config.StarPowerPercentage.Style(uiFont));
 			}
 		}
 
