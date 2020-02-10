@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace ExtraSongUI.Wrappers {
+namespace Common.Wrappers {
 	internal class GameManagerWrapper : WrapperBase {
 		public readonly GameManager gameManager;
 
@@ -39,6 +39,10 @@ namespace ExtraSongUI.Wrappers {
 		private static FieldInfo songField;
 		private const string songFieldName = "\u031A\u0311\u031B\u0317\u0319\u031B\u0316\u030E\u0312\u030F\u031B";
 
+		public GameObject PauseMenu => (GameObject)pauseMenuField.GetValue(gameManager);
+		private static FieldInfo pauseMenuField;
+		private const string pauseMenuFieldName = "pauseMenu";
+
 		/// <summary>
 		/// Seems to create a brand new list of notes based on the chart. It probably shouldn't be called mid-game
 		/// because performance is iffy and it has side effects.
@@ -65,6 +69,7 @@ namespace ExtraSongUI.Wrappers {
 			RegisterField(ref starProgressField, typeof(GameManager), starProgressFieldName);
 			RegisterField(ref practiceUIField, typeof(GameManager), practiceUIFieldName);
 			RegisterField(ref songField, typeof(GameManager), songFieldName);
+			RegisterField(ref pauseMenuField, typeof(GameManager), pauseMenuFieldName);
 			RegisterMethod(ref getNotesFromChartMethod, typeof(GameManager), getNotesFromChartMethodName);
 		}
 	}

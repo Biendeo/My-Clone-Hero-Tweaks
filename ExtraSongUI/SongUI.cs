@@ -1,5 +1,5 @@
-﻿using ExtraSongUI.Settings;
-using ExtraSongUI.Wrappers;
+﻿using Common.Wrappers;
+using ExtraSongUI.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -515,22 +515,22 @@ namespace ExtraSongUI {
 			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressName;
-				settingsCurrentBack = OnWindowCurrentStar;
+				settingsCurrentBack = OnWindowSevenStar;
 			}
 			if (GUILayout.Button("Current Score", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressScore;
-				settingsCurrentBack = OnWindowCurrentStar;
+				settingsCurrentBack = OnWindowSevenStar;
 			}
 			if (GUILayout.Button("End Score", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressEndScore;
-				settingsCurrentBack = OnWindowCurrentStar;
+				settingsCurrentBack = OnWindowSevenStar;
 			}
 			if (GUILayout.Button("Percentage", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressPercentage;
-				settingsCurrentBack = OnWindowCurrentStar;
+				settingsCurrentBack = OnWindowSevenStar;
 			}
 			GUILayout.Space(50.0f);
 			if (GUILayout.Button("Back", settingsButtonStyle)) {

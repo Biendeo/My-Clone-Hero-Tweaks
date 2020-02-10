@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExtraSongUI.Wrappers {
+namespace Common.Wrappers {
 	internal class PlayerProfileWrapper : WrapperBase {
 		public readonly object playerProfile;
 		public static Type PlayerProfileType;

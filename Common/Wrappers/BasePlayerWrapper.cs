@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace ExtraSongUI.Wrappers {
+namespace Common.Wrappers {
 	internal class BasePlayerWrapper : WrapperBase {
 		public readonly BasePlayer basePlayer;
 

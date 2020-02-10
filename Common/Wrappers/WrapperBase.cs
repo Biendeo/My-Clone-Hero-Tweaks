@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExtraSongUI.Wrappers {
+namespace Common.Wrappers {
 	abstract class WrapperBase {
 		/// <summary>
 		/// A helper method that initialises a FieldInfo if it is null. Useful for singleton knowledge of reflected fields.

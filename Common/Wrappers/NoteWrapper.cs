@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace ExtraSongUI.Wrappers {
+namespace Common.Wrappers {
 	internal class NoteWrapper : WrapperBase {
 		public readonly object note;
 		public static Type NoteType;

@@ -1,13 +1,13 @@
 ﻿using Common.Wrappers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 
-namespace ExtraSongUI {
+namespace PerfectMode
+{
 	public class Loader {
 		public void LoadTweak() {
 			WrapperBase.InitializeLoaders();
@@ -16,7 +16,7 @@ namespace ExtraSongUI {
 			}
 			this.gameObject = new GameObject(string.Empty, new Type[]
 			{
-				typeof(SongUI)
+				typeof(PerfectMode)
 			});
 			UnityEngine.Object.DontDestroyOnLoad(this.gameObject);
 			this.gameObject.SetActive(true);

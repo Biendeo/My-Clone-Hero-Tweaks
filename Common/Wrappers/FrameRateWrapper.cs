@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 
-namespace ExtraSongUI.Wrappers {
+namespace Common.Wrappers {
 	internal class FrameRateWrapper : WrapperBase {
 		public readonly FrameRate frameRate;
 

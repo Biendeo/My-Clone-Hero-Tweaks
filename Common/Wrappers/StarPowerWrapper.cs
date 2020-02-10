@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExtraSongUI.Wrappers {
+namespace Common.Wrappers {
 	//TODO: This inherits ChartObject so when that's done, make sure this inherits that.
 	internal class StarPowerWrapper : WrapperBase {
 		public readonly object starPower;
