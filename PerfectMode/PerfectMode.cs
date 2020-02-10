@@ -15,7 +15,7 @@ namespace PerfectMode {
 		private bool sceneChanged;
 
 		private GameManagerWrapper gameManager;
-		private List<NoteWrapper> noteSet;
+		private List<NoteWrapper> notes;
 
 		private bool failedObjective;
 		private float remainingTimeBeforeRestart;
@@ -83,23 +83,25 @@ namespace PerfectMode {
 		}
 
 		void LateUpdate() {
+			if (this.sceneChanged) {
+				this.sceneChanged = false;
+				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
+					var gameManagerObject = GameObject.Find("Game Manager");
+					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
+					notes = gameManager.BasePlayers[0].Notes;
+				}
+			}
 			if (config.Enabled) {
-				if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
-					var newNotes = gameManager.BasePlayers[0].HittableNotes.ToList();
-					foreach (var nonNull in newNotes.Where(n => !(n.note is null))) {
-						if (!noteSet.Exists(n => n.note == nonNull.note)) {
-							noteSet.Add(nonNull);
-						}
-					}
+				if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null && !failedObjective) {
 					target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
 					isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
-					missedNotes = noteSet.Count(n => n.WasMissed && !n.WasHit);
+					missedNotes = notes.Count(n => n.WasMissed && !n.WasHit);
 					if (config.FC && !isStillFC || config.NotesMissed < missedNotes) {
 						failedObjective = true;
 						remainingTimeBeforeRestart = Math.Min(config.FailDelay, (float)(gameManager.SongLength - gameManager.SongTime));
 					}
 				}
-				if (failedObjective && !gameManager.PauseMenu.activeInHierarchy) {
+				if (failedObjective && (gameManager.PauseMenu is null || !gameManager.PauseMenu.activeInHierarchy)) {
 					remainingTimeBeforeRestart -= Time.deltaTime;
 					if (remainingTimeBeforeRestart < 0.0f) {
 						//TODO: I can guarantee there's more going on that just this. Multiplayer is a concern.
@@ -110,14 +112,6 @@ namespace PerfectMode {
 			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
 				//TODO: Get the font directly from the bundle?
 				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
-			}
-			if (this.sceneChanged) {
-				this.sceneChanged = false;
-				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
-					var gameManagerObject = GameObject.Find("Game Manager");
-					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
-					noteSet = new List<NoteWrapper>();
-				}
 			}
 			if (Input.GetKeyDown(KeyCode.F6) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) {
 				configWindowEnabled = !configWindowEnabled;

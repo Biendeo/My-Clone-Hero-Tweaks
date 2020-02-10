@@ -18,6 +18,7 @@ namespace Common.Wrappers {
 		/// <summary>
 		/// Returns a chart given an instrument and a difficulty. This should have no side effects as the method
 		/// implementation is just returning a specific element of an array.
+		/// The difficulty and instrument fields seem to just be plain wrong, so maybe ignore getting this.
 		/// </summary>
 		/// <param name="instrument"></param>
 		/// <param name="difficulty"></param>

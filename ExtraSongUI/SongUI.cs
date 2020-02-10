@@ -26,9 +26,9 @@ namespace ExtraSongUI {
 
 		// Note count
 		private BasePlayerWrapper[] basePlayers;
+		private List<NoteWrapper> notes;
 		private int totalNoteCount;
 		private int totalStarPowers;
-		private List<NoteWrapper> noteSet;
 
 		private Font uiFont;
 
@@ -343,6 +343,21 @@ namespace ExtraSongUI {
 		}
 
 		void LateUpdate() {
+			if (this.sceneChanged) {
+				this.sceneChanged = false;
+				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
+					// Song length
+					var gameManagerObject = GameObject.Find("Game Manager");
+					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
+					starProgress = gameManager.StarProgress;
+					basePlayers = gameManager.BasePlayers;
+					notes = basePlayers[0].Notes;
+					totalNoteCount = notes.Count;
+					totalStarPowers = notes.Count(n => n.IsStarPowerEnd);
+					hitNotes = 0;
+					missedNotes = 0;
+				}
+			}
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
 				// Song length
 				formattedSongTime = string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime));
@@ -358,14 +373,8 @@ namespace ExtraSongUI {
 				sevenStarPercentage = currentScore * 100.0 / sevenStarScore;
 
 				// Note count
-				var newNotes = gameManager.BasePlayers[0].HittableNotes.ToList();
-				foreach (var nonNull in newNotes.Where(n => !(n.note is null))) {
-					if (!noteSet.Exists(n => n.note == nonNull.note)) {
-						noteSet.Add(nonNull);
-					}
-				}
-				hitNotes = noteSet.Count(n => n.WasHit);
-				missedNotes = noteSet.Count(n => n.WasMissed && !n.WasHit);
+				hitNotes = notes.Count(n => n.WasHit);
+				missedNotes = notes.Count(n => !n.WasHit && n.WasMissed);
 				seenNotes = hitNotes + missedNotes;
 				hitNotesPercentage = hitNotes * 100.0 / totalNoteCount;
 				fcIndicator = seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes}";
@@ -376,21 +385,6 @@ namespace ExtraSongUI {
 			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
 				//TODO: Get the font directly from the bundle?
 				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
-			}
-			if (this.sceneChanged) {
-				this.sceneChanged = false;
-				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
-					// Song length
-					var gameManagerObject = GameObject.Find("Game Manager");
-					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
-					starProgress = gameManager.StarProgress;
-					basePlayers = gameManager.BasePlayers;
-					//? The player difficulty seems to go easy to expert rather than expert to easy, so this 3 - inverts that for this usage only. That should be looked into.
-					var chart = gameManager.Song.GetChart(gameManager.BasePlayers[0].Player.PlayerProfile.Instrument, (sbyte)(3 - gameManager.BasePlayers[0].Player.PlayerProfile.Difficulty));
-					totalNoteCount = chart.UnknownInt1;
-					totalStarPowers = chart.StarPower.Length;
-					noteSet = new List<NoteWrapper>();
-				}
 			}
 			if (Input.GetKeyDown(KeyCode.F5) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) {
 				configWindowEnabled = !configWindowEnabled;
@@ -422,7 +416,6 @@ namespace ExtraSongUI {
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
-
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
 				if (!config.HideAll) {
 					// Song length
