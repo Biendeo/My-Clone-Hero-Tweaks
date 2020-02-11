@@ -70,6 +70,9 @@ namespace ExtraSongUI {
 		private int starPowersGotten;
 		private double starPowerPercentage;
 
+		private int currentCombo;
+		private int highestCombo;
+
 		private int currentNoteIndex;
 
 		public SongUI() {
@@ -78,249 +81,7 @@ namespace ExtraSongUI {
 		}
 
 		private void WriteDefaultConfig() {
-			// These original numbers were designed with 1440p in mind so this'll sort it out.
-			float widthScale = Screen.width / 2560.0f;
-			float heightScale = Screen.height / 1440.0f;
-			int smallFontSize = (int)(30 * widthScale);
-			int largeFontSize = (int)(50 * widthScale);
-			int extraLargeFontSize = (int)(150 * widthScale);
-
-			config = new Config {
-				TimeName = new EditableLabelSettings {
-					X = 100.0f * widthScale,
-					Y = 750.0f * heightScale,
-					Size = smallFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Content = "Time:",
-				},
-				SongTime = new FormattedLabelSettings {
-					X = 400.0f * widthScale,
-					Y = 750.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0} /"
-				},
-				SongLength = new FormattedLabelSettings {
-					X = 670.0f * widthScale,
-					Y = 750.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0}"
-				},
-				CurrentStarProgressName = new FormattedLabelSettings {
-					X = 100.0f * widthScale,
-					Y = 810.0f * heightScale,
-					Size = smallFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0} → {1}:"
-				},
-				CurrentStarProgressScore = new FormattedLabelSettings {
-					X = 400.0f * widthScale,
-					Y = 810.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0} /"
-				},
-				CurrentStarProgressEndScore = new FormattedLabelSettings {
-					X = 670.0f * widthScale,
-					Y = 810.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0}"
-				},
-				CurrentStarProgressPercentage = new FormattedLabelSettings {
-					X = 700.0f * widthScale,
-					Y = 810.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerLeft,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "({0}%)"
-				},
-				SevenStarProgressName = new FormattedLabelSettings {
-					X = 100.0f * widthScale,
-					Y = 870.0f * heightScale,
-					Size = smallFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0} → {1}:"
-				},
-				SevenStarProgressScore = new FormattedLabelSettings {
-					X = 400.0f * widthScale,
-					Y = 870.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0} /"
-				},
-				SevenStarProgressEndScore = new FormattedLabelSettings {
-					X = 670.0f * widthScale,
-					Y = 870.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0}"
-				},
-				SevenStarProgressPercentage = new FormattedLabelSettings {
-					X = 700.0f * widthScale,
-					Y = 870.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerLeft,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "({0}%)"
-				},
-				NotesName = new EditableLabelSettings {
-					X = 100.0f * widthScale,
-					Y = 930.0f * heightScale,
-					Size = smallFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Content = "Notes:"
-				},
-				NotesHitCounter = new FormattedLabelSettings {
-					X = 330.0f * widthScale,
-					Y = 930.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0} /"
-				},
-				NotesPassedCounter = new FormattedLabelSettings {
-					X = 530.0f * widthScale,
-					Y = 930.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0} /"
-				},
-				TotalNotesCounter = new FormattedLabelSettings {
-					X = 680.0f * widthScale,
-					Y = 930.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0}"
-				},
-				NotesHitPercentage = new FormattedLabelSettings {
-					X = 700.0f * widthScale,
-					Y = 930.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerLeft,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "({0}%)"
-				},
-				NotesMissedCounter = new FormattedLabelSettings {
-					X = 780.0f * widthScale,
-					Y = 1070.0f * heightScale,
-					Size = extraLargeFontSize,
-					Alignment = TextAnchor.MiddleRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0}"
-				},
-				StarPowerName = new EditableLabelSettings {
-					X = 100.0f * widthScale,
-					Y = 990.0f * heightScale,
-					Size = smallFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Content = "SP:"
-				},
-				StarPowersGottenCounter = new FormattedLabelSettings {
-					X = 400.0f * widthScale,
-					Y = 990.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0} /"
-				},
-				TotalStarPowersCounter = new FormattedLabelSettings {
-					X = 520.0f * widthScale,
-					Y = 990.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerRight,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "{0}"
-				},
-				StarPowerPercentage = new FormattedLabelSettings {
-					X = 700.0f * widthScale,
-					Y = 990.0f * heightScale,
-					Size = largeFontSize,
-					Alignment = TextAnchor.LowerLeft,
-					Bold = true,
-					Italic = false,
-					ColorARGB = LabelSettings.ColorToARGB(Color.white),
-					Visible = true,
-					Format = "({0}%)"
-				},
-				ConfigX = Screen.width - 350.0f,
-				ConfigY = 100.0f * heightScale,
-				HideAll = false
-			};
+			config = new Config();
 			var serializer = new XmlSerializer(typeof(Config));
 			using (var configOut = configFilePath.OpenWrite()) {
 				serializer.Serialize(configOut, config);
@@ -358,6 +119,8 @@ namespace ExtraSongUI {
 					totalStarPowers = notes.Count(n => n.IsStarPowerEnd);
 					hitNotes = 0;
 					missedNotes = 0;
+					currentCombo = 0;
+					highestCombo = 0;
 					currentNoteIndex = 0;
 				}
 			}
@@ -384,14 +147,15 @@ namespace ExtraSongUI {
 					}
 					++currentNoteIndex;
 				}
-				//hitNotes = notes.Count(n => n.WasHit);
-				//missedNotes = notes.Count(n => !n.WasHit && n.WasMissed);
 				seenNotes = hitNotes + missedNotes;
 				hitNotesPercentage = hitNotes * 100.0 / totalNoteCount;
 				fcIndicator = seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes}";
 
 				starPowersGotten = basePlayers[0].StarPowersHit;
 				starPowerPercentage = starPowersGotten * 100.0 / totalStarPowers;
+
+				currentCombo = basePlayers[0].Combo;
+				highestCombo = basePlayers[0].HighestCombo;
 			}
 			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
 				//TODO: Get the font directly from the bundle?
@@ -452,6 +216,10 @@ namespace ExtraSongUI {
 					if (config.StarPowersGottenCounter.Visible) GUI.Label(config.StarPowersGottenCounter.Rect, new GUIContent(string.Format(config.StarPowersGottenCounter.Format, starPowersGotten)), config.StarPowersGottenCounter.Style(uiFont));
 					if (config.TotalStarPowersCounter.Visible) GUI.Label(config.TotalStarPowersCounter.Rect, new GUIContent(string.Format(config.TotalStarPowersCounter.Format, totalStarPowers)), config.TotalStarPowersCounter.Style(uiFont));
 					if (config.StarPowerPercentage.Visible) GUI.Label(config.StarPowerPercentage.Rect, new GUIContent(string.Format(config.StarPowerPercentage.Format, starPowerPercentage.ToString("0.00"))), config.StarPowerPercentage.Style(uiFont));
+
+					if (config.ComboName.Visible) GUI.Label(config.ComboName.Rect, new GUIContent(config.ComboName.Content), config.ComboName.Style(uiFont));
+					if (config.CurrentComboCounter.Visible) GUI.Label(config.CurrentComboCounter.Rect, new GUIContent(string.Format(config.CurrentComboCounter.Format, currentCombo)), config.CurrentComboCounter.Style(uiFont));
+					if (config.HighestComboCounter.Visible) GUI.Label(config.HighestComboCounter.Rect, new GUIContent(string.Format(config.HighestComboCounter.Format, highestCombo)), config.HighestComboCounter.Style(uiFont));
 				}
 			}
 		}
@@ -461,6 +229,15 @@ namespace ExtraSongUI {
 		#region OnWindow Methods
 
 		private void OnWindowHead(int id) {
+			var largeLabelStyle = new GUIStyle {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				}
+			};
+			GUILayout.Label("Settings", largeLabelStyle);
 			if (GUILayout.Button("Time", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowTime;
 			}
@@ -476,11 +253,15 @@ namespace ExtraSongUI {
 			if (GUILayout.Button("Star Power", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowStarPower;
 			}
+			if (GUILayout.Button("Combo", settingsButtonStyle)) {
+				settingsOnWindow = OnWindowCombo;
+			}
 
 			GUILayout.Space(20.0f);
 			config.HideAll = GUILayout.Toggle(config.HideAll, "Hide all extra UI", settingsToggleStyle);
 			GUILayout.Space(20.0f);
 			if (GUILayout.Button("Save Config", settingsButtonStyle)) {
+				if (configFilePath.Exists) configFilePath.Delete();
 				var serializer = new XmlSerializer(typeof(Config));
 				using (var configOut = configFilePath.OpenWrite()) {
 					serializer.Serialize(configOut, config);
@@ -502,6 +283,15 @@ namespace ExtraSongUI {
 		}
 
 		private void OnWindowTime(int id) {
+			var largeLabelStyle = new GUIStyle {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				}
+			};
+			GUILayout.Label("Time", largeLabelStyle);
 			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.TimeName;
@@ -525,6 +315,15 @@ namespace ExtraSongUI {
 		}
 
 		private void OnWindowCurrentStar(int id) {
+			var largeLabelStyle = new GUIStyle {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				}
+			};
+			GUILayout.Label("Current Star", largeLabelStyle);
 			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressName;
@@ -553,6 +352,15 @@ namespace ExtraSongUI {
 		}
 
 		private void OnWindowSevenStar(int id) {
+			var largeLabelStyle = new GUIStyle {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				}
+			};
+			GUILayout.Label("Seven Star", largeLabelStyle);
 			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressName;
@@ -581,6 +389,15 @@ namespace ExtraSongUI {
 		}
 
 		private void OnWindowNotes(int id) {
+			var largeLabelStyle = new GUIStyle {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				}
+			};
+			GUILayout.Label("Notes", largeLabelStyle);
 			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesName;
@@ -619,6 +436,15 @@ namespace ExtraSongUI {
 		}
 
 		private void OnWindowStarPower(int id) {
+			var largeLabelStyle = new GUIStyle {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				}
+			};
+			GUILayout.Label("Star Power", largeLabelStyle);
 			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.StarPowerName;
@@ -638,6 +464,38 @@ namespace ExtraSongUI {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.StarPowerPercentage;
 				settingsCurrentBack = OnWindowStarPower;
+			}
+			GUILayout.Space(50.0f);
+			if (GUILayout.Button("Back", settingsButtonStyle)) {
+				settingsOnWindow = OnWindowHead;
+			}
+			GUI.DragWindow();
+		}
+
+		private void OnWindowCombo(int id) {
+			var largeLabelStyle = new GUIStyle {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				}
+			};
+			GUILayout.Label("Combo", largeLabelStyle);
+			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
+				settingsOnWindow = OnWindowEdit;
+				settingsCurrentlyEditing = config.ComboName;
+				settingsCurrentBack = OnWindowCombo;
+			}
+			if (GUILayout.Button("Current Combo Counter", settingsButtonStyle)) {
+				settingsOnWindow = OnWindowEdit;
+				settingsCurrentlyEditing = config.CurrentComboCounter;
+				settingsCurrentBack = OnWindowCombo;
+			}
+			if (GUILayout.Button("Highest Combo Counter", settingsButtonStyle)) {
+				settingsOnWindow = OnWindowEdit;
+				settingsCurrentlyEditing = config.HighestComboCounter;
+				settingsCurrentBack = OnWindowCombo;
 			}
 			GUILayout.Space(50.0f);
 			if (GUILayout.Button("Back", settingsButtonStyle)) {
