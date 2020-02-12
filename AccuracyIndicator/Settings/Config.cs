@@ -63,11 +63,11 @@ namespace AccuracyIndicator.Settings {
 
 			TimeOnScreen = 0.75f;
 
-			CutoffSlightlyEarly = 0.02f;
-			CutoffEarly = 0.01f;
-			CutoffVeryEarly = 0.003f;
-			CutoffSlightlyLate = 0.02f;
-			CutoffLate = 0.01f;
+			CutoffSlightlyEarly = 0.01f;
+			CutoffEarly = 0.02f;
+			CutoffVeryEarly = 0.03f;
+			CutoffSlightlyLate = 0.01f;
+			CutoffLate = 0.02f;
 			CutoffVeryLate = 0.03f;
 
 			ColorPerfectARGB = ColorToARGB(Color.white);
@@ -80,11 +80,6 @@ namespace AccuracyIndicator.Settings {
 			ColorMissedARGB = ColorToARGB(Color.grey);
 
 			AccuracyTime = true;
-
-			/*
-			 * 1390 /
-			 */
-
 			AccuracyTimeX = Screen.width * 0.8f;
 			AccuracyTimeY = Screen.height * (1270.0f / 1440.0f);
 			AccuracyTimeScale = Screen.height * 50 / 1440;
