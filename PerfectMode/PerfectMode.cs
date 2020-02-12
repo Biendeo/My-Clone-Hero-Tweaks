@@ -82,7 +82,7 @@ namespace PerfectMode {
 					var gameManagerObject = GameObject.Find("Game Manager");
 					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
 					notes = gameManager.BasePlayers[0].Notes;
-					totalNoteCount = notes.Count;
+					totalNoteCount = notes?.Count ?? 0;
 					currentNoteIndex = 0;
 					missedNotes = 0;
 				}

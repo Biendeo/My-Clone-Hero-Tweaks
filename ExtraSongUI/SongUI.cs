@@ -115,8 +115,8 @@ namespace ExtraSongUI {
 					starProgress = gameManager.StarProgress;
 					basePlayers = gameManager.BasePlayers;
 					notes = basePlayers[0].Notes;
-					totalNoteCount = notes.Count;
-					totalStarPowers = notes.Count(n => n.IsStarPowerEnd);
+					totalNoteCount = notes?.Count ?? 0;
+					totalStarPowers = notes?.Count(n => n.IsStarPowerEnd) ?? 0;
 					hitNotes = 0;
 					missedNotes = 0;
 					currentCombo = 0;

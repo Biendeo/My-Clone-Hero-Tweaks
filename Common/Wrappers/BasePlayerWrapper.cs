@@ -100,7 +100,7 @@ namespace Common.Wrappers {
 		private static FieldInfo hittableNotesField;
 		private const string hittableNotesFieldName = "\u0315\u0318\u0315\u030F\u0310\u031A\u0310\u031B\u0316\u0312\u0315";
 
-		public List<NoteWrapper> Notes => ((ICollection)notesField.GetValue(basePlayer)).Cast<object>().Select(o => new NoteWrapper(o)).ToList();
+		public List<NoteWrapper> Notes => ((ICollection)notesField.GetValue(basePlayer))?.Cast<object>().Select(o => new NoteWrapper(o)).ToList();
 		private static FieldInfo notesField;
 		private const string notesFieldName = "\u031A\u0316\u0315\u0318\u0319\u0315\u0316\u0313\u0315\u0315\u0312";
 
