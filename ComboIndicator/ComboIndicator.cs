@@ -56,7 +56,7 @@ namespace ComboIndicator {
 					});
 					textElement.GetComponent<DancingText>().Text = $"{currentCombo} Note Streak!";
 					textElement.GetComponent<DancingText>().Font = uiFont;
-					textElement.GetComponent<DancingText>().RaisedForSolo = soloCounter.Bool2;
+					textElement.GetComponent<DancingText>().RaisedForSolo = true; // Could be soloCounter.Bool2 but I want to gauge how people respond first.
 				}
 				lastCombo = currentCombo;
 			}
