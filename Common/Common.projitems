@@ -19,6 +19,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\NoteWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\PlayerProfileWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\PracticeUIWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\ScoreManagerWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SoloCounterWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SongWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\StarPowerWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\StarProgressWrapper.cs" />

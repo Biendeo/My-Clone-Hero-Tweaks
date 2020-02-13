@@ -80,6 +80,8 @@ namespace Common.Wrappers {
 			NoteWrapper.InitializeSingletonFields();
 			PlayerProfileWrapper.InitializeSingletonFields();
 			PracticeUIWrapper.InitializeSingletonFields();
+			ScoreManagerWrapper.InitializeSingletonFields();
+			SoloCounterWrapper.InitializeSingletonFields();
 			SongWrapper.InitializeSingletonFields();
 			StarPowerWrapper.InitializeSingletonFields();
 			StarProgressWrapper.InitializeSingletonFields();

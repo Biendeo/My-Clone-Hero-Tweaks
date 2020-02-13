@@ -104,6 +104,10 @@ namespace Common.Wrappers {
 		private static FieldInfo notesField;
 		private const string notesFieldName = "\u031A\u0316\u0315\u0318\u0319\u0315\u0316\u0313\u0315\u0315\u0312";
 
+		public SoloCounterWrapper SoloCounter => new SoloCounterWrapper((SoloCounter)soloCounterField.GetValue(basePlayer));
+		private static FieldInfo soloCounterField;
+		private const string soloCounterFieldName = "\u0315\u031B\u030E\u0319\u0310\u030E\u030F\u031B\u031A\u030E\u030F";
+
 		public BasePlayerWrapper(BasePlayer basePlayer) {
 			this.basePlayer = basePlayer;
 		}
@@ -132,6 +136,7 @@ namespace Common.Wrappers {
 			RegisterField(ref playerField, typeof(BasePlayer), playerFieldName);
 			RegisterField(ref hittableNotesField, typeof(BasePlayer), hittableNotesFieldName);
 			RegisterField(ref notesField, typeof(BasePlayer), notesFieldName);
+			RegisterField(ref soloCounterField, typeof(BasePlayer), soloCounterFieldName);
 		}
 	}
 }

@@ -43,6 +43,10 @@ namespace Common.Wrappers {
 		private static FieldInfo pauseMenuField;
 		private const string pauseMenuFieldName = "pauseMenu";
 
+		public ScoreManagerWrapper ScoreManager => new ScoreManagerWrapper((ScoreManager)scoreManagerField.GetValue(gameManager));
+		private static FieldInfo scoreManagerField;
+		private const string scoreManagerFieldName = "\u0316\u031C\u031C\u0318\u0311\u0317\u0317\u030F\u0319\u0312\u030F";
+
 		/// <summary>
 		/// Seems to create a brand new list of notes based on the chart. It probably shouldn't be called mid-game
 		/// because performance is iffy and it has side effects.
@@ -70,6 +74,7 @@ namespace Common.Wrappers {
 			RegisterField(ref practiceUIField, typeof(GameManager), practiceUIFieldName);
 			RegisterField(ref songField, typeof(GameManager), songFieldName);
 			RegisterField(ref pauseMenuField, typeof(GameManager), pauseMenuFieldName);
+			RegisterField(ref scoreManagerField, typeof(GameManager), scoreManagerFieldName);
 			RegisterMethod(ref getNotesFromChartMethod, typeof(GameManager), getNotesFromChartMethodName);
 		}
 	}
