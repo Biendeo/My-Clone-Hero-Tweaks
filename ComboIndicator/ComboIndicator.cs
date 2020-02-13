@@ -17,6 +17,7 @@ namespace ComboIndicator {
 	public class ComboIndicator : MonoBehaviour {
 		private bool sceneChanged;
 
+		private GameManagerWrapper gameManager;
 		private SoloCounterWrapper soloCounter;
 		private ScoreManagerWrapper scoreManager;
 
@@ -40,10 +41,11 @@ namespace ComboIndicator {
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
 				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
-					var gameManager = GameObject.Find("Game Manager")?.GetComponent<GameManager>();
+					gameManager = new GameManagerWrapper(GameObject.Find("Game Manager")?.GetComponent<GameManager>());
 					if (gameManager != null) {
-						soloCounter = new GameManagerWrapper(gameManager).BasePlayers[0].SoloCounter;
-						scoreManager = new GameManagerWrapper(gameManager).ScoreManager;
+
+						soloCounter = gameManager.BasePlayers[0].SoloCounter;
+						scoreManager = gameManager.ScoreManager;
 					}
 					lastCombo = 0;
 				}
@@ -54,6 +56,7 @@ namespace ComboIndicator {
 					var textElement = new GameObject(string.Empty, new Type[] {
 						typeof(DancingText)
 					});
+					textElement.GetComponent<DancingText>().GameManager = gameManager;
 					textElement.GetComponent<DancingText>().Text = $"{currentCombo} Note Streak!";
 					textElement.GetComponent<DancingText>().Font = uiFont;
 					textElement.GetComponent<DancingText>().RaisedForSolo = true; // Could be soloCounter.Bool2 but I want to gauge how people respond first.

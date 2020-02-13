@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Wrappers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace ComboIndicator {
 		public string Text;
 		public Font Font;
 		public bool RaisedForSolo;
+		internal GameManagerWrapper GameManager;
 		private Text text;
 
 		private float timeAlive;
@@ -77,7 +79,9 @@ namespace ComboIndicator {
 		}
 
 		void Update() {
-			timeAlive += Time.deltaTime;
+			if (!GameManager.IsPaused) {
+				timeAlive += Time.deltaTime;
+			}
 			if (timeAlive > timeToLive) {
 				Destroy(gameObject);
 			} else {

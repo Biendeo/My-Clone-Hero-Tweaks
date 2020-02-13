@@ -27,6 +27,10 @@ namespace Common.Wrappers {
 		private static FieldInfo songTimeField;
 		private const string songTimeFieldName = "\u031C\u030D\u030D\u0317\u0317\u0312\u031B\u031C\u0318\u0312\u030E";
 
+		public bool IsPaused => (bool)isPausedField.GetValue(gameManager);
+		private static FieldInfo isPausedField;
+		private const string isPausedFieldName = "\u031B\u0318\u030E\u0310\u0319\u030E\u0312\u031C\u031A\u030E\u0313";
+
 		public StarProgressWrapper StarProgress => new StarProgressWrapper((StarProgress)starProgressField.GetValue(gameManager));
 		private static FieldInfo starProgressField;
 		private const string starProgressFieldName = "starProgress";
@@ -70,6 +74,7 @@ namespace Common.Wrappers {
 			RegisterField(ref unknownBasePlayerField, typeof(GameManager), unknownBasePlayerFieldName);
 			RegisterField(ref songLengthField, typeof(GameManager), songLengthFieldName);
 			RegisterField(ref songTimeField, typeof(GameManager), songTimeFieldName);
+			RegisterField(ref isPausedField, typeof(GameManager), isPausedFieldName);
 			RegisterField(ref starProgressField, typeof(GameManager), starProgressFieldName);
 			RegisterField(ref practiceUIField, typeof(GameManager), practiceUIFieldName);
 			RegisterField(ref songField, typeof(GameManager), songFieldName);
