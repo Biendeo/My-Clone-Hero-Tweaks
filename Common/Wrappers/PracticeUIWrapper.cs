@@ -13,7 +13,7 @@ namespace Common.Wrappers {
 
 		public float SomeFloat => (float)someFloatField.GetValue(this);
 		[WrapperField("\u030E\u0316\u030F\u0314\u030E\u0312\u0315\u0317\u0315\u031B\u0316")]
-		private static FieldInfo someFloatField;
+		private static readonly FieldInfo someFloatField;
 
 		public PracticeUIWrapper(PracticeUI practiceUI) {
 			this.practiceUI = practiceUI;

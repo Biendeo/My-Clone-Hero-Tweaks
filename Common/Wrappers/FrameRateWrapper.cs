@@ -14,7 +14,7 @@ namespace Common.Wrappers {
 
 		public TextMeshProUGUI Text => (TextMeshProUGUI)textField.GetValue(frameRate);
 		[WrapperField("\u0318\u030F\u0319\u0310\u0312\u0310\u030E\u0314\u0310\u031A\u0313")]
-		private static FieldInfo textField;
+		private static readonly FieldInfo textField;
 
 		public FrameRateWrapper(FrameRate frameRate) {
 			this.frameRate = frameRate;

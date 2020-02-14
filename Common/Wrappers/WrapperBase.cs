@@ -10,7 +10,6 @@ using UnityEngine;
 namespace Common.Wrappers {
 	abstract class WrapperBase {
 		public static void InitializeLoaders() {
-			Debug.LogError($"Types: {string.Join(", ", Assembly.GetExecutingAssembly().GetTypes().Where(t => t.GetCustomAttribute<Wrapper>() != null).Select(t => t.Name))}");
 			foreach (var type in Assembly.GetExecutingAssembly().GetTypes()) {
 				var wrapper = type.GetCustomAttribute<Wrapper>();
 				if (wrapper != null) {

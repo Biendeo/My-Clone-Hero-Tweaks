@@ -14,7 +14,7 @@ namespace Common.Wrappers {
 
 		public uint Length => (uint)lengthField.GetValue(starPower);
 		[WrapperField("\u031C\u031C\u0312\u0319\u0314\u0312\u0317\u031C\u031C\u031C\u031A")]
-		private static FieldInfo lengthField;
+		private static readonly FieldInfo lengthField;
 
 		public StarPowerWrapper(object starPower) {
 			this.starPower = starPower;

@@ -13,15 +13,15 @@ namespace Common.Wrappers {
 
 		public string PlayerName => (string)playerNameField.GetValue(playerProfile);
 		[WrapperField("\u031A\u0311\u0312\u030D\u0315\u0310\u0311\u0316\u030D\u0311\u0312")]
-		private static FieldInfo playerNameField;
+		private static readonly FieldInfo playerNameField;
 
 		public sbyte Instrument => (sbyte)instrumentField.GetValue(playerProfile);
 		[WrapperField("\u030E\u031C\u0314\u031B\u030E\u031A\u0313\u030D\u0314\u0310\u031A")]
-		private static FieldInfo instrumentField;
+		private static readonly FieldInfo instrumentField;
 
 		public sbyte Difficulty => (sbyte)difficultyField.GetValue(playerProfile);
 		[WrapperField("\u030E\u0310\u0312\u031C\u0314\u031A\u030E\u031A\u0312\u0318\u030E")]
-		private static FieldInfo difficultyField;
+		private static readonly FieldInfo difficultyField;
 
 		public PlayerProfileWrapper(object playerProfile) {
 			this.playerProfile = playerProfile;
