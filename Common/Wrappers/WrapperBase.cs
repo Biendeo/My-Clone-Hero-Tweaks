@@ -12,6 +12,7 @@ namespace Common.Wrappers {
 		public static void InitializeLoaders() {
 			foreach (var type in Assembly.GetExecutingAssembly().GetTypes()) {
 				var wrapper = type.GetCustomAttribute<Wrapper>();
+				Debug.LogError($"type: {type.Name}, wrapper: {wrapper != null}");
 				if (wrapper != null) {
 					wrapper.InitializeSingletons(type);
 				}

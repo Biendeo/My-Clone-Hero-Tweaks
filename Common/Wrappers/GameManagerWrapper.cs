@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(GameManager))]
-	internal class GameManagerWrapper : WrapperBase {
+	internal class GameManagerWrapper {
 		public readonly GameManager gameManager;
 
 		public BasePlayerWrapper[] BasePlayers => ((BasePlayer[])basePlayersField.GetValue(gameManager)).Select(bp => new BasePlayerWrapper(bp)).ToArray();
@@ -52,6 +52,10 @@ namespace Common.Wrappers {
 		public ScoreManagerWrapper ScoreManager => new ScoreManagerWrapper((ScoreManager)scoreManagerField.GetValue(gameManager));
 		[WrapperField("\u0316\u031C\u031C\u0318\u0311\u0317\u0317\u030F\u0319\u0312\u030F")]
 		private static readonly FieldInfo scoreManagerField;
+
+		public GlobalVariablesWrapper GlobalVariables => new GlobalVariablesWrapper((GlobalVariables)globalVariablesField.GetValue(gameManager));
+		[WrapperField("\u030E\u0317\u0317\u030E\u030D\u0315\u0319\u0314\u0317\u030D\u030F")]
+		private static readonly FieldInfo globalVariablesField;
 
 		/// <summary>
 		/// Seems to create a brand new list of notes based on the chart. It probably shouldn't be called mid-game

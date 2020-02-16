@@ -10,14 +10,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\Wrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperProperty.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperConstructor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\BasePlayerWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\CHPlayerWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\FrameRateWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\GameManagerWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\GameSettingWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\GlobalVariablesWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\INIParserWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\MoonChartWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\MoonNoteWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\NoteWrapper.cs" />

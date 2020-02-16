@@ -32,10 +32,19 @@ namespace Common.Wrappers.Attributes {
 				} else if (field.FieldType == typeof(MethodInfo) && field.GetValue(null) == null) {
 					var wrapperMethod = field.GetCustomAttribute<WrapperMethod>();
 					if (wrapperMethod != null) {
-						field.SetValue(null, type.GetMethod(wrapperMethod.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+						if (wrapperMethod.Types.Length == 0) {
+							field.SetValue(null, type.GetMethod(wrapperMethod.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+						} else {
+							field.SetValue(null, type.GetMethod(wrapperMethod.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, wrapperMethod.Types, Array.Empty<ParameterModifier>()));
+						}
+					}
+				} else if (field.FieldType == typeof(ConstructorInfo) && field.GetValue(null) == null) {
+					var wrapperConstructor = field.GetCustomAttribute<WrapperConstructor>();
+					if (wrapperConstructor != null) {
+						field.SetValue(null, type.GetConstructor(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, wrapperConstructor.Types, null));
 					}
 				}
-				if ((field.FieldType == typeof(FieldInfo) || field.FieldType == typeof(PropertyInfo) || field.FieldType == typeof(MethodInfo)) && field.GetValue(null) == null) {
+				if ((field.FieldType == typeof(FieldInfo) || field.FieldType == typeof(PropertyInfo) || field.FieldType == typeof(MethodInfo) || field.FieldType == typeof(ConstructorInfo)) && field.GetValue(null) == null) {
 					Debug.LogError($"Uh oh! {wrapperType.Name}.{field.Name} was null!");
 				}
 			}

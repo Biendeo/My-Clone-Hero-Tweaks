@@ -27,9 +27,9 @@ namespace Common.Wrappers {
 		private static readonly PropertyInfo songProperty;
 
 		// A property for UnknownInt1.
-		public int UnknownInt3 => (int)unknownInt3Property.GetValue(moonChart);
+		public int UnknownInt1Property => (int)unknownInt1Property.GetValue(moonChart);
 		[WrapperProperty("\u0314\u0316\u030F\u0319\u0315\u031B\u0318\u0318\u031B\u0315\u031B")]
-		private static readonly PropertyInfo unknownInt3Property;
+		private static readonly PropertyInfo unknownInt1Property;
 
 		public StarPowerWrapper[] StarPower => ((object[])starPowerProperty.GetValue(moonChart)).Select(o => new StarPowerWrapper(o)).ToArray();
 		[WrapperProperty("\u0314\u0312\u0318\u031C\u031A\u0313\u0314\u0317\u030E\u0315\u031C")]
