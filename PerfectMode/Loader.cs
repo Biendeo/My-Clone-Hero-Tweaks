@@ -14,7 +14,7 @@ namespace PerfectMode
 			if (this.gameObject != null) {
 				return;
 			}
-			this.gameObject = new GameObject(string.Empty, new Type[]
+			this.gameObject = new GameObject("Biendeo Tweak - Perfect Mode", new Type[]
 			{
 				typeof(PerfectMode)
 			});

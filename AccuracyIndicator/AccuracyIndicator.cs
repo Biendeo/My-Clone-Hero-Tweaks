@@ -1,4 +1,5 @@
-﻿using AccuracyIndicator.Settings;
+﻿using AccuracyIndicator.Components;
+using AccuracyIndicator.Settings;
 using Common.Wrappers;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,13 @@ namespace AccuracyIndicator {
 		private int hitNotes;
 		private double hitAccuracy;
 		private double lastSongTime;
+		private List<float> noteHits;
+		private float highestVeryLate;
+		private float highestLate;
+		private float highestSlightlyLate;
+		private float highestSlightlyEarly;
+		private float highestEarly;
+		private float highestVeryEarly;
 
 		public AccuracyIndicator() {
 			configWindowEnabled = false;
@@ -96,6 +104,93 @@ namespace AccuracyIndicator {
 					lastNoteActualTime = 0.0f;
 					hitNotes = 0;
 					hitAccuracy = 0.0;
+					noteHits = new List<float>();
+					highestVeryLate = 0.0f;
+					highestLate = 0.0f;
+					highestSlightlyLate = 0.0f;
+					highestSlightlyEarly = 0.0f;
+					highestEarly = 0.0f;
+					highestVeryEarly = 0.0f;
+				} else if (SceneManager.GetActiveScene().name.Equals("EndOfSong") && config.Enabled) {
+					Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
+					foreach (var x in Enumerable.Range(0, 8)) {
+						var gameObjects = new GameObject[3];
+						var textComponents = new Text[3];
+						foreach (var y in Enumerable.Range(0, 3)) {
+							gameObjects[y] = new GameObject($"My element {x}-{y}", new Type[] {
+								typeof(Text),
+								typeof(DestroyOnSceneChange)
+							});
+
+							gameObjects[y].layer = LayerMask.NameToLayer("UI");
+							gameObjects[y].transform.SetParent(canvasTransform);
+							gameObjects[y].transform.SetSiblingIndex(0);
+							gameObjects[y].transform.localPosition = new Vector3(0.0f, 0.0f, x % 2 == 0 ? -100.0f : 100.0f);
+							gameObjects[y].transform.localEulerAngles = new Vector3();
+							gameObjects[y].transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+							textComponents[y] = gameObjects[y].GetComponent<Text>();
+							textComponents[y].color = Color.white;
+							textComponents[y].font = uiFont;
+							textComponents[y].fontSize = Screen.height * 30 / 1440;
+							textComponents[y].alignment = TextAnchor.MiddleRight;
+							textComponents[y].fontStyle = FontStyle.Bold;
+							textComponents[y].horizontalOverflow = HorizontalWrapMode.Overflow;
+							textComponents[y].verticalOverflow = VerticalWrapMode.Overflow;
+						}
+						if (x == 0) {
+							textComponents[0].text = $"Very early ({(highestVeryEarly * 1000.0f).ToString("0.00")}ms):";
+							int veryEarlies = noteHits.Count(nh => nh < highestVeryEarly);
+							textComponents[1].text = veryEarlies.ToString();
+							textComponents[2].text = $"({(veryEarlies * 100.0 / totalNoteCount).ToString("0.00")}%)";
+							textComponents[0].color = Config.ARGBToColor(config.ColorVeryEarlyARGB);
+						} else if (x == 1) {
+							textComponents[0].text = $"Early ({(highestEarly * 1000.0f).ToString("0.00")}ms):";
+							int earlies = noteHits.Count(nh => nh < highestEarly && nh >= highestVeryEarly);
+							textComponents[1].text = earlies.ToString();
+							textComponents[2].text = $"({(earlies * 100.0 / totalNoteCount).ToString("0.00")}%)";
+							textComponents[0].color = Config.ARGBToColor(config.ColorEarlyARGB);
+						} else if (x == 2) {
+							textComponents[0].text = $"Slightly early ({(highestSlightlyEarly * 1000.0f).ToString("0.00")}ms):";
+							int slightlyEarlies = noteHits.Count(nh => nh < highestSlightlyEarly && nh >= highestEarly);
+							textComponents[1].text = slightlyEarlies.ToString();
+							textComponents[2].text = $"({(slightlyEarlies * 100.0 / totalNoteCount).ToString("0.00")}%)";
+							textComponents[0].color = Config.ARGBToColor(config.ColorSlightlyEarlyARGB);
+						} else if (x == 3) {
+							textComponents[0].text = $"Perfect:";
+							int perfects = noteHits.Count(nh => nh <= highestSlightlyLate && nh >= highestSlightlyEarly);
+							textComponents[1].text = perfects.ToString();
+							textComponents[2].text = $"({(perfects * 100.0 / totalNoteCount).ToString("0.00")}%)";
+							textComponents[0].color = Config.ARGBToColor(config.ColorPerfectARGB);
+						} else if (x == 4) {
+							textComponents[0].text = $"Slightly late ({(highestSlightlyLate * 1000.0f).ToString("0.00")}ms):";
+							int slightlyLates = noteHits.Count(nh => nh <= highestLate && nh > highestSlightlyLate);
+							textComponents[1].text = slightlyLates.ToString();
+							textComponents[2].text = $"({(slightlyLates * 100.0 / totalNoteCount).ToString("0.00")}%)";
+							textComponents[0].color = Config.ARGBToColor(config.ColorSlightlyLateARGB);
+						} else if (x == 5) {
+							textComponents[0].text = $"Late ({(highestLate * 1000.0f).ToString("0.00")}ms):";
+							int lates = noteHits.Count(nh => nh <= highestVeryLate && nh > highestLate);
+							textComponents[1].text = lates.ToString();
+							textComponents[2].text = $"({(lates * 100.0 / totalNoteCount).ToString("0.00")}%)";
+							textComponents[0].color = Config.ARGBToColor(config.ColorLateARGB);
+						} else if (x == 6) {
+							textComponents[0].text = $"Very late ({(highestVeryLate * 1000.0f).ToString("0.00")}ms):";
+							int veryLates = noteHits.Count(nh => nh > highestVeryLate);
+							textComponents[1].text = veryLates.ToString();
+							textComponents[2].text = $"({(veryLates * 100.0 / totalNoteCount).ToString("0.00")}%)";
+							textComponents[0].color = Config.ARGBToColor(config.ColorVeryLateARGB);
+						} else if (x == 7) {
+							textComponents[0].text = $"Missed:";
+							int misses = totalNoteCount - noteHits.Count();
+							textComponents[1].text = misses.ToString();
+							textComponents[2].text = $"({(misses * 100.0 / totalNoteCount).ToString("0.00")}%)";
+							textComponents[0].color = Config.ARGBToColor(config.ColorMissedARGB);
+						}
+						float height = Screen.height * 50.0f / 1440.0f - (x * 37.0f);
+						gameObjects[0].transform.localPosition = new Vector3(Screen.width * 200.0f / 1440.0f - Screen.width / 2, height, 50);
+						gameObjects[1].transform.localPosition = new Vector3(Screen.width * 250.0f / 1440.0f - Screen.width / 2, height, 50);
+						gameObjects[2].transform.localPosition = new Vector3(Screen.width * 350.0f / 1440.0f - Screen.width / 2, height, 50);
+					}
 				}
 			}
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
@@ -110,7 +205,20 @@ namespace AccuracyIndicator {
 					lastNoteActualTime = 0.0f;
 					hitNotes = 0;
 					hitAccuracy = 0.0;
+					noteHits = new List<float>();
+					highestVeryLate = 0.0f;
+					highestLate = 0.0f;
+					highestSlightlyLate = 0.0f;
+					highestSlightlyEarly = 0.0f;
+					highestEarly = 0.0f;
+					highestVeryEarly = 0.0f;
 				}
+				highestVeryLate = Math.Max(highestVeryLate, config.CutoffVeryLate);
+				highestLate = Math.Max(highestLate, config.CutoffLate);
+				highestSlightlyLate = Math.Max(highestSlightlyLate, config.CutoffSlightlyLate);
+				highestSlightlyEarly = Math.Min(highestSlightlyEarly, -config.CutoffSlightlyEarly);
+				highestEarly = Math.Min(highestEarly, -config.CutoffEarly);
+				highestVeryEarly = Math.Min(highestVeryEarly, -config.CutoffVeryEarly);
 				if (notes != null) {
 					while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
 						lastNoteActualTime = notes[currentNoteIndex].Time;
@@ -125,6 +233,7 @@ namespace AccuracyIndicator {
 							} else {
 								Debug.LogError($"Panic?");
 							}
+							noteHits.Add(lastNoteHitDifference);
 							if (hitNotes == 0) {
 								hitAccuracy = lastNoteHitDifference;
 							} else {

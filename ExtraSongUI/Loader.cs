@@ -14,7 +14,7 @@ namespace ExtraSongUI {
 			if (this.gameObject != null) {
 				return;
 			}
-			this.gameObject = new GameObject(string.Empty, new Type[]
+			this.gameObject = new GameObject("Biendeo Tweak - Extra Song UI", new Type[]
 			{
 				typeof(SongUI)
 			});

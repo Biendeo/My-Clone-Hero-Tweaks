@@ -14,7 +14,7 @@ namespace AccuracyIndicator {
 			if (this.gameObject != null) {
 				return;
 			}
-			this.gameObject = new GameObject(string.Empty, new Type[]
+			this.gameObject = new GameObject("Biendeo Tweak - Accuracy Indicator", new Type[]
 			{
 				typeof(AccuracyIndicator)
 			});
