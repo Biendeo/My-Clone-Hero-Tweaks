@@ -72,8 +72,8 @@ namespace AccuracyIndicator.Settings {
 
 			AccuracyTime = new PositionableLabel {
 				Visible = true,
-				X = Screen.width * 0.8f,
-				Y = Screen.height * (1270.0f / 1440.0f),
+				X = (int)(Screen.width * 0.8f),
+				Y = (int)(Screen.height * (1270.0f / 1440.0f)),
 				Size = Screen.height * 50 / 1440,
 				Bold = true,
 				Italic = false,
@@ -82,8 +82,8 @@ namespace AccuracyIndicator.Settings {
 
 			AccuracyMessage = new PositionableLabel {
 				Visible = true,
-				X = Screen.width * 0.8f,
-				Y = Screen.height * (1330.0f / 1440.0f),
+				X = (int)(Screen.width * 0.8f),
+				Y = (int)(Screen.height * (1330.0f / 1440.0f)),
 				Size = Screen.height * 50 / 1440,
 				Bold = true,
 				Italic = false,
@@ -91,9 +91,9 @@ namespace AccuracyIndicator.Settings {
 			};
 
 			AverageAccuracy = new PositionableLabel {
-				Visible = true,
-				X = Screen.width * 0.8f,
-				Y = Screen.height * (1390.0f / 1440.0f),
+				Visible = false,
+				X = (int)(Screen.width * 0.8f),
+				Y = (int)(Screen.height * (1390.0f / 1440.0f)),
 				Size = Screen.height * 50 / 1440,
 				Bold = true,
 				Italic = false,
@@ -130,8 +130,8 @@ namespace AccuracyIndicator.Settings {
 
 			AccuracyTime = new PositionableLabel {
 				Visible = oldConfig.AccuracyTime,
-				X = oldConfig.AccuracyTimeX,
-				Y = oldConfig.AccuracyTimeY,
+				X = (int)oldConfig.AccuracyTimeX,
+				Y = (int)oldConfig.AccuracyTimeY,
 				Size = oldConfig.AccuracyTimeScale,
 				Bold = oldConfig.AccuracyTimeBold,
 				Italic = oldConfig.AccuracyTimeItalic,
@@ -140,8 +140,8 @@ namespace AccuracyIndicator.Settings {
 
 			AccuracyMessage = new PositionableLabel {
 				Visible = oldConfig.AccuracyMessage,
-				X = oldConfig.AccuracyMessageX,
-				Y = oldConfig.AccuracyMessageY,
+				X = (int)oldConfig.AccuracyMessageX,
+				Y = (int)oldConfig.AccuracyMessageY,
 				Size = oldConfig.AccuracyMessageScale,
 				Bold = oldConfig.AccuracyMessageBold,
 				Italic = oldConfig.AccuracyMessageItalic,
@@ -150,8 +150,8 @@ namespace AccuracyIndicator.Settings {
 
 			AverageAccuracy = new PositionableLabel {
 				Visible = oldConfig.AverageAccuracy,
-				X = oldConfig.AverageAccuracyX,
-				Y = oldConfig.AverageAccuracyY,
+				X = (int)oldConfig.AverageAccuracyX,
+				Y = (int)oldConfig.AverageAccuracyY,
 				Size = oldConfig.AverageAccuracyScale,
 				Bold = oldConfig.AverageAccuracyBold,
 				Italic = oldConfig.AverageAccuracyItalic,
@@ -194,6 +194,12 @@ namespace AccuracyIndicator.Settings {
 			using (var configOut = configFilePath.OpenWrite()) {
 				serializer.Serialize(configOut, this);
 			}
+		}
+
+		public void DrawLabelWindows() {
+			AccuracyTime.DrawLabelWindow(100002);
+			AccuracyMessage.DrawLabelWindow(100003);
+			AverageAccuracy.DrawLabelWindow(100004);
 		}
 
 		public void ConfigureGUI(GUIConfigurationStyles styles) {

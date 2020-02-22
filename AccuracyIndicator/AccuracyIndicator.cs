@@ -256,6 +256,7 @@ namespace AccuracyIndicator {
 				settingsHorizontalSliderThumbStyle = new GUIStyle(GUI.skin.horizontalSliderThumb);
 			}
 			if (configWindowEnabled) {
+				config.DrawLabelWindows();
 				var outputRect = GUILayout.Window(5318010, new Rect(config.ConfigX, config.ConfigY, 320.0f, 500.0f), OnWindow, new GUIContent("Accuracy Indicator Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
