@@ -25,8 +25,6 @@ namespace AccuracyIndicator {
 
 		private Font uiFont;
 
-		private bool configWindowEnabled;
-		private OldConfig oldConfig;
 		private Config config;
 
 		private GUIStyle settingsWindowStyle;
@@ -60,7 +58,6 @@ namespace AccuracyIndicator {
 		private float highestVeryEarly;
 
 		public AccuracyIndicator() {
-			configWindowEnabled = false;
 			lastSongTime = -5.0;
 		}
 
@@ -235,9 +232,7 @@ namespace AccuracyIndicator {
 				//TODO: Get the font directly from the bundle?
 				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 			}
-			if (Input.GetKeyDown(KeyCode.F7) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) {
-				configWindowEnabled = !configWindowEnabled;
-			}
+			config.HandleInput();
 			if (gameManager != null) {
 				lastSongTime = gameManager.SongTime;
 			}
@@ -255,7 +250,7 @@ namespace AccuracyIndicator {
 				settingsHorizontalSliderStyle = new GUIStyle(GUI.skin.horizontalSlider);
 				settingsHorizontalSliderThumbStyle = new GUIStyle(GUI.skin.horizontalSliderThumb);
 			}
-			if (configWindowEnabled) {
+			if (config.ConfigWindowEnabled) {
 				config.DrawLabelWindows();
 				var outputRect = GUILayout.Window(5318010, new Rect(config.ConfigX, config.ConfigY, 320.0f, 500.0f), OnWindow, new GUIContent("Accuracy Indicator Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;

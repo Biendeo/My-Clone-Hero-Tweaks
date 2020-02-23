@@ -15,8 +15,10 @@ namespace AccuracyIndicator.Settings {
 
 		public float ConfigX;
 		public float ConfigY;
+		public KeyBind ConfigKeyBind;
 
 		public bool Enabled;
+		public KeyBind EnabledKeyBind;
 
 		public float TimeOnScreen;
 
@@ -44,15 +46,28 @@ namespace AccuracyIndicator.Settings {
 		public bool LayoutTest;
 		[NonSerialized]
 		private bool DraggableLabelsEnabled;
+		[NonSerialized]
+		public bool ConfigWindowEnabled;
 
 		public Config() {
 			Version = 2;
 
 			ConfigX = 300.0f;
 			ConfigY = 200.0f;
+			ConfigKeyBind = new KeyBind {
+				Key = KeyCode.F7,
+				Ctrl = true,
+				Alt = false,
+				Shift = true
+			};
 
 			Enabled = true;
-			LayoutTest = false;
+			EnabledKeyBind = new KeyBind {
+				Key = KeyCode.F7,
+				Ctrl = false,
+				Alt = false,
+				Shift = false
+			};
 
 			TimeOnScreen = 0.75f;
 
@@ -65,12 +80,12 @@ namespace AccuracyIndicator.Settings {
 
 			//TODO: Blues and reds are probably better.
 			ColorPerfect = new ColorARGB(Color.white);
-			ColorSlightlyEarly = new ColorARGB(Color.green);
-			ColorEarly = new ColorARGB(Color.yellow);
+			ColorSlightlyEarly = new ColorARGB(Color.yellow);
+			ColorEarly = new ColorARGB(new Color(1.0f, 0.5f, 0.0f));
 			ColorVeryEarly = new ColorARGB(Color.red);
-			ColorSlightlyLate = new ColorARGB(Color.green);
-			ColorLate = new ColorARGB(Color.yellow);
-			ColorVeryLate = new ColorARGB(Color.red);
+			ColorSlightlyLate = new ColorARGB(new Color(0.25f, 0.9f, 1.0f));
+			ColorLate = new ColorARGB(new Color(0.0f, 0.5f, 1.0f));
+			ColorVeryLate = new ColorARGB(new Color(0.5f, 0.0f, 1.0f));
 			ColorMissed = new ColorARGB(Color.grey);
 
 			AccuracyTime = new PositionableLabel {
@@ -109,8 +124,20 @@ namespace AccuracyIndicator.Settings {
 
 			ConfigX = oldConfig.ConfigX;
 			ConfigY = oldConfig.ConfigY;
+			ConfigKeyBind = new KeyBind {
+				Key = KeyCode.F7,
+				Ctrl = true,
+				Alt = false,
+				Shift = true
+			};
 
 			Enabled = oldConfig.Enabled;
+			EnabledKeyBind = new KeyBind {
+				Key = KeyCode.F7,
+				Ctrl = false,
+				Alt = false,
+				Shift = false
+			};
 
 			TimeOnScreen = oldConfig.TimeOnScreen;
 
@@ -159,9 +186,6 @@ namespace AccuracyIndicator.Settings {
 				Italic = oldConfig.AverageAccuracyItalic,
 				Alignment = TextAnchor.MiddleCenter
 			};
-
-			LayoutTest = false;
-			DraggableLabelsEnabled = false;
 		}
 
 		public static Config LoadConfig() {
@@ -201,6 +225,17 @@ namespace AccuracyIndicator.Settings {
 			}
 		}
 
+		public void HandleInput() {
+			if (ConfigKeyBind.IsPressed && !ConfigKeyBind.JustSet) {
+				ConfigWindowEnabled = !ConfigWindowEnabled;
+			}
+			if (EnabledKeyBind.IsPressed && !EnabledKeyBind.JustSet) {
+				Enabled = !Enabled;
+			}
+			ConfigKeyBind.JustSet = false;
+			EnabledKeyBind.JustSet = false;
+		}
+
 		public void DrawLabelWindows() {
 			if (DraggableLabelsEnabled) {
 				AccuracyTime.DrawLabelWindow(100002);
@@ -212,12 +247,17 @@ namespace AccuracyIndicator.Settings {
 		public void ConfigureGUI(GUIConfigurationStyles styles) {
 			GUILayout.Label("Settings", styles.LargeLabel);
 			Enabled = GUILayout.Toggle(Enabled, "Enabled", styles.Toggle);
-			AccuracyTime.DraggableWindowsEnabled = DraggableLabelsEnabled;
-			AccuracyMessage.DraggableWindowsEnabled = DraggableLabelsEnabled;
-			AverageAccuracy.DraggableWindowsEnabled = DraggableLabelsEnabled;
 			GUILayout.Label("Time on-screen", styles.SmallLabel);
 			TimeOnScreen = GUILayout.HorizontalSlider(TimeOnScreen, 0.0f, 5.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
 			if (float.TryParse(GUILayout.TextField(TimeOnScreen.ToString(), styles.TextField), out float timeOnScreen)) TimeOnScreen = timeOnScreen;
+
+			GUILayout.Space(25.0f);
+			GUILayout.Label("Enable/Disable Keybind", styles.LargeLabel);
+			EnabledKeyBind.ConfigureGUI(styles);
+
+			GUILayout.Space(25.0f);
+			GUILayout.Label("Configuration Keybind", styles.LargeLabel);
+			ConfigKeyBind.ConfigureGUI(styles);
 
 			GUILayout.Space(25.0f);
 			GUILayout.Label("Debugging Tools", styles.LargeLabel);
@@ -232,6 +272,9 @@ namespace AccuracyIndicator.Settings {
 			GUILayout.Label("(this disables some options in this window)", new GUIStyle(styles.SmallLabel) {
 				fontStyle = FontStyle.Italic
 			});
+			AccuracyTime.DraggableWindowsEnabled = DraggableLabelsEnabled;
+			AccuracyMessage.DraggableWindowsEnabled = DraggableLabelsEnabled;
+			AverageAccuracy.DraggableWindowsEnabled = DraggableLabelsEnabled;
 
 			GUILayout.Space(25.0f);
 			GUILayout.Label("Accuracy Time Indicator", styles.LargeLabel);
