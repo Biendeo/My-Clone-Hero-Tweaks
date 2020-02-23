@@ -40,8 +40,9 @@ artifacts:
 
 deploy:
   - provider: GitHub
-    release: test
-    description: 'A test description'
+    tag: $(APPVEYOR_REPO_TAG_NAME)
+    release: $(APPVEYOR_REPO_TAG_NAME)
+    description: 'Placeholder description: maybe I should add install instructions here?'
     auth_token:
       secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
     artifact: AccuracyIndicator,ComboIndicator,ExtraSongUI,PerfectMode
