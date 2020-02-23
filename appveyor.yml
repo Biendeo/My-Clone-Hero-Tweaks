@@ -15,13 +15,23 @@ install:
 platform: Any CPU
 configuration: Release
 
+artifacts:
+  - path: AccuracyIndicator\bin\Release\AccuracyIndicator.dll
+    name: AccuracyIndicator
+  - path: ComboIndicator\bin\Release\ComboIndicator.dll
+    name: ComboIndicator
+  - path: ExtraSongUI\bin\Release\ExtraSongUI.dll
+    name: ExtraSongUI
+  - path: PerfectMode\bin\Release\PerfectMode.dll
+    name: PerfectMode
+
 deploy:
   - provider: GitHub
     release: test
     description: 'A test description'
     auth_token:
       secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
-    artifact: AccuracyIndicator\bin\Release\AccuracyIndicator.dll,ComboIndicator\bin\Release\ComboIndicator.dll,ExtraSongUI\bin\Release\ExtraSongUI.dll,PerfectMode\bin\Release\PerfectMode.dll
+    artifact: AccuracyIndicator,ComboIndicator,ExtraSongUI,PerfectMode
     on:
       branch: master
       # APPVEYOR_REPO_TAG: true
