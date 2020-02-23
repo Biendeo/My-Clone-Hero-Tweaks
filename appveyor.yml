@@ -1,7 +1,13 @@
-# skip-non-tags: true
+version: 1.2.0.{build}
+skip-non-tags: true
 
 image: Visual Studio 2019
 clone_depth: 1
+
+cache:
+  - clonehero-win64.7z
+  - clonehero-win64
+  - CH-Libraries
 
 install:
   - echo Downloading Clone Hero
@@ -11,6 +17,12 @@ install:
   - echo Moving common folder
   - ps: New-Item -ItemType Directory -Path 'CH-Libraries'
   - ps: Copy-Item -Path '.\clonehero-win64\Clone Hero_Data\Managed\*' -Destination 'CH-Libraries' -Recurse 
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
 
 platform: Any CPU
 configuration: Release
@@ -34,4 +46,4 @@ deploy:
     artifact: AccuracyIndicator,ComboIndicator,ExtraSongUI,PerfectMode
     on:
       branch: master
-      # APPVEYOR_REPO_TAG: true
+      APPVEYOR_REPO_TAG: true
