@@ -28,18 +28,20 @@ namespace Common.Settings {
 
 		public void ConfigureGUI(GUIConfigurationStyles styles) {
 			var color = ARGBToColor(ARGB);
+			GUILayout.Label($"R = {(int)(color.r * 255.0f)}, G = {(int)(color.g * 255.0f)}, B = {(int)(color.b * 255.0f)}, A = {(int)(color.a * 255.0f)}", new GUIStyle(styles.SmallLabel) {
+				normal = new GUIStyleState {
+					textColor = new Color(color.r, color.g, color.b),
+				},
+				fontStyle = FontStyle.Bold
+			});
 			GUILayout.Label("Red", styles.SmallLabel);
 			color.r = GUILayout.HorizontalSlider(color.r, 0.0f, 1.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
-			if (float.TryParse(GUILayout.TextField(color.r.ToString(), styles.TextField), out float r)) color.r = r;
 			GUILayout.Label("Green", styles.SmallLabel);
 			color.g = GUILayout.HorizontalSlider(color.g, 0.0f, 1.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
-			if (float.TryParse(GUILayout.TextField(color.g.ToString(), styles.TextField), out float g)) color.g = g;
 			GUILayout.Label("Blue", styles.SmallLabel);
 			color.b = GUILayout.HorizontalSlider(color.b, 0.0f, 1.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
-			if (float.TryParse(GUILayout.TextField(color.b.ToString(), styles.TextField), out float b)) color.b = b;
 			GUILayout.Label("Alpha", styles.SmallLabel);
 			color.a = GUILayout.HorizontalSlider(color.a, 0.0f, 1.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
-			if (float.TryParse(GUILayout.TextField(color.a.ToString(), styles.TextField), out float a)) color.a = a;
 			ARGB = ColorToARGB(color);
 		}
 

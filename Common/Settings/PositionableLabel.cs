@@ -14,20 +14,31 @@ namespace Common.Settings {
 		public bool Italic;
 		public bool Visible;
 
+		[NonSerialized]
+		public bool DraggableWindowsEnabled;
+
 		public void DrawLabelWindow(int id) {
-			var r = GUILayout.Window(id, new Rect(X, Y, 50.0f, 50.0f), DraggableWindow, "Hello");
-			Debug.LogError($"Actual XY ({X}, {Y}), window XY ({r.x}, {r.y})");
+			var r = GUILayout.Window(id, new Rect(X, Y, 50.0f, 50.0f), DraggableWindow, string.Empty);
 			X = (int)r.x;
 			Y = (int)r.y;
 		}
 
 		public void ConfigureGUI(GUIConfigurationStyles styles) {
-			GUILayout.Label("X", styles.SmallLabel);
-			X = (int)GUILayout.HorizontalSlider(X, -3840.0f, 3840.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
-			if (int.TryParse(GUILayout.TextField(X.ToString(), styles.TextField), out int x)) X = x;
-			GUILayout.Label("Y", styles.SmallLabel);
-			Y = (int)GUILayout.HorizontalSlider(Y, -2160, 2160.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
-			if (int.TryParse(GUILayout.TextField(Y.ToString(), styles.TextField), out int y)) Y = y;
+			Visible = GUILayout.Toggle(Visible, "Enabled", styles.Toggle);
+			if (!DraggableWindowsEnabled) {
+				GUILayout.Label("X", styles.SmallLabel);
+				X = (int)GUILayout.HorizontalSlider(X, -3840.0f, 3840.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
+				if (int.TryParse(GUILayout.TextField(X.ToString(), styles.TextField), out int x)) X = x;
+			} else {
+				GUILayout.Label($"X - {X.ToString()}", styles.SmallLabel);
+			}
+			if (!DraggableWindowsEnabled) {
+				GUILayout.Label("Y", styles.SmallLabel);
+				Y = (int)GUILayout.HorizontalSlider(Y, -2160, 2160.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
+				if (int.TryParse(GUILayout.TextField(Y.ToString(), styles.TextField), out int y)) Y = y;
+			} else {
+				GUILayout.Label($"Y - {Y.ToString()}", styles.SmallLabel);
+			}
 			GUILayout.Label("Size", styles.SmallLabel);
 			Size = (int)GUILayout.HorizontalSlider(Size, 0.0f, 500.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
 			if (int.TryParse(GUILayout.TextField(Size.ToString(), styles.TextField), out int size)) Size = size;
@@ -36,7 +47,6 @@ namespace Common.Settings {
 			}
 			Bold = GUILayout.Toggle(Bold, "Bold", styles.Toggle);
 			Italic = GUILayout.Toggle(Italic, "Italic", styles.Toggle);
-			Visible = GUILayout.Toggle(Visible, "Visible", styles.Toggle);
 		}
 
 		private void DraggableWindow(int id) {

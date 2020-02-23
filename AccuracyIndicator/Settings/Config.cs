@@ -17,7 +17,6 @@ namespace AccuracyIndicator.Settings {
 		public float ConfigY;
 
 		public bool Enabled;
-		public bool LayoutTest;
 
 		public float TimeOnScreen;
 
@@ -41,6 +40,10 @@ namespace AccuracyIndicator.Settings {
 		public PositionableLabel AccuracyMessage;
 		public PositionableLabel AverageAccuracy;
 
+		[NonSerialized]
+		public bool LayoutTest;
+		[NonSerialized]
+		private bool DraggableLabelsEnabled;
 
 		public Config() {
 			Version = 2;
@@ -108,7 +111,6 @@ namespace AccuracyIndicator.Settings {
 			ConfigY = oldConfig.ConfigY;
 
 			Enabled = oldConfig.Enabled;
-			LayoutTest = oldConfig.LayoutTest;
 
 			TimeOnScreen = oldConfig.TimeOnScreen;
 
@@ -157,6 +159,9 @@ namespace AccuracyIndicator.Settings {
 				Italic = oldConfig.AverageAccuracyItalic,
 				Alignment = TextAnchor.MiddleCenter
 			};
+
+			LayoutTest = false;
+			DraggableLabelsEnabled = false;
 		}
 
 		public static Config LoadConfig() {
@@ -197,18 +202,36 @@ namespace AccuracyIndicator.Settings {
 		}
 
 		public void DrawLabelWindows() {
-			AccuracyTime.DrawLabelWindow(100002);
-			AccuracyMessage.DrawLabelWindow(100003);
-			AverageAccuracy.DrawLabelWindow(100004);
+			if (DraggableLabelsEnabled) {
+				AccuracyTime.DrawLabelWindow(100002);
+				AccuracyMessage.DrawLabelWindow(100003);
+				AverageAccuracy.DrawLabelWindow(100004);
+			}
 		}
 
 		public void ConfigureGUI(GUIConfigurationStyles styles) {
 			GUILayout.Label("Settings", styles.LargeLabel);
 			Enabled = GUILayout.Toggle(Enabled, "Enabled", styles.Toggle);
-			LayoutTest = GUILayout.Toggle(LayoutTest, "Test Layout (for helping you)", styles.Toggle);
+			AccuracyTime.DraggableWindowsEnabled = DraggableLabelsEnabled;
+			AccuracyMessage.DraggableWindowsEnabled = DraggableLabelsEnabled;
+			AverageAccuracy.DraggableWindowsEnabled = DraggableLabelsEnabled;
 			GUILayout.Label("Time on-screen", styles.SmallLabel);
 			TimeOnScreen = GUILayout.HorizontalSlider(TimeOnScreen, 0.0f, 5.0f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
 			if (float.TryParse(GUILayout.TextField(TimeOnScreen.ToString(), styles.TextField), out float timeOnScreen)) TimeOnScreen = timeOnScreen;
+
+			GUILayout.Space(25.0f);
+			GUILayout.Label("Debugging Tools", styles.LargeLabel);
+			LayoutTest = GUILayout.Toggle(LayoutTest, "Test Layout", styles.Toggle);
+			GUILayout.Label("Prevents the labels from fading out", new GUIStyle(styles.SmallLabel) {
+				fontStyle = FontStyle.Italic
+			});
+			DraggableLabelsEnabled = GUILayout.Toggle(DraggableLabelsEnabled, "Draggable Labels", styles.Toggle);
+			GUILayout.Label("Allows you to drag each label with a window", new GUIStyle(styles.SmallLabel) {
+				fontStyle = FontStyle.Italic
+			});
+			GUILayout.Label("(this disables some options in this window)", new GUIStyle(styles.SmallLabel) {
+				fontStyle = FontStyle.Italic
+			});
 
 			GUILayout.Space(25.0f);
 			GUILayout.Label("Accuracy Time Indicator", styles.LargeLabel);
