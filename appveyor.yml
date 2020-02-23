@@ -5,10 +5,10 @@ skip_non_tags: true
 image: Visual Studio 2019
 clone_depth: 1
 
-cache:
-  - clonehero-win64.7z
-  - clonehero-win64
-  - CH-Libraries
+# cache:
+#   - clonehero-win64.7z
+#   - clonehero-win64
+#   - CH-Libraries
 
 install:
   - echo Downloading Clone Hero
