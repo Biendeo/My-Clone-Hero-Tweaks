@@ -1,0 +1,22 @@
+# skip-non-tags: true
+
+image: Visual Studio 2019
+clone_depth: 1
+
+install:
+  - echo Downloading Clone Hero
+  - ps: Start-FileDownload 'http://dl.clonehero.net/clonehero-v.23.2.2/clonehero-win64.7z'
+  - echo Unzipping Clone Hero
+  - ps: 7z x clonehero-win64.7z
+  - echo Moving common folder
+  - ps: New-Item -ItemType Directory -Path 'CH-Libraries'
+  - ps: Copy-Item -Path '.\clonehero-win64\Clone Hero_Data\Managed\*' -Destination 'CH-Libraries' -Recurse 
+
+platform: Any CPU
+configuration: Release
+
+deploy:
+  - provider: GitHub
+    on:
+      branch: master
+      # APPVEYOR_REPO_TAG: true
