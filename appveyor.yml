@@ -17,6 +17,11 @@ configuration: Release
 
 deploy:
   - provider: GitHub
+    release: test
+    description: 'A test description'
+    auth_token:
+      secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
+    artifact: AccuracyIndicator\bin\Release\AccuracyIndicator.dll,ComboIndicator\bin\Release\ComboIndicator.dll,ExtraSongUI\bin\Release\ExtraSongUI.dll,PerfectMode\bin\Release\PerfectMode.dll
     on:
       branch: master
       # APPVEYOR_REPO_TAG: true
