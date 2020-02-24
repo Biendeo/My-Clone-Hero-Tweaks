@@ -10,7 +10,7 @@ With this tweak, you can now see your song progress numerical, how many points y
 - Make sure you install CHLauncher first!
   - Navigate to the `#ch-launcher` channel, and download the latest version of CHLauncher.exe.
   - Run it, and patch your version of Clone Hero with it. You should now have a `Tweaks` folder in your Clone Hero folder.
-- Download the latest version of `ExtraSongUI.dll` and place it in your tweaks folder.
+- Download the latest version of `ExtraSongUI.dll` from [the releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and place it in your tweaks folder.
 
 ## How to use
 ### Default usage

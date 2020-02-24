@@ -10,7 +10,7 @@ By pressing `Ctrl + Shift + F7`, you can bring up a window that allows you to cu
 - Make sure you install CHLauncher first!
   - Navigate to the `#ch-launcher` channel, and download the latest version of CHLauncher.exe.
   - Run it, and patch your version of Clone Hero with it. You should now have a `Tweaks` folder in your Clone Hero folder.
-- Download the latest version of `AccuracyIndicator.dll` and place it in your tweaks folder.
+- Download the latest version of `AccuracyIndicator.dll` from [the releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and place it in your tweaks folder.
 
 ## How to use
 ### Default usage
