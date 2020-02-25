@@ -103,11 +103,11 @@ namespace AccuracyIndicator {
 						}
 					}
 
-					foreach (var x in Enumerable.Range(0, 8)) {
+					foreach (var x in Enumerable.Range(0, 9)) {
 						var gameObjects = new GameObject[3];
 						var textComponents = new Text[3];
 						foreach (var y in Enumerable.Range(0, 3)) {
-							gameObjects[y] = new GameObject($"My element {x}-{y}", new Type[] {
+							gameObjects[y] = new GameObject($"Accuracy Indicator Text Element {x}-{y}", new Type[] {
 								typeof(Text),
 								typeof(DestroyOnSceneChange)
 							});
@@ -175,10 +175,15 @@ namespace AccuracyIndicator {
 							textComponents[1].text = misses.ToString();
 							textComponents[2].text = $"({(misses * 100.0 / totalNoteCount).ToString("0.00")}%)";
 							textComponents[0].color = config.ColorMissed.Color;
+						} else if (x == 8) {
+							textComponents[0].text = $"Average time:";
+							textComponents[2].text = $"{(noteHits.Average() * 1000.0f).ToString("0.00")}ms";
+							textComponents[0].color = config.ColorPerfect.Color;
+							Destroy(textComponents[1]);
 						}
 						float height = Screen.height * 50.0f / 1440.0f - (x * 37.0f);
 						gameObjects[0].transform.localPosition = new Vector3(Screen.width * 200.0f / 1440.0f - Screen.width / 2, height, 50);
-						gameObjects[1].transform.localPosition = new Vector3(Screen.width * 250.0f / 1440.0f - Screen.width / 2, height, 50);
+						if (x < 8) gameObjects[1].transform.localPosition = new Vector3(Screen.width * 250.0f / 1440.0f - Screen.width / 2, height, 50);
 						gameObjects[2].transform.localPosition = new Vector3(Screen.width * 350.0f / 1440.0f - Screen.width / 2, height, 50);
 					}
 				}
