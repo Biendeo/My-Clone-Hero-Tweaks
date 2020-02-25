@@ -94,6 +94,15 @@ namespace AccuracyIndicator {
 					highestVeryEarly = 0.0f;
 				} else if (SceneManager.GetActiveScene().name.Equals("EndOfSong") && config.Enabled) {
 					Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
+
+					//HACK: This shouldn't be the final solution but if anyone notices it happening, please report it.
+					if (noteHits.Any(n => n > 0.2f)) {
+						Debug.LogError($"Accuracy Indicator was computing how many notes you hit in each category, but {noteHits.Count(n => n > 0.2f)} notes were above 0.2s? That must mean they were in ms. For now, those values will be manually corrected.");
+						foreach (int i in Enumerable.Range(0, noteHits.Count)) {
+							if (noteHits[i] > 0.2f) noteHits[i] /= 1000.0f;
+						}
+					}
+
 					foreach (var x in Enumerable.Range(0, 8)) {
 						var gameObjects = new GameObject[3];
 						var textComponents = new Text[3];
