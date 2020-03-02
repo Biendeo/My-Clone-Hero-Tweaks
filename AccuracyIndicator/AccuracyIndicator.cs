@@ -241,7 +241,10 @@ namespace AccuracyIndicator {
 				// Determine what color and message displays.
 				Color labelColor = Color.white;
 				string message = string.Empty;
-				if (lastNoteHitDifference < -config.CutoffVeryEarly) {
+				if (lastNoteHitDifference == 0.07f) {
+					labelColor = config.ColorMissed.Color;
+					message = "Missed";
+				} else if (lastNoteHitDifference < -config.CutoffVeryEarly) {
 					labelColor = config.ColorVeryEarly.Color;
 					message = "Very Early";
 				} else if (lastNoteHitDifference > config.CutoffVeryLate) {
@@ -259,9 +262,6 @@ namespace AccuracyIndicator {
 				} else if (lastNoteHitDifference > config.CutoffSlightlyLate) {
 					labelColor = config.ColorSlightlyLate.Color;
 					message = "Slightly Late!";
-				} else if (lastNoteHitDifference == 0.07f) {
-					labelColor = config.ColorMissed.Color;
-					message = "Missed";
 				} else {
 					labelColor = config.ColorPerfect.Color;
 					message = "Perfect!";

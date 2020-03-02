@@ -42,11 +42,11 @@ namespace AccuracyIndicator.Settings {
 		public PositionableLabel AccuracyMessage;
 		public PositionableLabel AverageAccuracy;
 
-		[NonSerialized]
+		[XmlIgnore]
 		public bool LayoutTest;
-		[NonSerialized]
+		[XmlIgnore]
 		private bool DraggableLabelsEnabled;
-		[NonSerialized]
+		[XmlIgnore]
 		public bool ConfigWindowEnabled;
 
 		public Config() {

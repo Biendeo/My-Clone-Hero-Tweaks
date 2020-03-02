@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Serialization;
 using UnityEngine;
 
 namespace Common.Settings {
@@ -14,7 +15,7 @@ namespace Common.Settings {
 		public bool Italic;
 		public bool Visible;
 
-		[NonSerialized]
+		[XmlIgnore]
 		public bool DraggableWindowsEnabled;
 
 		public void DrawLabelWindow(int id) {

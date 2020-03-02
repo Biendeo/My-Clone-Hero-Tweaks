@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Serialization;
 using UnityEngine;
 
 namespace Common.Settings {
@@ -11,9 +12,9 @@ namespace Common.Settings {
 		public bool Ctrl;
 		public bool Alt;
 
-		[NonSerialized]
+		[XmlIgnore]
 		private bool WaitingForKey;
-		[NonSerialized]
+		[XmlIgnore]
 		public bool JustSet;
 
 		public bool IsPressed => Input.GetKeyDown(Key) && (Shift == (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) && (Ctrl == (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) && (Alt == (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)));
