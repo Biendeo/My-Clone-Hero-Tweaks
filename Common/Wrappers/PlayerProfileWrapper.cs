@@ -7,33 +7,23 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Common.Wrappers {
-	[Wrapper("\u0311\u0316\u0315\u031B\u0310\u0314\u0316\u030E\u0311\u0315\u031B")]
-	internal class PlayerProfileWrapper {
-		public readonly object playerProfile;
+	[Wrapper(typeof(PauseMenu))]
+	internal class PauseMenuWrapper {
+		public readonly PauseMenu pauseMenu;
 
-		public PlayerProfileWrapper(object playerProfile) {
-			this.playerProfile = playerProfile;
+		public PauseMenuWrapper(PauseMenu pauseMenu) {
+			this.pauseMenu = pauseMenu;
 		}
 
-		public string PlayerName => (string)playerNameField.GetValue(playerProfile);
-		[WrapperField("\u031A\u0311\u0312\u030D\u0315\u0310\u0311\u0316\u030D\u0311\u0312")]
-		private static readonly FieldInfo playerNameField;
+		#region Methods
 
-		public ControllerType Instrument => (ControllerType)instrumentField.GetValue(playerProfile);
-		[WrapperField("\u030E\u031C\u0314\u031B\u030E\u031A\u0313\u030D\u0314\u0310\u031A")]
-		private static readonly FieldInfo instrumentField;
+		public void RestartInPracticeMode() => restartInPracticeModeMethod.Invoke(pauseMenu, Array.Empty<object>());
+		[WrapperMethod("\u0318\u031A\u0317\u030D\u031B\u031B\u0318\u0313\u030D\u030F\u0314")]
+		private static readonly MethodInfo restartInPracticeModeMethod;
 
-		public sbyte Difficulty => (sbyte)difficultyField.GetValue(playerProfile);
-		[WrapperField("\u030E\u0310\u0312\u031C\u0314\u031A\u030E\u031A\u0312\u0318\u030E")]
-		private static readonly FieldInfo difficultyField;
-
-		#region Enumerations
-
-		public enum ControllerType : byte {
-			Guitar,
-			GHLGuitar,
-			Drums
-		}
+		public void RestartSong() => restartSongMethod.Invoke(pauseMenu, Array.Empty<object>());
+		[WrapperMethod("\u030E\u0315\u0315\u0310\u0312\u030E\u0312\u031A\u0313\u0314\u0310")]
+		private static readonly MethodInfo restartSongMethod;
 
 		#endregion
 	}

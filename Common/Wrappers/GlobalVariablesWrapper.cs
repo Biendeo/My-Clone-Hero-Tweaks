@@ -266,6 +266,10 @@ namespace Common.Wrappers {
 		[WrapperField("\u031B\u0315\u031B\u0319\u030D\u0313\u0319\u0317\u031A\u0318\u0312")]
 		private static readonly FieldInfo volumeStemsField;
 
+		public bool isInPracticeMode => (bool)isInPracticeModeField.GetValue(globalVariables);
+		[WrapperField("\u0318\u030E\u0310\u0315\u0313\u0318\u031C\u0318\u030E\u0313\u031A")]
+		private static readonly FieldInfo isInPracticeModeField;
+
 		#endregion
 
 		#region Methods

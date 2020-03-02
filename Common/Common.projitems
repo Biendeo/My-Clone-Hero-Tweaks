@@ -30,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\MoonChartWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\MoonNoteWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\NoteWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\PauseMenuWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\PlayerProfileWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\PracticeUIWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\ScoreManagerWrapper.cs" />

@@ -21,6 +21,7 @@ namespace PerfectMode {
 		private float remainingTimeBeforeRestart;
 
 		private Font uiFont;
+		private bool invokedSceneChange;
 
 		private bool configWindowEnabled;
 		private readonly FileInfo configFilePath;
@@ -85,6 +86,7 @@ namespace PerfectMode {
 					totalNoteCount = notes?.Count ?? 0;
 					currentNoteIndex = 0;
 					missedNotes = 0;
+					invokedSceneChange = false;
 				}
 			}
 			if (config.Enabled) {
@@ -104,9 +106,10 @@ namespace PerfectMode {
 				}
 				if (failedObjective && (gameManager.PauseMenu is null || !gameManager.PauseMenu.activeInHierarchy)) {
 					remainingTimeBeforeRestart -= Time.deltaTime;
-					if (remainingTimeBeforeRestart < 0.0f) {
-						//TODO: I can guarantee there's more going on that just this. Multiplayer is a concern.
-						SceneManager.LoadScene("Gameplay");
+					if (remainingTimeBeforeRestart < 0.0f && !invokedSceneChange) {
+						//TODO: Double-check that multiplayer works fine with this.
+						StartCoroutine(FadeBehaviourWrapper.instance.InvokeSceneChange("Gameplay"));
+						invokedSceneChange = true;
 					}
 				}
 			}
