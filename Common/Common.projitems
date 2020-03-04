@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Settings\GUIConfigurationStyles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\IGUIConfigurable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\KeyBind.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\ColorablePositionalLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\PositionableLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\Wrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperField.cs" />

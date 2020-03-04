@@ -78,7 +78,6 @@ namespace AccuracyIndicator.Settings {
 			CutoffLate = 0.02f;
 			CutoffVeryLate = 0.03f;
 
-			//TODO: Blues and reds are probably better.
 			ColorPerfect = new ColorARGB(Color.white);
 			ColorSlightlyEarly = new ColorARGB(Color.yellow);
 			ColorEarly = new ColorARGB(new Color(1.0f, 0.5f, 0.0f));

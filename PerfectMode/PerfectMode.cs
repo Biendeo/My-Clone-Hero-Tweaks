@@ -23,8 +23,6 @@ namespace PerfectMode {
 		private Font uiFont;
 		private bool invokedSceneChange;
 
-		private bool configWindowEnabled;
-		private readonly FileInfo configFilePath;
 		private Config config;
 
 		private GUIStyle settingsWindowStyle;
@@ -44,36 +42,40 @@ namespace PerfectMode {
 		private int totalNoteCount;
 		private int currentNoteIndex;
 
+		private GameObject displayImageLabel;
+		private GameObject remainingNotesLeftLabel;
+		private GameObject restartIndicatorLabel;
+
 
 		public PerfectMode() {
-			configWindowEnabled = false;
-			configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "PerfectModeConfig.xml"));
 			settingsScrollPosition = new Vector2();
-		}
-
-		private void WriteDefaultConfig() {
-			config = new Config();
-			var serializer = new XmlSerializer(typeof(Config));
-			using (var configOut = configFilePath.OpenWrite()) {
-				serializer.Serialize(configOut, config);
-			}
 		}
 
 		#region Unity Methods
 
 		void Start() {
-			if (!configFilePath.Exists) {
-				WriteDefaultConfig();
-			} else {
-				var serializer = new XmlSerializer(typeof(Config));
-				using (var configIn = configFilePath.OpenRead()) {
-					config = serializer.Deserialize(configIn) as Config;
-				}
-			}
+			config = Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 				failedObjective = false;
 			};
+		}
+
+		private void DestroyAndNullGameplayLabels() {
+			if (displayImageLabel != null) Destroy(displayImageLabel);
+			if (remainingNotesLeftLabel != null) Destroy(remainingNotesLeftLabel);
+			if (restartIndicatorLabel != null) Destroy(restartIndicatorLabel);
+			displayImageLabel = null;
+			remainingNotesLeftLabel = null;
+			restartIndicatorLabel = null;
+		}
+
+		private void ResetGameplaySceneValues() {
+			notes = gameManager.BasePlayers[0].Notes;
+			totalNoteCount = notes?.Count ?? 0;
+			currentNoteIndex = 0;
+			missedNotes = 0;
+			invokedSceneChange = false;
 		}
 
 		void LateUpdate() {
@@ -82,27 +84,62 @@ namespace PerfectMode {
 				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
 					var gameManagerObject = GameObject.Find("Game Manager");
 					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
-					notes = gameManager.BasePlayers[0].Notes;
-					totalNoteCount = notes?.Count ?? 0;
-					currentNoteIndex = 0;
-					missedNotes = 0;
-					invokedSceneChange = false;
+					ResetGameplaySceneValues();
+
+					DestroyAndNullGameplayLabels();
+					Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
+
+					displayImageLabel = new GameObject($"Perfect Mode Indicator", new Type[] {
+						typeof(Text)
+					});
+					displayImageLabel.layer = LayerMask.NameToLayer("UI");
+					displayImageLabel.transform.SetParent(canvasTransform);
+					displayImageLabel.transform.SetSiblingIndex(0);
+					displayImageLabel.transform.localEulerAngles = new Vector3();
+					displayImageLabel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+					displayImageLabel.GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+					displayImageLabel.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
+					displayImageLabel.GetComponent<Text>().font = uiFont;
+
+					remainingNotesLeftLabel = new GameObject($"Perfect Mode Notes Remaining", new Type[] {
+						typeof(Text)
+					});
+					remainingNotesLeftLabel.layer = LayerMask.NameToLayer("UI");
+					remainingNotesLeftLabel.transform.SetParent(canvasTransform);
+					remainingNotesLeftLabel.transform.SetSiblingIndex(0);
+					remainingNotesLeftLabel.transform.localEulerAngles = new Vector3();
+					remainingNotesLeftLabel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+					remainingNotesLeftLabel.GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+					remainingNotesLeftLabel.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
+					remainingNotesLeftLabel.GetComponent<Text>().font = uiFont;
+
+					restartIndicatorLabel = new GameObject($"Perfect Mode Restart Message", new Type[] {
+						typeof(Text)
+					});
+					restartIndicatorLabel.layer = LayerMask.NameToLayer("UI");
+					restartIndicatorLabel.transform.SetParent(canvasTransform);
+					restartIndicatorLabel.transform.SetSiblingIndex(0);
+					restartIndicatorLabel.transform.localEulerAngles = new Vector3();
+					restartIndicatorLabel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+					restartIndicatorLabel.GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+					restartIndicatorLabel.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
+					restartIndicatorLabel.GetComponent<Text>().font = uiFont;
+				} else {
+					DestroyAndNullGameplayLabels();
 				}
 			}
-			if (config.Enabled) {
-				if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null && !failedObjective) {
-					target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
-					isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
-					while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
-						if (!notes[currentNoteIndex].WasHit && notes[currentNoteIndex].WasMissed) {
-							++missedNotes;
-						}
-						++currentNoteIndex;
+			if (config.Enabled && SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null) {
+				target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
+				isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
+				while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
+					if (!notes[currentNoteIndex].WasHit && notes[currentNoteIndex].WasMissed) {
+						++missedNotes;
 					}
-					if (config.FC && !isStillFC || config.NotesMissed < missedNotes) {
-						failedObjective = true;
-						remainingTimeBeforeRestart = Math.Min(config.FailDelay, (float)(gameManager.SongLength - gameManager.SongTime));
-					}
+					++currentNoteIndex;
+				}
+				if (!failedObjective && (config.FC && !isStillFC || config.NotesMissed < missedNotes)) {
+					failedObjective = true;
+					remainingTimeBeforeRestart = Math.Min(config.FailDelay, (float)(gameManager.SongLength - gameManager.SongTime));
 				}
 				if (failedObjective && (gameManager.PauseMenu is null || !gameManager.PauseMenu.activeInHierarchy)) {
 					remainingTimeBeforeRestart -= Time.deltaTime;
@@ -112,14 +149,55 @@ namespace PerfectMode {
 						invokedSceneChange = true;
 					}
 				}
+
+				if (config.DisplayImage.Visible || config.LayoutTest) {
+					displayImageLabel.transform.localPosition = new Vector3(config.DisplayImage.X - Screen.width / 2, Screen.height / 2 - config.DisplayImage.Y);
+					var text = displayImageLabel.GetComponent<Text>();
+					text.enabled = true;
+					text.fontSize = config.DisplayImage.Size;
+					text.alignment = config.DisplayImage.Alignment;
+					text.fontStyle = (config.DisplayImage.Bold ? FontStyle.Bold : FontStyle.Normal) | (config.DisplayImage.Italic ? FontStyle.Italic : FontStyle.Normal);
+					text.text = $"{target} mode active";
+					text.color = config.DisplayImage.Color.Color;
+				} else {
+					displayImageLabel.GetComponent<Text>().enabled = false;
+				}
+
+				if ((config.RemainingNotesLeft.Visible && !config.FC) || config.LayoutTest) {
+					remainingNotesLeftLabel.transform.localPosition = new Vector3(config.RemainingNotesLeft.X - Screen.width / 2, Screen.height / 2 - config.RemainingNotesLeft.Y);
+					var text = remainingNotesLeftLabel.GetComponent<Text>();
+					text.enabled = true;
+					text.fontSize = config.RemainingNotesLeft.Size;
+					text.alignment = config.RemainingNotesLeft.Alignment;
+					text.fontStyle = (config.RemainingNotesLeft.Bold ? FontStyle.Bold : FontStyle.Normal) | (config.RemainingNotesLeft.Italic ? FontStyle.Italic : FontStyle.Normal);
+					text.text = config.NotesMissed - missedNotes >= 0 ? $"{config.NotesMissed - missedNotes} note{(config.NotesMissed - missedNotes == 1 ? string.Empty : "s")} can be missed" : $"Too many notes missed";
+					text.color = config.RemainingNotesLeft.Color.Color;
+				} else {
+					remainingNotesLeftLabel.GetComponent<Text>().enabled = false;
+				}
+
+				if ((config.RestartIndicator.Visible && failedObjective) || config.LayoutTest) {
+					restartIndicatorLabel.transform.localPosition = new Vector3(config.RestartIndicator.X - Screen.width / 2, Screen.height / 2 - config.RestartIndicator.Y);
+					var text = restartIndicatorLabel.GetComponent<Text>();
+					text.enabled = true;
+					text.fontSize = config.RestartIndicator.Size;
+					text.alignment = config.RestartIndicator.Alignment;
+					text.fontStyle = (config.RestartIndicator.Bold ? FontStyle.Bold : FontStyle.Normal) | (config.RestartIndicator.Italic ? FontStyle.Italic : FontStyle.Normal);
+					text.text = $"{target} failed, restarting in {(int)remainingTimeBeforeRestart + 1}";
+					text.color = new Color(config.RestartIndicator.Color.Color.r, config.RestartIndicator.Color.Color.g, config.RestartIndicator.Color.Color.b, config.RestartIndicator.Color.Color.a * Math.Min((config.FailDelay - remainingTimeBeforeRestart) * 2.0f, 1.0f));
+				} else {
+					restartIndicatorLabel.GetComponent<Text>().enabled = false;
+				}
+			} else if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
+				displayImageLabel.GetComponent<Text>().enabled = false;
+				remainingNotesLeftLabel.GetComponent<Text>().enabled = false;
+				restartIndicatorLabel.GetComponent<Text>().enabled = false;
 			}
 			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
 				//TODO: Get the font directly from the bundle?
 				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 			}
-			if (Input.GetKeyDown(KeyCode.F6) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) {
-				configWindowEnabled = !configWindowEnabled;
-			}
+			config.HandleInput();
 		}
 
 		void OnGUI() {
@@ -134,51 +212,12 @@ namespace PerfectMode {
 				settingsHorizontalSliderStyle = new GUIStyle(GUI.skin.horizontalSlider);
 				settingsHorizontalSliderThumbStyle = new GUIStyle(GUI.skin.horizontalSliderThumb);
 			}
-			if (configWindowEnabled) {
+			if (config.ConfigWindowEnabled) {
 				//TODO: Look into why the GUILayout just panics if this and Extra Song UI are both loaded.
-				var outputRect = GUILayout.Window(5318009, new Rect(config.ConfigX, config.ConfigY, 250.0f, 500.0f), OnWindow, new GUIContent("Perfect Mode Settings"), settingsWindowStyle);
+				config.DrawLabelWindows();
+				var outputRect = GUILayout.Window(5318009, new Rect(config.ConfigX, config.ConfigY, 320.0f, 500.0f), OnWindow, new GUIContent("Perfect Mode Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
-			}
-
-			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
-				if (config.Enabled) {
-					if (config.DisplayImage) {
-						var displayImageStyle = new GUIStyle {
-							font = uiFont,
-							fontSize = config.DisplayImageScale,
-							fontStyle = (config.DisplayImageBold ? FontStyle.Bold : FontStyle.Normal) | (config.DisplayImageItalic ? FontStyle.Italic : FontStyle.Normal),
-							alignment = TextAnchor.UpperLeft,
-							normal = new GUIStyleState {
-								textColor = Config.ARGBToColor(config.DisplayImageColorARGB)
-							}
-						};
-						GUI.Label(new Rect(config.DisplayImageX, config.DisplayImageY, 0.1f, 0.1f), new GUIContent($"{target} mode active"), displayImageStyle);
-					}
-					if (config.RemainingNotesLeft && !config.FC) {
-						var remainingNotesStyle = new GUIStyle {
-							font = uiFont,
-							fontSize = config.RemainingNotesLeftScale,
-							fontStyle = (config.RemainingNotesLeftBold ? FontStyle.Bold : FontStyle.Normal) | (config.RemainingNotesLeftItalic ? FontStyle.Italic : FontStyle.Normal),
-							alignment = TextAnchor.UpperLeft,
-							normal = new GUIStyleState {
-								textColor = Config.ARGBToColor(config.RemainingNotesLeftColorARGB)
-							}
-						};
-						GUI.Label(new Rect(config.RemainingNotesLeftX, config.RemainingNotesLeftY, 0.1f, 0.1f), new GUIContent(config.NotesMissed - missedNotes >= 0 ? $"{config.NotesMissed - missedNotes} note{(config.NotesMissed - missedNotes == 1 ? string.Empty : "s")} can be missed" : $"Too many notes missed"), remainingNotesStyle);
-					}
-					if (failedObjective) {
-						var failedStyle = new GUIStyle {
-							fontSize =  Screen.height / 30,
-							alignment = TextAnchor.MiddleCenter,
-							fontStyle = FontStyle.Bold,
-							normal = new GUIStyleState {
-								textColor = new Color(1.0f, 1.0f, 1.0f, Math.Min((config.FailDelay - remainingTimeBeforeRestart) * 2.0f, 1.0f)),
-							}
-						};
-						GUI.Label(new Rect(Screen.width / 2, Screen.height / 5 * 4, 0.1f, 0.1f), new GUIContent($"{target} failed, restarting in {(int)remainingTimeBeforeRestart + 1}"), failedStyle);
-					}
-				}
 			}
 		}
 
@@ -201,83 +240,19 @@ namespace PerfectMode {
 				}
 			};
 			settingsScrollPosition = GUILayout.BeginScrollView(settingsScrollPosition);
-
-			GUILayout.Label("Settings", largeLabelStyle);
-			config.Enabled = GUILayout.Toggle(config.Enabled, "Enabled", settingsToggleStyle);
-			config.FC = GUILayout.Toggle(config.FC, "FC Mode", settingsToggleStyle);
-			GUILayout.Label("Note Miss Limit (inclusive)", smallLabelStyle);
-			config.NotesMissed = (int)GUILayout.HorizontalSlider(config.NotesMissed, 0.0f, 100.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (int.TryParse(GUILayout.TextField(config.NotesMissed.ToString(), settingsTextFieldStyle), out int notesMissed)) config.NotesMissed = notesMissed;
-			GUILayout.Label("Fail Delay Before Restart", smallLabelStyle);
-			config.FailDelay = GUILayout.HorizontalSlider(config.FailDelay, 0.0f, 10.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(config.FailDelay.ToString(), settingsTextFieldStyle), out float failDelay)) config.FailDelay = failDelay;
-
-			GUILayout.Space(25.0f);
-			GUILayout.Label("Indicator", largeLabelStyle);
-			config.DisplayImage = GUILayout.Toggle(config.DisplayImage, "On-screen indicator enabled", settingsToggleStyle);
-			GUILayout.Label("Indicator X", smallLabelStyle);
-			config.DisplayImageX = GUILayout.HorizontalSlider(config.DisplayImageX, -3840.0f, 3840.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(config.DisplayImageX.ToString(), settingsTextFieldStyle), out float displayImageX)) config.DisplayImageX = displayImageX;
-			GUILayout.Label("Indicator Y", smallLabelStyle);
-			config.DisplayImageY = GUILayout.HorizontalSlider(config.DisplayImageY, -2160.0f, 2160.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(config.DisplayImageY.ToString(), settingsTextFieldStyle), out float displayImageY)) config.DisplayImageY = displayImageY;
-			GUILayout.Label("Indicator Scale", smallLabelStyle);
-			config.DisplayImageScale = (int)GUILayout.HorizontalSlider(config.DisplayImageScale, 0.0f, 500.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (int.TryParse(GUILayout.TextField(config.DisplayImageScale.ToString(), settingsTextFieldStyle), out int displayImageScale)) config.DisplayImageScale = displayImageScale;
-			config.DisplayImageBold = GUILayout.Toggle(config.DisplayImageBold, "Bold", settingsToggleStyle);
-			config.DisplayImageItalic = GUILayout.Toggle(config.DisplayImageItalic, "Italic", settingsToggleStyle);
-			var displayImageColor = Config.ARGBToColor(config.DisplayImageColorARGB);
-			GUILayout.Label("Red", smallLabelStyle);
-			displayImageColor.r = GUILayout.HorizontalSlider(displayImageColor.r, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(displayImageColor.r.ToString(), settingsTextFieldStyle), out float displayImageR)) displayImageColor.r = displayImageR;
-			GUILayout.Label("Green", smallLabelStyle);
-			displayImageColor.g = GUILayout.HorizontalSlider(displayImageColor.g, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(displayImageColor.g.ToString(), settingsTextFieldStyle), out float displayImageG)) displayImageColor.g = displayImageG;
-			GUILayout.Label("Blue", smallLabelStyle);
-			displayImageColor.b = GUILayout.HorizontalSlider(displayImageColor.b, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(displayImageColor.b.ToString(), settingsTextFieldStyle), out float displayImageB)) displayImageColor.b = displayImageB;
-			GUILayout.Label("Alpha", smallLabelStyle);
-			displayImageColor.a = GUILayout.HorizontalSlider(displayImageColor.a, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(displayImageColor.a.ToString(), settingsTextFieldStyle), out float displayImageA)) displayImageColor.a = displayImageA;
-			config.DisplayImageColorARGB = Config.ColorToARGB(displayImageColor);
-
-			GUILayout.Space(25.0f);
-			GUILayout.Label("Remaining indicator", largeLabelStyle);
-			config.RemainingNotesLeft = GUILayout.Toggle(config.RemainingNotesLeft, "Remaining indicator enabled", settingsToggleStyle);
-			GUILayout.Label("Indicator X", smallLabelStyle);
-			config.RemainingNotesLeftX = GUILayout.HorizontalSlider(config.RemainingNotesLeftX, -3840.0f, 3840.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(config.RemainingNotesLeftX.ToString(), settingsTextFieldStyle), out float remainingNotesLeftX)) config.RemainingNotesLeftX = remainingNotesLeftX;
-			GUILayout.Label("Indicator Y", smallLabelStyle);
-			config.RemainingNotesLeftY = GUILayout.HorizontalSlider(config.RemainingNotesLeftY, -2160.0f, 2160.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(config.RemainingNotesLeftY.ToString(), settingsTextFieldStyle), out float remainingNotesLeftY)) config.RemainingNotesLeftY = remainingNotesLeftY;
-			GUILayout.Label("Indicator Scale", smallLabelStyle);
-			config.RemainingNotesLeftScale = (int)GUILayout.HorizontalSlider(config.RemainingNotesLeftScale, 0.0f, 500.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (int.TryParse(GUILayout.TextField(config.RemainingNotesLeftScale.ToString(), settingsTextFieldStyle), out int remainingNotesLeftScale)) config.RemainingNotesLeftScale = remainingNotesLeftScale;
-			config.RemainingNotesLeftBold = GUILayout.Toggle(config.RemainingNotesLeftBold, "Bold", settingsToggleStyle);
-			config.RemainingNotesLeftItalic = GUILayout.Toggle(config.RemainingNotesLeftItalic, "Italic", settingsToggleStyle);
-			var remainingNotesLeftColor = Config.ARGBToColor(config.RemainingNotesLeftColorARGB);
-			GUILayout.Label("Red", smallLabelStyle);
-			remainingNotesLeftColor.r = GUILayout.HorizontalSlider(remainingNotesLeftColor.r, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(remainingNotesLeftColor.r.ToString(), settingsTextFieldStyle), out float remainingNotesLeftR)) remainingNotesLeftColor.r = remainingNotesLeftR;
-			GUILayout.Label("Green", smallLabelStyle);
-			remainingNotesLeftColor.g = GUILayout.HorizontalSlider(remainingNotesLeftColor.g, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(remainingNotesLeftColor.g.ToString(), settingsTextFieldStyle), out float remainingNotesLeftG)) remainingNotesLeftColor.g = remainingNotesLeftG;
-			GUILayout.Label("Blue", smallLabelStyle);
-			remainingNotesLeftColor.b = GUILayout.HorizontalSlider(remainingNotesLeftColor.b, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(remainingNotesLeftColor.b.ToString(), settingsTextFieldStyle), out float remainingNotesLeftB)) remainingNotesLeftColor.b = remainingNotesLeftB;
-			GUILayout.Label("Alpha", smallLabelStyle);
-			remainingNotesLeftColor.a = GUILayout.HorizontalSlider(remainingNotesLeftColor.a, 0.0f, 1.0f, settingsHorizontalSliderStyle, settingsHorizontalSliderThumbStyle);
-			if (float.TryParse(GUILayout.TextField(remainingNotesLeftColor.a.ToString(), settingsTextFieldStyle), out float remainingNotesLeftA)) remainingNotesLeftColor.a = remainingNotesLeftA;
-			config.RemainingNotesLeftColorARGB = Config.ColorToARGB(remainingNotesLeftColor);
-
-			GUILayout.Space(25.0f);
-			if (GUILayout.Button("Save Config", settingsButtonStyle)) {
-				if (configFilePath.Exists) configFilePath.Delete();
-				var serializer = new XmlSerializer(typeof(Config));
-				using (var configOut = configFilePath.OpenWrite()) {
-					serializer.Serialize(configOut, config);
-				}
-			}
+			config.ConfigureGUI(new Common.Settings.GUIConfigurationStyles {
+				LargeLabel = largeLabelStyle,
+				SmallLabel = smallLabelStyle,
+				Window = settingsWindowStyle,
+				Toggle = settingsToggleStyle,
+				Button = settingsButtonStyle,
+				TextArea = settingsTextAreaStyle,
+				TextField = settingsTextFieldStyle,
+				Label = settingsLabelStyle,
+				Box = settingsBoxStyle,
+				HorizontalSlider = settingsHorizontalSliderStyle,
+				HorizontalSliderThumb = settingsHorizontalSliderThumbStyle
+			});
 			GUILayout.Space(25.0f);
 
 			GUILayout.Label($"Perfect Mode v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}");

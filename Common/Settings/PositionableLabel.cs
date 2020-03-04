@@ -24,7 +24,7 @@ namespace Common.Settings {
 			Y = (int)r.y;
 		}
 
-		public void ConfigureGUI(GUIConfigurationStyles styles) {
+		public virtual void ConfigureGUI(GUIConfigurationStyles styles) {
 			Visible = GUILayout.Toggle(Visible, "Enabled", styles.Toggle);
 			if (!DraggableWindowsEnabled) {
 				GUILayout.Label("X", styles.SmallLabel);
@@ -56,7 +56,7 @@ namespace Common.Settings {
 
 		public Rect Rect => new Rect(X, Y, 0.1f, 0.1f);
 
-		public GUIStyle Style => new GUIStyle {
+		public virtual GUIStyle Style => new GUIStyle {
 			fontSize = Size,
 			alignment = Alignment,
 			fontStyle = (Bold ? FontStyle.Bold : FontStyle.Normal) | (Italic ? FontStyle.Italic : FontStyle.Normal)
