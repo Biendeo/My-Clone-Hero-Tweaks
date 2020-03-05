@@ -1,47 +1,59 @@
-﻿using System;
+﻿using Common.Settings;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using UnityEngine;
 
 namespace ExtraSongUI.Settings {
 	[Serializable]
 	public class Config {
-		public EditableLabelSettings TimeName;
-		public FormattedLabelSettings SongTime;
-		public FormattedLabelSettings SongLength;
-
-		public FormattedLabelSettings CurrentStarProgressName;
-		public FormattedLabelSettings CurrentStarProgressScore;
-		public FormattedLabelSettings CurrentStarProgressEndScore;
-		public FormattedLabelSettings CurrentStarProgressPercentage;
-
-		public FormattedLabelSettings SevenStarProgressName;
-		public FormattedLabelSettings SevenStarProgressScore;
-		public FormattedLabelSettings SevenStarProgressEndScore;
-		public FormattedLabelSettings SevenStarProgressPercentage;
-
-		public EditableLabelSettings NotesName;
-		public FormattedLabelSettings NotesHitCounter;
-		public FormattedLabelSettings NotesPassedCounter;
-		public FormattedLabelSettings TotalNotesCounter;
-		public FormattedLabelSettings NotesHitPercentage;
-		public FormattedLabelSettings NotesMissedCounter;
-
-		public EditableLabelSettings StarPowerName;
-		public FormattedLabelSettings StarPowersGottenCounter;
-		public FormattedLabelSettings TotalStarPowersCounter;
-		public FormattedLabelSettings StarPowerPercentage;
-
-		public EditableLabelSettings ComboName;
-		public FormattedLabelSettings CurrentComboCounter;
-		public FormattedLabelSettings HighestComboCounter;
+		public int Version;
 
 		public float ConfigX;
 		public float ConfigY;
+		public KeyBind ConfigKeyBind;
 
-		public bool HideAll;
+		public bool Enabled;
+		public KeyBind EnabledKeyBind;
+
+		public FormattableColorablePositionableLabel TimeName;
+		public FormattableColorablePositionableLabel SongTime;
+		public FormattableColorablePositionableLabel SongLength;
+
+		public FormattableColorablePositionableLabel CurrentStarProgressName;
+		public FormattableColorablePositionableLabel CurrentStarProgressScore;
+		public FormattableColorablePositionableLabel CurrentStarProgressEndScore;
+		public FormattableColorablePositionableLabel CurrentStarProgressPercentage;
+
+		public FormattableColorablePositionableLabel SevenStarProgressName;
+		public FormattableColorablePositionableLabel SevenStarProgressScore;
+		public FormattableColorablePositionableLabel SevenStarProgressEndScore;
+		public FormattableColorablePositionableLabel SevenStarProgressPercentage;
+
+		public FormattableColorablePositionableLabel NotesName;
+		public FormattableColorablePositionableLabel NotesHitCounter;
+		public FormattableColorablePositionableLabel NotesPassedCounter;
+		public FormattableColorablePositionableLabel TotalNotesCounter;
+		public FormattableColorablePositionableLabel NotesHitPercentage;
+		public FormattableColorablePositionableLabel NotesMissedCounter;
+
+		public FormattableColorablePositionableLabel StarPowerName;
+		public FormattableColorablePositionableLabel StarPowersGottenCounter;
+		public FormattableColorablePositionableLabel TotalStarPowersCounter;
+		public FormattableColorablePositionableLabel StarPowerPercentage;
+
+		public FormattableColorablePositionableLabel ComboName;
+		public FormattableColorablePositionableLabel CurrentComboCounter;
+		public FormattableColorablePositionableLabel HighestComboCounter;
+
+		[XmlIgnore]
+		public bool DraggableLabelsEnabled;
+		[XmlIgnore]
+		public bool ConfigWindowEnabled;
 
 		public Config() {
 			// These original numbers were designed with 1440p in mind so this'll sort it out.
@@ -51,273 +63,469 @@ namespace ExtraSongUI.Settings {
 			int largeFontSize = (int)(50 * widthScale);
 			int extraLargeFontSize = (int)(150 * widthScale);
 
-			TimeName = new EditableLabelSettings {
-				X = 100.0f * widthScale,
-				Y = 750.0f * heightScale,
+			Version = 2;
+
+			ConfigX = 400.0f;
+			ConfigY = 400.0f;
+			ConfigKeyBind = new KeyBind {
+				Key = KeyCode.F5,
+				Ctrl = true,
+				Alt = false,
+				Shift = true
+			};
+
+			Enabled = true;
+			EnabledKeyBind = new KeyBind {
+				Key = KeyCode.F5,
+				Ctrl = false,
+				Alt = false,
+				Shift = false
+			};
+
+			TimeName = new FormattableColorablePositionableLabel {
+				Format = "Time: ",
+				X = (int)(100.0f * widthScale),
+				Y = (int)(750.0f * heightScale),
 				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Content = "Time:",
+				Color = new ColorARGB(Color.white)
 			};
-			SongTime = new FormattedLabelSettings {
-				X = 400.0f * widthScale,
-				Y = 750.0f * heightScale,
+
+			SongTime = new FormattableColorablePositionableLabel {
+				Format = "{0} /",
+				X = (int)(400.0f * widthScale),
+				Y = (int)(750.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0} /"
+				Color = new ColorARGB(Color.white)
 			};
-			SongLength = new FormattedLabelSettings {
-				X = 670.0f * widthScale,
-				Y = 750.0f * heightScale,
+
+			SongLength = new FormattableColorablePositionableLabel {
+				Format = "{0}",
+				X = (int)(670.0f * widthScale),
+				Y = (int)(750.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0}"
+				Color = new ColorARGB(Color.white)
 			};
-			CurrentStarProgressName = new FormattedLabelSettings {
-				X = 100.0f * widthScale,
-				Y = 810.0f * heightScale,
+
+			CurrentStarProgressName = new FormattableColorablePositionableLabel {
+				Format = "{0} → {1}:",
+				X = (int)(100.0f * widthScale),
+				Y = (int)(810.0f * heightScale),
 				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0} → {1}:"
+				Color = new ColorARGB(Color.white)
 			};
-			CurrentStarProgressScore = new FormattedLabelSettings {
-				X = 400.0f * widthScale,
-				Y = 810.0f * heightScale,
+
+			CurrentStarProgressScore = new FormattableColorablePositionableLabel {
+				Format = "{0} /",
+				X = (int)(400.0f * widthScale),
+				Y = (int)(810.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0} /"
+				Color = new ColorARGB(Color.white)
 			};
-			CurrentStarProgressEndScore = new FormattedLabelSettings {
-				X = 670.0f * widthScale,
-				Y = 810.0f * heightScale,
+
+			CurrentStarProgressEndScore = new FormattableColorablePositionableLabel {
+				Format = "{0}",
+				X = (int)(670.0f * widthScale),
+				Y = (int)(810.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0}"
+				Color = new ColorARGB(Color.white)
 			};
-			CurrentStarProgressPercentage = new FormattedLabelSettings {
-				X = 700.0f * widthScale,
-				Y = 810.0f * heightScale,
+
+			CurrentStarProgressPercentage = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(700.0f * widthScale),
+				Y = (int)(810.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "({0}%)"
+				Color = new ColorARGB(Color.white)
 			};
-			SevenStarProgressName = new FormattedLabelSettings {
-				X = 100.0f * widthScale,
-				Y = 870.0f * heightScale,
+
+			SevenStarProgressName = new FormattableColorablePositionableLabel {
+				Format = "0 → 7:",
+				X = (int)(100.0f * widthScale),
+				Y = (int)(870.0f * heightScale),
 				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0} → {1}:"
+				Color = new ColorARGB(Color.white)
 			};
-			SevenStarProgressScore = new FormattedLabelSettings {
-				X = 400.0f * widthScale,
-				Y = 870.0f * heightScale,
+
+			SevenStarProgressScore = new FormattableColorablePositionableLabel {
+				Format = "{0} /",
+				X = (int)(400.0f * widthScale),
+				Y = (int)(870.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0} /"
+				Color = new ColorARGB(Color.white)
 			};
-			SevenStarProgressEndScore = new FormattedLabelSettings {
-				X = 670.0f * widthScale,
-				Y = 870.0f * heightScale,
+
+			SevenStarProgressEndScore = new FormattableColorablePositionableLabel {
+				Format = "{0}",
+				X = (int)(670.0f * widthScale),
+				Y = (int)(870.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0}"
+				Color = new ColorARGB(Color.white)
 			};
-			SevenStarProgressPercentage = new FormattedLabelSettings {
-				X = 700.0f * widthScale,
-				Y = 870.0f * heightScale,
+
+			SevenStarProgressPercentage = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(700.0f * widthScale),
+				Y = (int)(870.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "({0}%)"
+				Color = new ColorARGB(Color.white)
 			};
-			NotesName = new EditableLabelSettings {
-				X = 100.0f * widthScale,
-				Y = 930.0f * heightScale,
-				Size = smallFontSize,
-				Alignment = TextAnchor.LowerRight,
-				Bold = true,
-				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
-				Visible = true,
-				Content = "Notes:"
-			};
-			NotesHitCounter = new FormattedLabelSettings {
-				X = 330.0f * widthScale,
-				Y = 930.0f * heightScale,
+
+			NotesName = new FormattableColorablePositionableLabel {
+				Format = "Notes:",
+				X = (int)(100.0f * widthScale),
+				Y = (int)(930.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0} /"
+				Color = new ColorARGB(Color.white)
 			};
-			NotesPassedCounter = new FormattedLabelSettings {
-				X = 530.0f * widthScale,
-				Y = 930.0f * heightScale,
+
+			NotesHitCounter = new FormattableColorablePositionableLabel {
+				Format = "{0} /",
+				X = (int)(330.0f * widthScale),
+				Y = (int)(930.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0} /"
+				Color = new ColorARGB(Color.white)
 			};
-			TotalNotesCounter = new FormattedLabelSettings {
-				X = 680.0f * widthScale,
-				Y = 930.0f * heightScale,
+
+			NotesPassedCounter = new FormattableColorablePositionableLabel {
+				Format = "{0} /",
+				X = (int)(530.0f * widthScale),
+				Y = (int)(930.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0}"
+				Color = new ColorARGB(Color.white)
 			};
-			NotesHitPercentage = new FormattedLabelSettings {
-				X = 700.0f * widthScale,
-				Y = 930.0f * heightScale,
+
+			TotalNotesCounter = new FormattableColorablePositionableLabel {
+				Format = "{0}",
+				X = (int)(680.0f * widthScale),
+				Y = (int)(930.0f * heightScale),
+				Size = largeFontSize,
+				Alignment = TextAnchor.LowerRight,
+				Bold = true,
+				Italic = false,
+				Visible = true,
+				Color = new ColorARGB(Color.white)
+			};
+
+			NotesHitPercentage = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(700.0 * widthScale),
+				Y = (int)(930.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "({0}%)"
+				Color = new ColorARGB(Color.white)
 			};
-			NotesMissedCounter = new FormattedLabelSettings {
-				X = 780.0f * widthScale,
-				Y = 1070.0f * heightScale,
+
+			NotesMissedCounter = new FormattableColorablePositionableLabel {
+				Format = "{0}",
+				X = (int)(780.0f * widthScale),
+				Y = (int)(1070.0f * heightScale),
 				Size = extraLargeFontSize,
 				Alignment = TextAnchor.MiddleRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0}"
+				Color = new ColorARGB(Color.white)
 			};
-			StarPowerName = new EditableLabelSettings {
-				X = 100.0f * widthScale,
-				Y = 990.0f * heightScale,
+
+			StarPowerName = new FormattableColorablePositionableLabel {
+				Format = "SP:",
+				X = (int)(100.0f * widthScale),
+				Y = (int)(990.0f * heightScale),
 				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Content = "SP:"
+				Color = new ColorARGB(Color.white)
 			};
-			StarPowersGottenCounter = new FormattedLabelSettings {
-				X = 330.0f * widthScale,
-				Y = 990.0f * heightScale,
+
+			StarPowersGottenCounter = new FormattableColorablePositionableLabel {
+				Format = "{0} /",
+				X = (int)(330.0f * widthScale),
+				Y = (int)(990.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0} /"
+				Color = new ColorARGB(Color.white)
 			};
-			TotalStarPowersCounter = new FormattedLabelSettings {
-				X = 510.0f * widthScale,
-				Y = 990.0f * heightScale,
+
+			TotalStarPowersCounter = new FormattableColorablePositionableLabel {
+				Format = "{0}",
+				X = (int)(510.0f * widthScale),
+				Y = (int)(990.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0}"
+				Color = new ColorARGB(Color.white)
 			};
-			StarPowerPercentage = new FormattedLabelSettings {
-				X = 700.0f * widthScale,
-				Y = 990.0f * heightScale,
+
+			StarPowerPercentage = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(700.0f * widthScale),
+				Y = (int)(990.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "({0}%)"
+				Color = new ColorARGB(Color.white)
 			};
-			ComboName = new EditableLabelSettings {
-				X = 100.0f * widthScale,
-				Y = 1050.0f * heightScale,
-				Size = smallFontSize / 5 * 4,
+
+			ComboName = new FormattableColorablePositionableLabel {
+				Format = "Combo:",
+				X = (int)(100.0f * widthScale),
+				Y = (int)(1050.0f * heightScale),
+				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Content = "Combo:"
+				Color = new ColorARGB(Color.white)
 			};
-			CurrentComboCounter = new FormattedLabelSettings {
-				X = 330.0f * widthScale,
-				Y = 1050.0f * heightScale,
+
+			CurrentComboCounter = new FormattableColorablePositionableLabel {
+				Format = "{0} /",
+				X = (int)(330.0f * widthScale),
+				Y = (int)(1050.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0} /"
+				Color = new ColorARGB(Color.white)
 			};
-			HighestComboCounter = new FormattedLabelSettings {
-				X = 510.0f * widthScale,
-				Y = 1050.0f * heightScale,
+
+			HighestComboCounter = new FormattableColorablePositionableLabel {
+				Format = "{0}",
+				X = (int)(510.0f * widthScale),
+				Y = (int)(1050.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
-				ColorARGB = LabelSettings.ColorToARGB(Color.white),
 				Visible = true,
-				Format = "{0}"
+				Color = new ColorARGB(Color.white)
 			};
-			ConfigX = Screen.width - 350.0f;
-			ConfigY = 100.0f * heightScale;
-			HideAll = false;
+		}
+
+		private FormattableColorablePositionableLabel NewLabelFromOld(EditableLabelSettings label) {
+			return new FormattableColorablePositionableLabel {
+				Format = label.Content,
+				X = (int)label.X,
+				Y = (int)label.Y,
+				Size = label.Size,
+				Alignment = label.Alignment,
+				Bold = label.Bold,
+				Italic = label.Italic,
+				Visible = label.Visible,
+				Color = new ColorARGB(label.ColorARGB)
+			};
+		}
+
+		private FormattableColorablePositionableLabel NewLabelFromOld(FormattedLabelSettings label) {
+			return new FormattableColorablePositionableLabel {
+				Format = label.Format,
+				X = (int)label.X,
+				Y = (int)label.Y,
+				Size = label.Size,
+				Alignment = label.Alignment,
+				Bold = label.Bold,
+				Italic = label.Italic,
+				Visible = label.Visible,
+				Color = new ColorARGB(label.ColorARGB)
+			};
+		}
+
+		public Config(OldConfig oldConfig) {
+			// These original numbers were designed with 1440p in mind so this'll sort it out.
+			float widthScale = Screen.width / 2560.0f;
+			float heightScale = Screen.height / 1440.0f;
+			int smallFontSize = (int)(30 * widthScale);
+			int largeFontSize = (int)(50 * widthScale);
+			int extraLargeFontSize = (int)(150 * widthScale);
+
+			Version = 2;
+
+			ConfigX = oldConfig.ConfigX;
+			ConfigY = oldConfig.ConfigY;
+			ConfigKeyBind = new KeyBind {
+				Key = KeyCode.F5,
+				Ctrl = true,
+				Alt = false,
+				Shift = true
+			};
+
+			Enabled = oldConfig.HideAll;
+			EnabledKeyBind = new KeyBind {
+				Key = KeyCode.F5,
+				Ctrl = false,
+				Alt = false,
+				Shift = false
+			};
+
+			TimeName = NewLabelFromOld(oldConfig.TimeName);
+			SongTime = NewLabelFromOld(oldConfig.SongTime);
+			SongLength = NewLabelFromOld(oldConfig.SongLength);
+			CurrentStarProgressName = NewLabelFromOld(oldConfig.CurrentStarProgressName);
+			CurrentStarProgressScore = NewLabelFromOld(oldConfig.CurrentStarProgressScore);
+			CurrentStarProgressEndScore = NewLabelFromOld(oldConfig.CurrentStarProgressEndScore);
+			CurrentStarProgressPercentage = NewLabelFromOld(oldConfig.CurrentStarProgressPercentage);
+			SevenStarProgressName = NewLabelFromOld(oldConfig.SevenStarProgressName);
+			SevenStarProgressScore = NewLabelFromOld(oldConfig.SevenStarProgressScore);
+			SevenStarProgressEndScore = NewLabelFromOld(oldConfig.SevenStarProgressEndScore);
+			SevenStarProgressPercentage = NewLabelFromOld(oldConfig.SevenStarProgressPercentage);
+			NotesName = NewLabelFromOld(oldConfig.NotesName);
+			NotesHitCounter = NewLabelFromOld(oldConfig.NotesHitCounter);
+			NotesPassedCounter = NewLabelFromOld(oldConfig.NotesPassedCounter);
+			TotalNotesCounter = NewLabelFromOld(oldConfig.TotalNotesCounter);
+			NotesHitPercentage = NewLabelFromOld(oldConfig.NotesHitPercentage);
+			NotesMissedCounter = NewLabelFromOld(oldConfig.NotesMissedCounter);
+			StarPowerName = NewLabelFromOld(oldConfig.StarPowerName);
+			StarPowersGottenCounter = NewLabelFromOld(oldConfig.StarPowersGottenCounter);
+			TotalStarPowersCounter = NewLabelFromOld(oldConfig.TotalStarPowersCounter);
+			StarPowerPercentage = NewLabelFromOld(oldConfig.StarPowerPercentage);
+			ComboName = NewLabelFromOld(oldConfig.ComboName);
+			CurrentComboCounter = NewLabelFromOld(oldConfig.CurrentComboCounter);
+			HighestComboCounter = NewLabelFromOld(oldConfig.HighestComboCounter);
+		}
+
+		public static Config LoadConfig() {
+			var configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "ExtraSongUIConfig.xml"));
+			if (configFilePath.Exists) {
+				// Determine if it's the old version. Without a version field, this is slightly tricky.
+				var configString = File.ReadAllText(configFilePath.FullName);
+				if (configString.Contains("<HideAll>")) {
+					configString = configString.Replace("<Config xmlns:", "<OldConfig xmlns:");
+					configString = configString.Replace("</Config>", "</OldConfig>");
+					var oldSerializer = new XmlSerializer(typeof(OldConfig));
+					using (var oldConfigIn = new MemoryStream(Encoding.Unicode.GetBytes(configString))) {
+						var oldConfig = oldSerializer.Deserialize(oldConfigIn) as OldConfig;
+						var newConfig = new Config(oldConfig);
+						newConfig.SaveConfig();
+						return newConfig;
+					}
+				} else {
+					var serializer = new XmlSerializer(typeof(Config));
+					using (var configIn = new MemoryStream(Encoding.Unicode.GetBytes(configString))) {
+						return serializer.Deserialize(configIn) as Config;
+					}
+				}
+			} else {
+				var c = new Config();
+				c.SaveConfig();
+				return c;
+			}
+		}
+
+		public void SaveConfig() {
+			var configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "ExtraSongUIConfig.xml"));
+			var serializer = new XmlSerializer(typeof(Config));
+			using (var configOut = configFilePath.Open(FileMode.Create)) {
+				serializer.Serialize(configOut, this);
+			}
+		}
+
+		public void HandleInput() {
+			if (ConfigKeyBind.IsPressed && !ConfigKeyBind.JustSet) {
+				ConfigWindowEnabled = !ConfigWindowEnabled;
+			}
+			if (EnabledKeyBind.IsPressed && !EnabledKeyBind.JustSet) {
+				Enabled = !Enabled;
+			}
+			ConfigKeyBind.JustSet = false;
+			EnabledKeyBind.JustSet = false;
+		}
+
+		public void DrawLabelWindows() {
+			if (DraggableLabelsEnabled) {
+				TimeName.DrawLabelWindow(110001);
+				SongTime.DrawLabelWindow(110002);
+				SongLength.DrawLabelWindow(110003);
+				CurrentStarProgressName.DrawLabelWindow(110004);
+				CurrentStarProgressScore.DrawLabelWindow(110005);
+				CurrentStarProgressEndScore.DrawLabelWindow(110006);
+				CurrentStarProgressPercentage.DrawLabelWindow(110007);
+				SevenStarProgressName.DrawLabelWindow(110008);
+				SevenStarProgressScore.DrawLabelWindow(110009);
+				SevenStarProgressEndScore.DrawLabelWindow(110010);
+				SevenStarProgressPercentage.DrawLabelWindow(110011);
+				NotesName.DrawLabelWindow(110012);
+				NotesHitCounter.DrawLabelWindow(110013);
+				NotesPassedCounter.DrawLabelWindow(110014);
+				TotalNotesCounter.DrawLabelWindow(110015);
+				NotesHitPercentage.DrawLabelWindow(110016);
+				NotesMissedCounter.DrawLabelWindow(110017);
+				StarPowerName.DrawLabelWindow(110018);
+				StarPowersGottenCounter.DrawLabelWindow(110019);
+				TotalStarPowersCounter.DrawLabelWindow(110020);
+				StarPowerPercentage.DrawLabelWindow(110021);
+				ComboName.DrawLabelWindow(110022);
+				CurrentComboCounter.DrawLabelWindow(110023);
+				HighestComboCounter.DrawLabelWindow(110024);
+			}
 		}
 	}
 }
