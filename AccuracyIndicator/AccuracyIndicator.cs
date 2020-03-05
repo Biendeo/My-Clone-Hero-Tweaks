@@ -369,7 +369,7 @@ namespace AccuracyIndicator {
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
 				//! In practice mode, the song time is set to 1.5s before the section or A/B. If it is looping, it is
 				//! initially set to 0, then to the appropriate time. As long as the user isn't on less than 10FPS, this should work.
-				if (Math.Abs(gameManager.SongTime - lastSongTime) > 0.1) {
+				if (Math.Abs(gameManager.SongTime - lastSongTime) > 1.5 && gameManager.PracticeUI.practiceUI != null) {
 					ResetGameplaySceneValues();
 				}
 				UpdateGreatestThresholds();

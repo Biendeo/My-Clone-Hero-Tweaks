@@ -240,6 +240,9 @@ namespace PerfectMode.Settings {
 			GUILayout.Label("(this disables some options in this window)", new GUIStyle(styles.SmallLabel) {
 				fontStyle = FontStyle.Italic
 			});
+			DisplayImage.DraggableWindowsEnabled = DraggableLabelsEnabled;
+			RemainingNotesLeft.DraggableWindowsEnabled = DraggableLabelsEnabled;
+			RestartIndicator.DraggableWindowsEnabled = DraggableLabelsEnabled;
 
 			GUILayout.Space(25.0f);
 			GUILayout.Label("Active Display Indicator", styles.LargeLabel);

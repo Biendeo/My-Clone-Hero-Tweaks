@@ -197,7 +197,7 @@ namespace ExtraSongUI {
 		}
 
 		private void UpdateGameplayLabel(GameObject o, FormattableColorablePositionableLabel labelSettings, string content) {
-			if (labelSettings.Visible) {
+			if (labelSettings.Visible && config.Enabled) {
 				o.transform.localPosition = new Vector3(labelSettings.X - Screen.width / 2, Screen.height / 2 - labelSettings.Y);
 				var text = o.GetComponent<Text>();
 				text.enabled = true;
@@ -425,9 +425,33 @@ namespace ExtraSongUI {
 			GUILayout.Label("(this disables some options in this window)", new GUIStyle(styles.SmallLabel) {
 				fontStyle = FontStyle.Italic
 			});
+			config.TimeName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.SongTime.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.SongLength.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.CurrentStarProgressName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.CurrentStarProgressScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.CurrentStarProgressEndScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.CurrentStarProgressPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.SevenStarProgressName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.SevenStarProgressScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.SevenStarProgressEndScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.SevenStarProgressPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.NotesName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.NotesHitCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.NotesPassedCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.TotalNotesCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.NotesHitPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.NotesMissedCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.StarPowerName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.StarPowersGottenCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.TotalStarPowersCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.StarPowerPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.ComboName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.CurrentComboCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.HighestComboCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 
 			GUILayout.Space(20.0f);
-			config.Enabled = GUILayout.Toggle(config.Enabled, "Hide all extra UI", settingsToggleStyle);
+			config.Enabled = !GUILayout.Toggle(!config.Enabled, "Hide all extra UI", settingsToggleStyle);
 			GUILayout.Space(20.0f);
 			if (GUILayout.Button("Save Config", settingsButtonStyle)) config.SaveConfig();
 			GUILayout.Space(50.0f);
