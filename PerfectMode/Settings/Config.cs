@@ -202,9 +202,9 @@ namespace PerfectMode.Settings {
 
 		public void DrawLabelWindows() {
 			if (DraggableLabelsEnabled) {
-				DisplayImage.DrawLabelWindow(100005);
-				RemainingNotesLeft.DrawLabelWindow(100006);
-				RestartIndicator.DrawLabelWindow(100007);
+				DisplayImage.DrawLabelWindow(187001002);
+				RemainingNotesLeft.DrawLabelWindow(187001003);
+				RestartIndicator.DrawLabelWindow(187001004);
 			}
 		}
 

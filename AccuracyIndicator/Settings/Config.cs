@@ -237,9 +237,9 @@ namespace AccuracyIndicator.Settings {
 
 		public void DrawLabelWindows() {
 			if (DraggableLabelsEnabled) {
-				AccuracyTime.DrawLabelWindow(100002);
-				AccuracyMessage.DrawLabelWindow(100003);
-				AverageAccuracy.DrawLabelWindow(100004);
+				AccuracyTime.DrawLabelWindow(187002002);
+				AccuracyMessage.DrawLabelWindow(187002003);
+				AverageAccuracy.DrawLabelWindow(187002004);
 			}
 		}
 

@@ -349,7 +349,7 @@ namespace ExtraSongUI {
 			}
 			if (config.ConfigWindowEnabled) {
 				config.DrawLabelWindows();
-				var outputRect = GUILayout.Window(5318008, new Rect(config.ConfigX, config.ConfigY, 320.0f, 0.1f), settingsOnWindow, new GUIContent("Extra Song UI Settings"), settingsWindowStyle);
+				var outputRect = GUILayout.Window(187000001, new Rect(config.ConfigX, config.ConfigY, 320.0f, 807.0f), settingsOnWindow, new GUIContent("Extra Song UI Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}

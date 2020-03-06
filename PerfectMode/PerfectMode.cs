@@ -215,7 +215,7 @@ namespace PerfectMode {
 			if (config.ConfigWindowEnabled) {
 				//TODO: Look into why the GUILayout just panics if this and Extra Song UI are both loaded.
 				config.DrawLabelWindows();
-				var outputRect = GUILayout.Window(5318009, new Rect(config.ConfigX, config.ConfigY, 320.0f, 500.0f), OnWindow, new GUIContent("Perfect Mode Settings"), settingsWindowStyle);
+				var outputRect = GUILayout.Window(187001001, new Rect(config.ConfigX, config.ConfigY, 320.0f, 500.0f), OnWindow, new GUIContent("Perfect Mode Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}

@@ -156,7 +156,7 @@ namespace ExtraSongUI.Settings {
 
 			CurrentStarProgressPercentage = new FormattableColorablePositionableLabel {
 				Format = "({0}%)",
-				X = (int)(700.0f * widthScale),
+				X = (int)(780.0f * widthScale),
 				Y = (int)(810.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
@@ -204,7 +204,7 @@ namespace ExtraSongUI.Settings {
 
 			SevenStarProgressPercentage = new FormattableColorablePositionableLabel {
 				Format = "({0}%)",
-				X = (int)(700.0f * widthScale),
+				X = (int)(780.0f * widthScale),
 				Y = (int)(870.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
@@ -264,7 +264,7 @@ namespace ExtraSongUI.Settings {
 
 			NotesHitPercentage = new FormattableColorablePositionableLabel {
 				Format = "({0}%)",
-				X = (int)(700.0 * widthScale),
+				X = (int)(780.0 * widthScale),
 				Y = (int)(930.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
@@ -501,30 +501,30 @@ namespace ExtraSongUI.Settings {
 
 		public void DrawLabelWindows() {
 			if (DraggableLabelsEnabled) {
-				TimeName.DrawLabelWindow(110001);
-				SongTime.DrawLabelWindow(110002);
-				SongLength.DrawLabelWindow(110003);
-				CurrentStarProgressName.DrawLabelWindow(110004);
-				CurrentStarProgressScore.DrawLabelWindow(110005);
-				CurrentStarProgressEndScore.DrawLabelWindow(110006);
-				CurrentStarProgressPercentage.DrawLabelWindow(110007);
-				SevenStarProgressName.DrawLabelWindow(110008);
-				SevenStarProgressScore.DrawLabelWindow(110009);
-				SevenStarProgressEndScore.DrawLabelWindow(110010);
-				SevenStarProgressPercentage.DrawLabelWindow(110011);
-				NotesName.DrawLabelWindow(110012);
-				NotesHitCounter.DrawLabelWindow(110013);
-				NotesPassedCounter.DrawLabelWindow(110014);
-				TotalNotesCounter.DrawLabelWindow(110015);
-				NotesHitPercentage.DrawLabelWindow(110016);
-				NotesMissedCounter.DrawLabelWindow(110017);
-				StarPowerName.DrawLabelWindow(110018);
-				StarPowersGottenCounter.DrawLabelWindow(110019);
-				TotalStarPowersCounter.DrawLabelWindow(110020);
-				StarPowerPercentage.DrawLabelWindow(110021);
-				ComboName.DrawLabelWindow(110022);
-				CurrentComboCounter.DrawLabelWindow(110023);
-				HighestComboCounter.DrawLabelWindow(110024);
+				TimeName.DrawLabelWindow(187000002);
+				SongTime.DrawLabelWindow(187000003);
+				SongLength.DrawLabelWindow(187000004);
+				CurrentStarProgressName.DrawLabelWindow(187000005);
+				CurrentStarProgressScore.DrawLabelWindow(187000006);
+				CurrentStarProgressEndScore.DrawLabelWindow(187000007);
+				CurrentStarProgressPercentage.DrawLabelWindow(187000008);
+				SevenStarProgressName.DrawLabelWindow(187000009);
+				SevenStarProgressScore.DrawLabelWindow(187000010);
+				SevenStarProgressEndScore.DrawLabelWindow(187000011);
+				SevenStarProgressPercentage.DrawLabelWindow(187000012);
+				NotesName.DrawLabelWindow(187000013);
+				NotesHitCounter.DrawLabelWindow(187000014);
+				NotesPassedCounter.DrawLabelWindow(187000015);
+				TotalNotesCounter.DrawLabelWindow(187000016);
+				NotesHitPercentage.DrawLabelWindow(187000017);
+				NotesMissedCounter.DrawLabelWindow(187000018);
+				StarPowerName.DrawLabelWindow(187000019);
+				StarPowersGottenCounter.DrawLabelWindow(187000020);
+				TotalStarPowersCounter.DrawLabelWindow(187000021);
+				StarPowerPercentage.DrawLabelWindow(187000022);
+				ComboName.DrawLabelWindow(187000023);
+				CurrentComboCounter.DrawLabelWindow(187000024);
+				HighestComboCounter.DrawLabelWindow(187000025);
 			}
 		}
 	}

@@ -19,7 +19,7 @@ namespace Common.Settings {
 		public bool DraggableWindowsEnabled;
 
 		public void DrawLabelWindow(int id) {
-			var r = GUILayout.Window(id, new Rect(X, Y, 50.0f, 50.0f), DraggableWindow, string.Empty);
+			var r = GUILayout.Window(id, new Rect(X, Y, 20.0f, 30.0f), DraggableWindow, string.Empty);
 			X = (int)r.x;
 			Y = (int)r.y;
 		}
