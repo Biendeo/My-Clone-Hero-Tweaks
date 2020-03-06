@@ -63,7 +63,7 @@ namespace PerfectMode.Settings {
 			DisplayImage = new ColorablePositionableLabel {
 				Visible = true,
 				X = (int)(30.0f * Screen.width / 1440.0f),
-				Y = (int)(1360.0f * Screen.height / 1440.0f),
+				Y = (int)(1415.0f * Screen.height / 1440.0f),
 				Size = Screen.height * 50 / 1440,
 				Bold = true,
 				Italic = false,
@@ -74,10 +74,10 @@ namespace PerfectMode.Settings {
 			RemainingNotesLeft = new ColorablePositionableLabel {
 				Visible = true,
 				X = (int)(30.0f * Screen.width / 1440.0f),
-				Y = (int)(1310.0f * Screen.height / 1440.0f),
+				Y = (int)(1365.0f * Screen.height / 1440.0f),
 				Size = Screen.height * 40 / 1440,
 				Bold = true,
-				Italic = false,
+				Italic = true,
 				Alignment = TextAnchor.MiddleLeft,
 				Color = new ColorARGB(Color.white)
 			};
@@ -85,7 +85,7 @@ namespace PerfectMode.Settings {
 			RestartIndicator = new ColorablePositionableLabel {
 				Visible = true,
 				X = Screen.width / 2,
-				Y = (int)(1360.0f * Screen.height / 1440.0f),
+				Y = (int)(1200.0f * Screen.height / 1440.0f),
 				Size = Screen.height * 50 / 1440,
 				Bold = true,
 				Italic = false,

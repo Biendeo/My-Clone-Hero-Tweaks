@@ -84,7 +84,7 @@ namespace ExtraSongUI.Settings {
 
 			TimeName = new FormattableColorablePositionableLabel {
 				Format = "Time: ",
-				X = (int)(100.0f * widthScale),
+				X = (int)(60.0f * widthScale),
 				Y = (int)(750.0f * heightScale),
 				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -96,7 +96,7 @@ namespace ExtraSongUI.Settings {
 
 			SongTime = new FormattableColorablePositionableLabel {
 				Format = "{0} /",
-				X = (int)(400.0f * widthScale),
+				X = (int)(350.0f * widthScale),
 				Y = (int)(750.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -108,7 +108,7 @@ namespace ExtraSongUI.Settings {
 
 			SongLength = new FormattableColorablePositionableLabel {
 				Format = "{0}",
-				X = (int)(670.0f * widthScale),
+				X = (int)(620.0f * widthScale),
 				Y = (int)(750.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -120,7 +120,7 @@ namespace ExtraSongUI.Settings {
 
 			CurrentStarProgressName = new FormattableColorablePositionableLabel {
 				Format = "{0} → {1}:",
-				X = (int)(100.0f * widthScale),
+				X = (int)(60.0f * widthScale),
 				Y = (int)(810.0f * heightScale),
 				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -132,7 +132,7 @@ namespace ExtraSongUI.Settings {
 
 			CurrentStarProgressScore = new FormattableColorablePositionableLabel {
 				Format = "{0} /",
-				X = (int)(400.0f * widthScale),
+				X = (int)(350.0f * widthScale),
 				Y = (int)(810.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -144,7 +144,7 @@ namespace ExtraSongUI.Settings {
 
 			CurrentStarProgressEndScore = new FormattableColorablePositionableLabel {
 				Format = "{0}",
-				X = (int)(670.0f * widthScale),
+				X = (int)(620.0f * widthScale),
 				Y = (int)(810.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -156,7 +156,7 @@ namespace ExtraSongUI.Settings {
 
 			CurrentStarProgressPercentage = new FormattableColorablePositionableLabel {
 				Format = "({0}%)",
-				X = (int)(780.0f * widthScale),
+				X = (int)(750.0f * widthScale),
 				Y = (int)(810.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
@@ -168,7 +168,7 @@ namespace ExtraSongUI.Settings {
 
 			SevenStarProgressName = new FormattableColorablePositionableLabel {
 				Format = "0 → 7:",
-				X = (int)(100.0f * widthScale),
+				X = (int)(60.0f * widthScale),
 				Y = (int)(870.0f * heightScale),
 				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -180,7 +180,7 @@ namespace ExtraSongUI.Settings {
 
 			SevenStarProgressScore = new FormattableColorablePositionableLabel {
 				Format = "{0} /",
-				X = (int)(400.0f * widthScale),
+				X = (int)(350.0f * widthScale),
 				Y = (int)(870.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -192,7 +192,7 @@ namespace ExtraSongUI.Settings {
 
 			SevenStarProgressEndScore = new FormattableColorablePositionableLabel {
 				Format = "{0}",
-				X = (int)(670.0f * widthScale),
+				X = (int)(620.0f * widthScale),
 				Y = (int)(870.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -204,7 +204,7 @@ namespace ExtraSongUI.Settings {
 
 			SevenStarProgressPercentage = new FormattableColorablePositionableLabel {
 				Format = "({0}%)",
-				X = (int)(780.0f * widthScale),
+				X = (int)(750.0f * widthScale),
 				Y = (int)(870.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
@@ -216,9 +216,9 @@ namespace ExtraSongUI.Settings {
 
 			NotesName = new FormattableColorablePositionableLabel {
 				Format = "Notes:",
-				X = (int)(100.0f * widthScale),
+				X = (int)(60.0f * widthScale),
 				Y = (int)(930.0f * heightScale),
-				Size = largeFontSize,
+				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
 				Bold = true,
 				Italic = false,
@@ -228,7 +228,7 @@ namespace ExtraSongUI.Settings {
 
 			NotesHitCounter = new FormattableColorablePositionableLabel {
 				Format = "{0} /",
-				X = (int)(330.0f * widthScale),
+				X = (int)(280.0f * widthScale),
 				Y = (int)(930.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -240,7 +240,7 @@ namespace ExtraSongUI.Settings {
 
 			NotesPassedCounter = new FormattableColorablePositionableLabel {
 				Format = "{0} /",
-				X = (int)(530.0f * widthScale),
+				X = (int)(470.0f * widthScale),
 				Y = (int)(930.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -252,7 +252,7 @@ namespace ExtraSongUI.Settings {
 
 			TotalNotesCounter = new FormattableColorablePositionableLabel {
 				Format = "{0}",
-				X = (int)(680.0f * widthScale),
+				X = (int)(640.0f * widthScale),
 				Y = (int)(930.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -264,7 +264,7 @@ namespace ExtraSongUI.Settings {
 
 			NotesHitPercentage = new FormattableColorablePositionableLabel {
 				Format = "({0}%)",
-				X = (int)(780.0 * widthScale),
+				X = (int)(750.0f * widthScale),
 				Y = (int)(930.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
@@ -276,8 +276,8 @@ namespace ExtraSongUI.Settings {
 
 			NotesMissedCounter = new FormattableColorablePositionableLabel {
 				Format = "{0}",
-				X = (int)(780.0f * widthScale),
-				Y = (int)(1070.0f * heightScale),
+				X = (int)(750.0f * widthScale),
+				Y = (int)(1100.0f * heightScale),
 				Size = extraLargeFontSize,
 				Alignment = TextAnchor.MiddleRight,
 				Bold = true,
@@ -288,7 +288,7 @@ namespace ExtraSongUI.Settings {
 
 			StarPowerName = new FormattableColorablePositionableLabel {
 				Format = "SP:",
-				X = (int)(100.0f * widthScale),
+				X = (int)(60.0f * widthScale),
 				Y = (int)(990.0f * heightScale),
 				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -300,7 +300,7 @@ namespace ExtraSongUI.Settings {
 
 			StarPowersGottenCounter = new FormattableColorablePositionableLabel {
 				Format = "{0} /",
-				X = (int)(330.0f * widthScale),
+				X = (int)(280.0f * widthScale),
 				Y = (int)(990.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -312,7 +312,7 @@ namespace ExtraSongUI.Settings {
 
 			TotalStarPowersCounter = new FormattableColorablePositionableLabel {
 				Format = "{0}",
-				X = (int)(510.0f * widthScale),
+				X = (int)(430.0f * widthScale),
 				Y = (int)(990.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -324,7 +324,7 @@ namespace ExtraSongUI.Settings {
 
 			StarPowerPercentage = new FormattableColorablePositionableLabel {
 				Format = "({0}%)",
-				X = (int)(700.0f * widthScale),
+				X = (int)(750.0f * widthScale),
 				Y = (int)(990.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
@@ -336,7 +336,7 @@ namespace ExtraSongUI.Settings {
 
 			ComboName = new FormattableColorablePositionableLabel {
 				Format = "Combo:",
-				X = (int)(100.0f * widthScale),
+				X = (int)(60.0f * widthScale),
 				Y = (int)(1050.0f * heightScale),
 				Size = smallFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -348,7 +348,7 @@ namespace ExtraSongUI.Settings {
 
 			CurrentComboCounter = new FormattableColorablePositionableLabel {
 				Format = "{0} /",
-				X = (int)(330.0f * widthScale),
+				X = (int)(280.0f * widthScale),
 				Y = (int)(1050.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
@@ -360,7 +360,7 @@ namespace ExtraSongUI.Settings {
 
 			HighestComboCounter = new FormattableColorablePositionableLabel {
 				Format = "{0}",
-				X = (int)(510.0f * widthScale),
+				X = (int)(430.0f * widthScale),
 				Y = (int)(1050.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
