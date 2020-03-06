@@ -510,7 +510,7 @@ namespace ExtraSongUI {
 			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressName;
-				settingsCurrentlyEditingName = "Current Star Progress Name Label";
+				settingsCurrentlyEditingName = "Current Star Name Label";
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			if (GUILayout.Button("Current Score", settingsButtonStyle)) {
@@ -528,7 +528,7 @@ namespace ExtraSongUI {
 			if (GUILayout.Button("Percentage", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.CurrentStarProgressPercentage;
-				settingsCurrentlyEditingName = "Current Star Progress Percentage";
+				settingsCurrentlyEditingName = "Current Star Percentage";
 				settingsCurrentBack = OnWindowCurrentStar;
 			}
 			GUILayout.Space(50.0f);
@@ -551,7 +551,7 @@ namespace ExtraSongUI {
 			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressName;
-				settingsCurrentlyEditingName = "Seven Star Progress Name Label";
+				settingsCurrentlyEditingName = "Seven Star Name Label";
 				settingsCurrentBack = OnWindowSevenStar;
 			}
 			if (GUILayout.Button("Current Score", settingsButtonStyle)) {
@@ -569,7 +569,7 @@ namespace ExtraSongUI {
 			if (GUILayout.Button("Percentage", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SevenStarProgressPercentage;
-				settingsCurrentlyEditingName = "Seven Star Progress Percentage";
+				settingsCurrentlyEditingName = "Seven Star Percentage";
 				settingsCurrentBack = OnWindowSevenStar;
 			}
 			GUILayout.Space(50.0f);
