@@ -270,6 +270,10 @@ namespace Common.Wrappers {
 		[WrapperField("\u0318\u030E\u0310\u0315\u0313\u0318\u031C\u0318\u030E\u0313\u031A")]
 		private static readonly FieldInfo isInPracticeModeField;
 
+		public string cachePath => (string)cachePathField.GetValue(globalVariables);
+		[WrapperField("\u0315\u0312\u0315\u0314\u0319\u0316\u0312\u030D\u030D\u031A\u030E")]
+		private static readonly FieldInfo cachePathField;
+
 		#endregion
 
 		#region Methods

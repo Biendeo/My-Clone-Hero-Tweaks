@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperConstructor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\BasePlayerWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\CacheWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\CHPlayerWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\FadeBehaviourWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\FrameRateWrapper.cs" />
@@ -37,6 +38,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\PracticeUIWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\ScoreManagerWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SoloCounterWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SongDirectoryWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SongEntryWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SongSelectWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SongScanWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SongWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\StarPowerWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\StarProgressWrapper.cs" />

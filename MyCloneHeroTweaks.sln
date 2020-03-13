@@ -18,11 +18,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncSongScan", "AsyncSongScan\AsyncSongScan.csproj", "{706A2C43-585E-4FE2-834F-AEAEA234735C}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{1b27bfcc-1305-439e-b304-9f215b75cb16}*SharedItemsImports = 4
 		Common\Common.projitems*{55140311-41d2-477c-9dd5-2cab0c829ef7}*SharedItemsImports = 4
 		Common\Common.projitems*{6ba711cb-ed1d-49e7-b371-d06ccc215e2c}*SharedItemsImports = 4
+		Common\Common.projitems*{706a2c43-585e-4fe2-834f-aeaea234735c}*SharedItemsImports = 4
 		Common\Common.projitems*{8bc6874b-773f-4914-aadc-dee82a721796}*SharedItemsImports = 13
 		Common\Common.projitems*{90fe6b48-8612-42c6-82cc-d49a606bdcba}*SharedItemsImports = 4
 	EndGlobalSection
@@ -65,6 +68,14 @@ Global
 		{55140311-41D2-477C-9DD5-2CAB0C829EF7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55140311-41D2-477C-9DD5-2CAB0C829EF7}.Release|x64.ActiveCfg = Release|Any CPU
 		{55140311-41D2-477C-9DD5-2CAB0C829EF7}.Release|x64.Build.0 = Release|Any CPU
+		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Debug|x64.Build.0 = Debug|Any CPU
+		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Release|x64.ActiveCfg = Release|Any CPU
+		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

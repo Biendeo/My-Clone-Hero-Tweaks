@@ -10,5 +10,9 @@ namespace Common.Wrappers.Attributes {
 		public WrapperConstructor(Type[] types) {
 			Types = types;
 		}
+
+		public WrapperConstructor() {
+			Types = Array.Empty<Type>();
+		}
 	}
 }
