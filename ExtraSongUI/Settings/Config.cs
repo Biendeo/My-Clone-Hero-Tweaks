@@ -23,6 +23,7 @@ namespace ExtraSongUI.Settings {
 		public FormattableColorablePositionableLabel TimeName;
 		public FormattableColorablePositionableLabel SongTime;
 		public FormattableColorablePositionableLabel SongLength;
+		public FormattableColorablePositionableLabel SongTimePercentage;
 
 		public FormattableColorablePositionableLabel CurrentStarProgressName;
 		public FormattableColorablePositionableLabel CurrentStarProgressScore;
@@ -38,6 +39,7 @@ namespace ExtraSongUI.Settings {
 		public FormattableColorablePositionableLabel NotesHitCounter;
 		public FormattableColorablePositionableLabel NotesPassedCounter;
 		public FormattableColorablePositionableLabel TotalNotesCounter;
+		public FormattableColorablePositionableLabel SeenNotesHitPercentage;
 		public FormattableColorablePositionableLabel NotesHitPercentage;
 		public FormattableColorablePositionableLabel NotesMissedCounter;
 
@@ -45,6 +47,7 @@ namespace ExtraSongUI.Settings {
 		public FormattableColorablePositionableLabel StarPowersGottenCounter;
 		public FormattableColorablePositionableLabel TotalStarPowersCounter;
 		public FormattableColorablePositionableLabel StarPowerPercentage;
+		public FormattableColorablePositionableLabel CurrentStarPower;
 
 		public FormattableColorablePositionableLabel ComboName;
 		public FormattableColorablePositionableLabel CurrentComboCounter;
@@ -112,6 +115,18 @@ namespace ExtraSongUI.Settings {
 				Y = (int)(750.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerRight,
+				Bold = true,
+				Italic = false,
+				Visible = true,
+				Color = new ColorARGB(Color.white)
+			};
+
+			SongTimePercentage = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(750.0f * widthScale),
+				Y = (int)(750.0f * heightScale),
+				Size = largeFontSize,
+				Alignment = TextAnchor.LowerLeft,
 				Bold = true,
 				Italic = false,
 				Visible = true,
@@ -262,6 +277,18 @@ namespace ExtraSongUI.Settings {
 				Color = new ColorARGB(Color.white)
 			};
 
+			SeenNotesHitPercentage = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(750.0f * widthScale),
+				Y = (int)(930.0f * heightScale),
+				Size = largeFontSize,
+				Alignment = TextAnchor.LowerLeft,
+				Bold = true,
+				Italic = false,
+				Visible = false,
+				Color = new ColorARGB(Color.white)
+			};
+
 			NotesHitPercentage = new FormattableColorablePositionableLabel {
 				Format = "({0}%)",
 				X = (int)(750.0f * widthScale),
@@ -326,6 +353,18 @@ namespace ExtraSongUI.Settings {
 				Format = "({0}%)",
 				X = (int)(750.0f * widthScale),
 				Y = (int)(990.0f * heightScale),
+				Size = largeFontSize,
+				Alignment = TextAnchor.LowerLeft,
+				Bold = true,
+				Italic = false,
+				Visible = true,
+				Color = new ColorARGB(Color.white)
+			};
+
+			CurrentStarPower = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(1825.0f * widthScale),
+				Y = (int)(1125.0f * heightScale),
 				Size = largeFontSize,
 				Alignment = TextAnchor.LowerLeft,
 				Bold = true,
@@ -450,6 +489,42 @@ namespace ExtraSongUI.Settings {
 			ComboName = NewLabelFromOld(oldConfig.ComboName);
 			CurrentComboCounter = NewLabelFromOld(oldConfig.CurrentComboCounter);
 			HighestComboCounter = NewLabelFromOld(oldConfig.HighestComboCounter);
+
+			SongTimePercentage = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(750.0f * widthScale),
+				Y = (int)(750.0f * heightScale),
+				Size = largeFontSize,
+				Alignment = TextAnchor.LowerLeft,
+				Bold = true,
+				Italic = false,
+				Visible = true,
+				Color = new ColorARGB(Color.white)
+			};
+
+			SeenNotesHitPercentage = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(750.0f * widthScale),
+				Y = (int)(930.0f * heightScale),
+				Size = largeFontSize,
+				Alignment = TextAnchor.LowerLeft,
+				Bold = true,
+				Italic = false,
+				Visible = false,
+				Color = new ColorARGB(Color.white)
+			};
+
+			CurrentStarPower = new FormattableColorablePositionableLabel {
+				Format = "({0}%)",
+				X = (int)(1825.0f * widthScale),
+				Y = (int)(1125.0f * heightScale),
+				Size = largeFontSize,
+				Alignment = TextAnchor.LowerLeft,
+				Bold = true,
+				Italic = false,
+				Visible = true,
+				Color = new ColorARGB(Color.white)
+			};
 		}
 
 		public static Config LoadConfig() {
@@ -525,6 +600,9 @@ namespace ExtraSongUI.Settings {
 				ComboName.DrawLabelWindow(187000023);
 				CurrentComboCounter.DrawLabelWindow(187000024);
 				HighestComboCounter.DrawLabelWindow(187000025);
+				SongTimePercentage.DrawLabelWindow(187000026);
+				SeenNotesHitPercentage.DrawLabelWindow(187000027);
+				CurrentStarPower.DrawLabelWindow(187000028);
 			}
 		}
 	}

@@ -52,6 +52,7 @@ namespace ExtraSongUI {
 
 		private string formattedSongTime;
 		private string formattedSongLength;
+		private double songTimePercentage;
 
 		private int currentStarCount;
 		private int currentScore;
@@ -65,10 +66,12 @@ namespace ExtraSongUI {
 		private int missedNotes;
 		private int seenNotes;
 		private double hitNotesPercentage;
+		private double seenNotesPercentage;
 		private string fcIndicator;
 
 		private int starPowersGotten;
 		private double starPowerPercentage;
+		private double currentStarPower;
 
 		private int currentCombo;
 		private int highestCombo;
@@ -78,6 +81,7 @@ namespace ExtraSongUI {
 		private GameObject TimeNameLabel;
 		private GameObject SongTimeLabel;
 		private GameObject SongLengthLabel;
+		private GameObject SongTimePercentageLabel;
 
 		private GameObject CurrentStarProgressNameLabel;
 		private GameObject CurrentStarProgressScoreLabel;
@@ -93,6 +97,7 @@ namespace ExtraSongUI {
 		private GameObject NotesHitCounterLabel;
 		private GameObject NotesPassedCounterLabel;
 		private GameObject TotalNotesCounterLabel;
+		private GameObject SeenNotesHitPercentageLabel;
 		private GameObject NotesHitPercentageLabel;
 		private GameObject NotesMissedCounterLabel;
 
@@ -100,6 +105,7 @@ namespace ExtraSongUI {
 		private GameObject StarPowersGottenCounterLabel;
 		private GameObject TotalStarPowersCounterLabel;
 		private GameObject StarPowerPercentageLabel;
+		private GameObject CurrentStarPowerLabel;
 
 		private GameObject ComboNameLabel;
 		private GameObject CurrentComboCounterLabel;
@@ -122,6 +128,7 @@ namespace ExtraSongUI {
 			if (TimeNameLabel != null) Destroy(TimeNameLabel);
 			if (SongTimeLabel != null) Destroy(SongTimeLabel);
 			if (SongLengthLabel != null) Destroy(SongLengthLabel);
+			if (SongTimePercentageLabel != null) Destroy(SongTimePercentageLabel);
 
 			if (CurrentStarProgressNameLabel != null) Destroy(CurrentStarProgressNameLabel);
 			if (CurrentStarProgressScoreLabel != null) Destroy(CurrentStarProgressScoreLabel);
@@ -137,6 +144,7 @@ namespace ExtraSongUI {
 			if (NotesHitCounterLabel != null) Destroy(NotesHitCounterLabel);
 			if (NotesPassedCounterLabel != null) Destroy(NotesPassedCounterLabel);
 			if (TotalNotesCounterLabel != null) Destroy(TotalNotesCounterLabel);
+			if (SeenNotesHitPercentageLabel != null) Destroy(SeenNotesHitPercentageLabel);
 			if (NotesHitPercentageLabel != null) Destroy(NotesHitPercentageLabel);
 			if (NotesMissedCounterLabel != null) Destroy(NotesMissedCounterLabel);
 
@@ -144,6 +152,7 @@ namespace ExtraSongUI {
 			if (StarPowersGottenCounterLabel != null) Destroy(StarPowersGottenCounterLabel);
 			if (TotalStarPowersCounterLabel != null) Destroy(TotalStarPowersCounterLabel);
 			if (StarPowerPercentageLabel != null) Destroy(StarPowerPercentageLabel);
+			if (CurrentStarPowerLabel != null) Destroy(CurrentStarPowerLabel);
 
 			if (ComboNameLabel != null) Destroy(ComboNameLabel);
 			if (CurrentComboCounterLabel != null) Destroy(CurrentComboCounterLabel);
@@ -152,6 +161,7 @@ namespace ExtraSongUI {
 			TimeNameLabel = null;
 			SongTimeLabel = null;
 			SongLengthLabel = null;
+			SongTimePercentageLabel = null;
 
 			CurrentStarProgressNameLabel = null;
 			CurrentStarProgressScoreLabel = null;
@@ -167,6 +177,7 @@ namespace ExtraSongUI {
 			NotesHitCounterLabel = null;
 			NotesPassedCounterLabel = null;
 			TotalNotesCounterLabel = null;
+			SeenNotesHitPercentageLabel = null;
 			NotesHitPercentageLabel = null;
 			NotesMissedCounterLabel = null;
 
@@ -174,6 +185,7 @@ namespace ExtraSongUI {
 			StarPowersGottenCounterLabel = null;
 			TotalStarPowersCounterLabel = null;
 			StarPowerPercentageLabel = null;
+			CurrentStarPowerLabel = null;
 
 			ComboNameLabel = null;
 			CurrentComboCounterLabel = null;
@@ -235,6 +247,7 @@ namespace ExtraSongUI {
 					TimeNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Time Name Label", uiFont);
 					SongTimeLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Time Label", uiFont);
 					SongLengthLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Length Label", uiFont);
+					SongTimePercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Time Percentage Label", uiFont);
 
 					CurrentStarProgressNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Star Progress Name Label", uiFont);
 					CurrentStarProgressScoreLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Star Progress Score Label", uiFont);
@@ -250,15 +263,17 @@ namespace ExtraSongUI {
 					NotesHitCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Notes Hit Counter Label", uiFont);
 					NotesPassedCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Notes Passed Counter Label", uiFont);
 					TotalNotesCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Total Notes Counter Label", uiFont);
+					SeenNotesHitPercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Seen Notes Hit Percentage Label", uiFont);
 					NotesHitPercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Notes Hit Percentage Label", uiFont);
 					NotesMissedCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Notes Missed Counter Label", uiFont);
 
-					StarPowerNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Length Label", uiFont);
-					StarPowersGottenCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Length Label", uiFont);
-					TotalStarPowersCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Length Label", uiFont);
-					StarPowerPercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Length Label", uiFont);
+					StarPowerNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Star Power Name Label", uiFont);
+					StarPowersGottenCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Star Powers Gotten Counter Label", uiFont);
+					TotalStarPowersCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Total Star Powers Counter Label", uiFont);
+					StarPowerPercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Star Power Percentage Label", uiFont);
+					CurrentStarPowerLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Star Power Label", uiFont);
 
-					ComboNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Star Power Name Label", uiFont);
+					ComboNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Combo Name Label", uiFont);
 					CurrentComboCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Combo Counter Label", uiFont);
 					HighestComboCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Highest Combo Counter Label", uiFont);
 				} else {
@@ -269,15 +284,16 @@ namespace ExtraSongUI {
 				// Song length
 				formattedSongTime = string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime));
 				formattedSongLength = string.Format(config.SongLength.Format, DoubleToTimeString(gameManager.SongLength));
+				songTimePercentage = Math.Max(Math.Min(gameManager.SongTime * 100.0 / gameManager.SongLength, 100.0), 0.0);
 
 				// Star progress
 				currentStarCount = starProgress.CurrentStar;
-				currentScore = starProgress.LastScore; //TODO: Migrate to ScoreManager 'cause this stops after a while.
+				currentScore = Math.Min(starProgress.LastScore, starProgress.StarScores[6]); //TODO: Migrate to ScoreManager 'cause this stops incremented after you reach 7-star.
 				previousStarScore = starProgress.CurrentStar == 0 ? 0 : starProgress.StarScores[starProgress.CurrentStar - 1];
 				nextStarScore = starProgress.StarScores[starProgress.CurrentStar];
 				nextStarPercentage = starProgress.CurrentStar < 7 ? (currentScore - previousStarScore) * 100.0 / (nextStarScore - previousStarScore) : 100.0;
 				sevenStarScore = starProgress.StarScores[6];
-				sevenStarPercentage = currentScore * 100.0 / sevenStarScore;
+				sevenStarPercentage = Math.Min(currentScore * 100.0 / sevenStarScore, 100.0);
 
 				// Note count
 				while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
@@ -289,11 +305,13 @@ namespace ExtraSongUI {
 					++currentNoteIndex;
 				}
 				seenNotes = hitNotes + missedNotes;
-				hitNotesPercentage = hitNotes * 100.0 / totalNoteCount;
+				hitNotesPercentage = totalNoteCount == 0 ? 100.0 : hitNotes * 100.0 / totalNoteCount;
+				seenNotesPercentage = seenNotes == 0 ? 100.0 : hitNotes * 100.0 / seenNotes;
 				fcIndicator = seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes}";
 
 				starPowersGotten = basePlayers[0].StarPowersHit;
-				starPowerPercentage = starPowersGotten * 100.0 / totalStarPowers;
+				starPowerPercentage = totalStarPowers == 0 ? 100.0 : starPowersGotten * 100.0 / totalStarPowers;
+				currentStarPower = basePlayers[0].spBar.someFloat * 100.0;
 
 				currentCombo = basePlayers[0].Combo;
 				highestCombo = basePlayers[0].HighestCombo;
@@ -301,6 +319,7 @@ namespace ExtraSongUI {
 				UpdateGameplayLabel(TimeNameLabel, config.TimeName, config.TimeName.Format);
 				UpdateGameplayLabel(SongTimeLabel, config.SongTime, formattedSongTime);
 				UpdateGameplayLabel(SongLengthLabel, config.SongLength, formattedSongLength);
+				UpdateGameplayLabel(SongTimePercentageLabel, config.SongTimePercentage, string.Format(config.SongTimePercentage.Format, songTimePercentage.ToString("0.00")));
 
 				UpdateGameplayLabel(CurrentStarProgressNameLabel, config.CurrentStarProgressName, string.Format(config.CurrentStarProgressName.Format, currentStarCount, Math.Min(7, currentStarCount + 1)));
 				UpdateGameplayLabel(CurrentStarProgressScoreLabel, config.CurrentStarProgressScore, string.Format(config.CurrentStarProgressScore.Format, currentScore - previousStarScore));
@@ -316,6 +335,7 @@ namespace ExtraSongUI {
 				UpdateGameplayLabel(NotesHitCounterLabel, config.NotesHitCounter, string.Format(config.NotesHitCounter.Format, hitNotes));
 				UpdateGameplayLabel(NotesPassedCounterLabel, config.NotesPassedCounter, string.Format(config.NotesPassedCounter.Format, seenNotes));
 				UpdateGameplayLabel(TotalNotesCounterLabel, config.TotalNotesCounter, string.Format(config.TotalNotesCounter.Format, totalNoteCount));
+				UpdateGameplayLabel(SeenNotesHitPercentageLabel, config.SeenNotesHitPercentage, string.Format(config.SeenNotesHitPercentage.Format, seenNotesPercentage.ToString("0.00")));
 				UpdateGameplayLabel(NotesHitPercentageLabel, config.NotesHitPercentage, string.Format(config.NotesHitPercentage.Format, hitNotesPercentage.ToString("0.00")));
 				UpdateGameplayLabel(NotesMissedCounterLabel, config.NotesMissedCounter, string.Format(config.NotesMissedCounter.Format, fcIndicator));
 
@@ -323,6 +343,7 @@ namespace ExtraSongUI {
 				UpdateGameplayLabel(StarPowersGottenCounterLabel, config.StarPowersGottenCounter, string.Format(config.StarPowersGottenCounter.Format, starPowersGotten));
 				UpdateGameplayLabel(TotalStarPowersCounterLabel, config.TotalStarPowersCounter, string.Format(config.TotalStarPowersCounter.Format, totalStarPowers));
 				UpdateGameplayLabel(StarPowerPercentageLabel, config.StarPowerPercentage, string.Format(config.StarPowerPercentage.Format, starPowerPercentage.ToString("0.00")));
+				UpdateGameplayLabel(CurrentStarPowerLabel, config.CurrentStarPower, string.Format(config.CurrentStarPower.Format, currentStarPower.ToString("0.00")));
 
 				UpdateGameplayLabel(ComboNameLabel, config.ComboName, config.ComboName.Format);
 				UpdateGameplayLabel(CurrentComboCounterLabel, config.CurrentComboCounter, string.Format(config.CurrentComboCounter.Format, currentCombo));
@@ -428,6 +449,7 @@ namespace ExtraSongUI {
 			config.TimeName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.SongTime.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.SongLength.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.SongTimePercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.CurrentStarProgressName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.CurrentStarProgressScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.CurrentStarProgressEndScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
@@ -440,12 +462,14 @@ namespace ExtraSongUI {
 			config.NotesHitCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.NotesPassedCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.TotalNotesCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.SeenNotesHitPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.NotesHitPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.NotesMissedCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.StarPowerName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.StarPowersGottenCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.TotalStarPowersCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.StarPowerPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+			config.CurrentStarPower.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.ComboName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.CurrentComboCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
 			config.HighestComboCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
@@ -488,6 +512,12 @@ namespace ExtraSongUI {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.SongLength;
 				settingsCurrentlyEditingName = "Song Length";
+				settingsCurrentBack = OnWindowTime;
+			}
+			if (GUILayout.Button("Song Time Percentage", settingsButtonStyle)) {
+				settingsOnWindow = OnWindowEdit;
+				settingsCurrentlyEditing = config.SongTimePercentage;
+				settingsCurrentlyEditingName = "Song Time Percentage";
 				settingsCurrentBack = OnWindowTime;
 			}
 			GUILayout.Space(50.0f);
@@ -615,8 +645,14 @@ namespace ExtraSongUI {
 			}
 			if (GUILayout.Button("Hit Percentage", settingsButtonStyle)) {
 				settingsOnWindow = OnWindowEdit;
+				settingsCurrentlyEditing = config.SeenNotesHitPercentage;
+				settingsCurrentlyEditingName = "Seen Notes Hit Percentage";
+				settingsCurrentBack = OnWindowNotes;
+			}
+			if (GUILayout.Button("Total Percentage", settingsButtonStyle)) {
+				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.NotesHitPercentage;
-				settingsCurrentlyEditingName = "Notes Hit Percentage";
+				settingsCurrentlyEditingName = "Total Notes Hit Percentage";
 				settingsCurrentBack = OnWindowNotes;
 			}
 			if (GUILayout.Button("Missed Counter", settingsButtonStyle)) {
@@ -664,6 +700,12 @@ namespace ExtraSongUI {
 				settingsOnWindow = OnWindowEdit;
 				settingsCurrentlyEditing = config.StarPowerPercentage;
 				settingsCurrentlyEditingName = "Star Powers Hit Percentage";
+				settingsCurrentBack = OnWindowStarPower;
+			}
+			if (GUILayout.Button("Current SP", settingsButtonStyle)) {
+				settingsOnWindow = OnWindowEdit;
+				settingsCurrentlyEditing = config.CurrentStarPower;
+				settingsCurrentlyEditingName = "Current SP Percentage";
 				settingsCurrentBack = OnWindowStarPower;
 			}
 			GUILayout.Space(50.0f);

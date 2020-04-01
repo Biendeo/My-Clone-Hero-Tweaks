@@ -110,6 +110,10 @@ namespace Common.Wrappers {
 		[WrapperField("\u0315\u031B\u030E\u0319\u0310\u030E\u030F\u031B\u031A\u030E\u030F")]
 		private static readonly FieldInfo soloCounterField;
 
+		public SPBarWrapper spBar => new SPBarWrapper((SPBar)spBarField.GetValue(basePlayer));
+		[WrapperField("spBar")]
+		private static readonly FieldInfo spBarField;
+
 		public BasePlayerWrapper(BasePlayer basePlayer) {
 			this.basePlayer = basePlayer;
 		}
