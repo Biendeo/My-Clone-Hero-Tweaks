@@ -49,6 +49,10 @@ namespace Common.Wrappers {
 		[WrapperField("\u031C\u0317\u030F\u030E\u030D\u030F\u031C\u0318\u031C\u0318\u0315")]
 		private static readonly FieldInfo customSongExportField;
 
+		public string buildVersion => (string)buildVersionField.GetValue(globalVariables);
+		[WrapperField("\u030E\u030E\u0313\u030D\u0319\u031A\u030E\u0319\u0314\u0318\u031C")]
+		private static readonly FieldInfo buildVersionField;
+
 		public string[] languages => (string[])languagesField.GetValue(globalVariables);
 		[WrapperField("\u0312\u0319\u0318\u0315\u031A\u031A\u0310\u030D\u0313\u0318\u031A")]
 		private static readonly FieldInfo languagesField;

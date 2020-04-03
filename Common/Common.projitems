@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Settings\KeyBind.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\ColorablePositionableLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\PositionableLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VersionCheck.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\Wrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrappers\Attributes\WrapperMethod.cs" />

@@ -1,5 +1,6 @@
 ﻿using AccuracyIndicator.Components;
 using AccuracyIndicator.Settings;
+using Common;
 using Common.Wrappers;
 using System;
 using System.Collections.Generic;
@@ -61,8 +62,11 @@ namespace AccuracyIndicator {
 		private GameObject accuracyMessageLabel;
 		private GameObject averageAccuracyLabel;
 
+		private readonly VersionCheck VersionCheck;
+
 		public AccuracyIndicator() {
 			lastSongTime = -5.0;
+			VersionCheck = new VersionCheck(187002999);
 		}
 
 		#region Unity Methods
@@ -366,6 +370,10 @@ namespace AccuracyIndicator {
 					InstantiateEndOfSongLabels();
 				}
 			}
+			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
+				string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
+				VersionCheck.CheckVersion(detectedVersion);
+			}
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
 				//! In practice mode, the song time is set to 1.5s before the section or A/B. If it is looping, it is
 				//! initially set to 0, then to the appropriate time. As long as the user isn't on less than 10FPS, this should work.
@@ -405,6 +413,9 @@ namespace AccuracyIndicator {
 				var outputRect = GUILayout.Window(187002001, new Rect(config.ConfigX, config.ConfigY, 320.0f, 500.0f), OnWindow, new GUIContent("Accuracy Indicator Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
+			}
+			if (VersionCheck.IsShowingUpdateWindow) {
+				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
 		}
 

@@ -1,4 +1,5 @@
-﻿using Common.Wrappers;
+﻿using Common;
+using Common.Wrappers;
 using PerfectMode.Settings;
 using System;
 using System.Collections.Generic;
@@ -46,9 +47,11 @@ namespace PerfectMode {
 		private GameObject remainingNotesLeftLabel;
 		private GameObject restartIndicatorLabel;
 
+		private readonly VersionCheck VersionCheck;
 
 		public PerfectMode() {
 			settingsScrollPosition = new Vector2();
+			VersionCheck = new VersionCheck(187001999);
 		}
 
 		#region Unity Methods
@@ -127,6 +130,10 @@ namespace PerfectMode {
 				} else {
 					DestroyAndNullGameplayLabels();
 				}
+			}
+			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
+				string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
+				VersionCheck.CheckVersion(detectedVersion);
 			}
 			if (config.Enabled && SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null) {
 				target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
@@ -218,6 +225,9 @@ namespace PerfectMode {
 				var outputRect = GUILayout.Window(187001001, new Rect(config.ConfigX, config.ConfigY, 320.0f, 500.0f), OnWindow, new GUIContent("Perfect Mode Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
+			}
+			if (VersionCheck.IsShowingUpdateWindow) {
+				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
 		}
 

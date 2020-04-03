@@ -1,4 +1,5 @@
-﻿using Common.Settings;
+﻿using Common;
+using Common.Settings;
 using Common.Wrappers;
 using ExtraSongUI.Settings;
 using System;
@@ -111,8 +112,11 @@ namespace ExtraSongUI {
 		private GameObject CurrentComboCounterLabel;
 		private GameObject HighestComboCounterLabel;
 
+		private readonly VersionCheck VersionCheck;
+
 		public SongUI() {
 			settingsOnWindow = OnWindowHead;
+			VersionCheck = new VersionCheck(187000999);
 		}
 
 		#region Unity Methods
@@ -280,6 +284,10 @@ namespace ExtraSongUI {
 					DestroyAndNullGameplayLabels();
 				}
 			}
+			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
+				string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
+				VersionCheck.CheckVersion(detectedVersion);
+			}
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
 				// Song length
 				formattedSongTime = string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime));
@@ -373,6 +381,9 @@ namespace ExtraSongUI {
 				var outputRect = GUILayout.Window(187000001, new Rect(config.ConfigX, config.ConfigY, 320.0f, 807.0f), settingsOnWindow, new GUIContent("Extra Song UI Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
+			}
+			if (VersionCheck.IsShowingUpdateWindow) {
+				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
 		}
 
