@@ -31,14 +31,18 @@ namespace Common {
 		}
 
 		public void CheckVersion(string intendedVersion) {
-			using (var wc = new WebClient()) {
-				string versionsText = wc.DownloadString("https://raw.githubusercontent.com/Biendeo/My-Clone-Hero-Tweaks/master/versions.txt");
-				var versions = versionsText.Split('\n').Select(l => l.Split('='));
-				latestVersion = versions.Single(l => l[0] == intendedVersion)[1];
+			try {
+				using (var wc = new WebClient()) {
+					string versionsText = wc.DownloadString("https://raw.githubusercontent.com/Biendeo/My-Clone-Hero-Tweaks/master/versions.txt");
+					var versions = versionsText.Split('\n').Select(l => l.Split('='));
+					latestVersion = versions.Single(l => l[0] == intendedVersion)[1];
 
-				HasVersionBeenChecked = true;
-				IsShowingUpdateWindow = latestVersion != string.Join(".", FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion.Split('.').Take(3));
+					IsShowingUpdateWindow = latestVersion != string.Join(".", FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion.Split('.').Take(3));
+				}
+			} catch (WebException) {
+				// Any WebException could cause an error; since it's not really too vital for the tweak, it's simpler to just not prompt for an update.
 			}
+			HasVersionBeenChecked = true;
 		}
 
 		public void DrawUpdateWindow(GUIStyle windowStyle, GUIStyle labelStyle, GUIStyle buttonStyle) {
