@@ -4,6 +4,7 @@ using Common;
 using Common.Wrappers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -63,10 +64,12 @@ namespace AccuracyIndicator {
 		private GameObject averageAccuracyLabel;
 
 		private readonly VersionCheck VersionCheck;
+		private Rect ChangelogRect;
 
 		public AccuracyIndicator() {
 			lastSongTime = -5.0;
 			VersionCheck = new VersionCheck(187002999);
+			ChangelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
@@ -107,14 +110,6 @@ namespace AccuracyIndicator {
 
 		private void InstantiateEndOfSongLabels() {
 			Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
-
-			//HACK: This shouldn't be the final solution but if anyone notices it happening, please report it.
-			if (noteHits.Any(n => n > 0.2f)) {
-				Debug.LogError($"Accuracy Indicator was computing how many notes you hit in each category, but {noteHits.Count(n => n > 0.2f)} notes were above 0.2s? That must mean they were in ms. For now, those values will be manually corrected.");
-				foreach (int i in Enumerable.Range(0, noteHits.Count)) {
-					if (noteHits[i] > 0.2f) noteHits[i] /= 1000.0f;
-				}
-			}
 
 			foreach (var x in Enumerable.Range(0, 9)) {
 				var gameObjects = new GameObject[3];
@@ -222,7 +217,7 @@ namespace AccuracyIndicator {
 					} else if (lastNoteHitTime < lastNoteActualTime) {
 						lastNoteHitDifference = (float)(lastNoteHitTime - lastNoteActualTime);
 					} else {
-						Debug.LogError($"Panic?");
+						UnityEngine.Debug.LogError($"Panic?");
 					}
 					noteHits.Add(lastNoteHitDifference);
 					if (hitNotes == 0) {
@@ -371,8 +366,12 @@ namespace AccuracyIndicator {
 				}
 			}
 			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
-				string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-				VersionCheck.CheckVersion(detectedVersion);
+				if (config.SilenceUpdates) {
+					VersionCheck.HasVersionBeenChecked = true;
+				} else {
+					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
+					VersionCheck.CheckVersion(detectedVersion);
+				}
 			}
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
 				//! In practice mode, the song time is set to 1.5s before the section or A/B. If it is looping, it is
@@ -417,6 +416,9 @@ namespace AccuracyIndicator {
 			if (VersionCheck.IsShowingUpdateWindow) {
 				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
+			if (config.TweakVersion != FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion && !config.SeenChangelog) {
+				ChangelogRect = GUILayout.Window(187002998, ChangelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
+			}
 		}
 
 		#endregion
@@ -457,6 +459,46 @@ namespace AccuracyIndicator {
 			GUILayout.Label("Tweak by Biendeo");
 			GUILayout.Label("Thankyou for using this!");
 			GUILayout.EndScrollView();
+			GUI.DragWindow();
+		}
+
+		private void OnChangelogWindow(int id) {
+			var largeLabelStyle = new GUIStyle(settingsLabelStyle) {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				},
+				wordWrap = false
+			};
+			var smallLabelStyle = new GUIStyle(settingsLabelStyle) {
+				fontSize = 14,
+				alignment = TextAnchor.UpperLeft,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				},
+				wordWrap = true
+			};
+			GUILayout.Label("Thankyou for downloading Accuracy Indicator!", largeLabelStyle);
+			GUILayout.Label("When you enter gameplay, you should see the accuracy indicator appear each time you hit a note. You can press F7 to enable/disable this feature.", smallLabelStyle);
+			GUILayout.Label("Press Ctrl + Shift + F7 to enable/disable the config window.", smallLabelStyle);
+			GUILayout.Label("The config window lets you change things such as the keys to enable/disable the mode, the leniency of the different accuracy ratings, and the layout of the UI.", smallLabelStyle);
+			GUILayout.Label("Please make sure to press the \"Save Config\" button at the bottom of the config window so that your settings are saved for the next time you run Clone Hero.", smallLabelStyle);
+			GUILayout.Label("Please refer to the README.md on the Github for more details or to submit bugs/new features.", smallLabelStyle);
+
+			GUILayout.Space(15.0f);
+
+			GUILayout.Label("Changelog", largeLabelStyle);
+			GUILayout.Label("This changelog will now appear if you ever change this tweak's version! This should help new users know how to use this tweak, and tell you about any changes for more regular users.", smallLabelStyle);
+			GUILayout.Label("If there's a new version available, a window will prompt, just like this changelog, telling you to download it. This is also based on the version of CH you're running, so when v0.24 comes out, you won't be spammed on v0.23.2.2.", smallLabelStyle);
+			GUILayout.Label("The config window will now always try and show your mouse when you open it. One limitation is that if you try to open the configs for multiple tweaks, your mouse state may be hidden when you close some of them. In this case, just close and reopen the config window for the relative tweaks.", smallLabelStyle);
+
+			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
+				config.SeenChangelog = true;
+				config.TweakVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+				config.SaveConfig();
+			}
 			GUI.DragWindow();
 		}
 	}

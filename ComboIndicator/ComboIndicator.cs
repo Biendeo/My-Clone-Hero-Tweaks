@@ -1,7 +1,9 @@
-﻿using Common;
+﻿using ComboIndicator.Settings;
+using Common;
 using Common.Wrappers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +28,8 @@ namespace ComboIndicator {
 
 		private int lastCombo;
 
+		private Config config;
+
 		private GUIStyle settingsWindowStyle;
 		private GUIStyle settingsToggleStyle;
 		private GUIStyle settingsButtonStyle;
@@ -37,20 +41,24 @@ namespace ComboIndicator {
 		private GUIStyle settingsHorizontalSliderThumbStyle;
 
 		private readonly VersionCheck VersionCheck;
+		private Rect ChangelogRect;
 
 		public ComboIndicator() {
 			VersionCheck = new VersionCheck(187003999);
+			ChangelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
 
 		void Start() {
+			config = Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 			};
 		}
 
 		void LateUpdate() {
+			config = Config.LoadConfig();
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
 				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
@@ -64,8 +72,12 @@ namespace ComboIndicator {
 				}
 			}
 			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
-				string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-				VersionCheck.CheckVersion(detectedVersion);
+				if (config.SilenceUpdates) {
+					VersionCheck.HasVersionBeenChecked = true;
+				} else {
+					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
+					VersionCheck.CheckVersion(detectedVersion);
+				}
 			}
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && scoreManager != null) {
 				int currentCombo = scoreManager.OverallCombo;
@@ -101,6 +113,47 @@ namespace ComboIndicator {
 			if (VersionCheck.IsShowingUpdateWindow) {
 				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
+			if (config.TweakVersion != FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion && !config.SeenChangelog) {
+				ChangelogRect = GUILayout.Window(187001998, ChangelogRect, OnChangelogWindow, new GUIContent($"Combo Indicator Changelog"), settingsWindowStyle);
+			}
+		}
+
+		private void OnChangelogWindow(int id) {
+			var largeLabelStyle = new GUIStyle(settingsLabelStyle) {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				},
+				wordWrap = false
+			};
+			var smallLabelStyle = new GUIStyle(settingsLabelStyle) {
+				fontSize = 14,
+				alignment = TextAnchor.UpperLeft,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				},
+				wordWrap = true
+			};
+			GUILayout.Label("Thankyou for downloading Combo Indicator!", largeLabelStyle);
+			GUILayout.Label("In gameplay, when you reach a note streak of 50, 100, 200, etc. you'll see the indicator show up above the highway.", smallLabelStyle);
+			GUILayout.Label("Please refer to the README.md on the Github for more details or to submit bugs/new features.", smallLabelStyle);
+
+			GUILayout.Space(15.0f);
+
+			GUILayout.Label("Changelog", largeLabelStyle);
+			GUILayout.Label("Combo Indicator now has a config file! This is only used right now for remembering whether this changelog has been shown or not.", smallLabelStyle);
+			GUILayout.Label("This changelog will now appear if you ever change this tweak's version! This should help new users know how to use this tweak, and tell you about any changes for more regular users.", smallLabelStyle);
+			GUILayout.Label("If there's a new version available, a window will prompt, just like this changelog, telling you to download it. This is also based on the version of CH you're running, so when v0.24 comes out, you won't be spammed on v0.23.2.2.", smallLabelStyle);
+			GUILayout.Label("The config window will now always try and show your mouse when you open it. One limitation is that if you try to open the configs for multiple tweaks, your mouse state may be hidden when you close some of them. In this case, just close and reopen the config window for the relative tweaks.", smallLabelStyle);
+
+			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
+				config.SeenChangelog = true;
+				config.TweakVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+				config.SaveConfig();
+			}
+			GUI.DragWindow();
 		}
 
 		#endregion

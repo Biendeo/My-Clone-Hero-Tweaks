@@ -18,8 +18,8 @@ namespace Common {
 		private GUIStyle labelStyle;
 		private GUIStyle buttonStyle;
 
-		public bool HasVersionBeenChecked { get; private set; }
-		public bool IsShowingUpdateWindow { get; private set; }
+		public bool HasVersionBeenChecked;
+		public bool IsShowingUpdateWindow;
 
 		public VersionCheck(int windowId) {
 			this.windowId = windowId;
@@ -41,6 +41,8 @@ namespace Common {
 				}
 			} catch (WebException) {
 				// Any WebException could cause an error; since it's not really too vital for the tweak, it's simpler to just not prompt for an update.
+			} catch (InvalidOperationException) {
+				// This exception is thrown if the CH version isn't found in the versions list. Perhaps it should prompt the user that they're using an unsupported CH version?
 			}
 			HasVersionBeenChecked = true;
 		}

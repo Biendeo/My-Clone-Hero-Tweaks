@@ -12,6 +12,8 @@ namespace ExtraSongUI.Settings {
 	[Serializable]
 	public class Config {
 		public int Version;
+		public string TweakVersion;
+		public bool SilenceUpdates;
 
 		public float ConfigX;
 		public float ConfigY;
@@ -57,6 +59,8 @@ namespace ExtraSongUI.Settings {
 		public bool DraggableLabelsEnabled;
 		[XmlIgnore]
 		public bool ConfigWindowEnabled;
+		[XmlIgnore]
+		public bool SeenChangelog;
 
 		public Config() {
 			// These original numbers were designed with 1440p in mind so this'll sort it out.
@@ -67,6 +71,8 @@ namespace ExtraSongUI.Settings {
 			int extraLargeFontSize = (int)(150 * widthScale);
 
 			Version = 2;
+			TweakVersion = "0.0.0";
+			SilenceUpdates = false;
 
 			ConfigX = 400.0f;
 			ConfigY = 400.0f;
@@ -447,6 +453,8 @@ namespace ExtraSongUI.Settings {
 			int extraLargeFontSize = (int)(150 * widthScale);
 
 			Version = 2;
+			TweakVersion = "0.0.0";
+			SilenceUpdates = false;
 
 			ConfigX = oldConfig.ConfigX;
 			ConfigY = oldConfig.ConfigY;

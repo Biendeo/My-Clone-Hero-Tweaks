@@ -4,6 +4,7 @@ using Common.Wrappers;
 using ExtraSongUI.Settings;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -113,10 +114,12 @@ namespace ExtraSongUI {
 		private GameObject HighestComboCounterLabel;
 
 		private readonly VersionCheck VersionCheck;
+		private Rect ChangelogRect;
 
 		public SongUI() {
 			settingsOnWindow = OnWindowHead;
 			VersionCheck = new VersionCheck(187000999);
+			ChangelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
@@ -285,8 +288,12 @@ namespace ExtraSongUI {
 				}
 			}
 			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
-				string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-				VersionCheck.CheckVersion(detectedVersion);
+				if (config.SilenceUpdates) {
+					VersionCheck.HasVersionBeenChecked = true;
+				} else {
+					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
+					VersionCheck.CheckVersion(detectedVersion);
+				}
 			}
 			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
 				// Song length
@@ -384,6 +391,9 @@ namespace ExtraSongUI {
 			}
 			if (VersionCheck.IsShowingUpdateWindow) {
 				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
+			}
+			if (config.TweakVersion != FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion && !config.SeenChangelog) {
+				ChangelogRect = GUILayout.Window(187000998, ChangelogRect, OnChangelogWindow, new GUIContent($"Extra Song UI Changelog"), settingsWindowStyle);
 			}
 		}
 
@@ -793,6 +803,47 @@ namespace ExtraSongUI {
 			GUILayout.Space(50.0f);
 			if (GUILayout.Button("Back", settingsButtonStyle)) {
 				settingsOnWindow = settingsCurrentBack;
+			}
+			GUI.DragWindow();
+		}
+
+		private void OnChangelogWindow(int id) {
+			var largeLabelStyle = new GUIStyle(settingsLabelStyle) {
+				fontSize = 20,
+				alignment = TextAnchor.UpperLeft,
+				fontStyle = FontStyle.Bold,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				},
+				wordWrap = false
+			};
+			var smallLabelStyle = new GUIStyle(settingsLabelStyle) {
+				fontSize = 14,
+				alignment = TextAnchor.UpperLeft,
+				normal = new GUIStyleState {
+					textColor = Color.white,
+				},
+				wordWrap = true
+			};
+			GUILayout.Label("Thankyou for downloading Extra Song UI!", largeLabelStyle);
+			GUILayout.Label("When you enter a song, you should see a default amount of extra UI elements. You can press F5 at any point in time to enable/disable it.", smallLabelStyle);
+			GUILayout.Label("Press Ctrl + Shift + F5 to enable/disable the config window.", smallLabelStyle);
+			GUILayout.Label("The config window lets you change things such as the keys to enable/disable the UI, which elements appear, and what color and position they'll be at.", smallLabelStyle);
+			GUILayout.Label("Please make sure to press the \"Save Config\" button at the bottom of the config window so that your settings are saved for the next time you run Clone Hero.", smallLabelStyle);
+			GUILayout.Label("Please refer to the README.md on the Github for more details or to submit bugs/new features.", smallLabelStyle);
+
+			GUILayout.Space(15.0f);
+
+			GUILayout.Label("Changelog", largeLabelStyle);
+			GUILayout.Label("This tweak now shows your current star power (as a percentage from 0% to 100%), the song progress as a percentage, and the percentage of seen notes that you've hit. The last of them is default disabled, so please enable it if you would like to see it.", smallLabelStyle);
+			GUILayout.Label("This changelog will now appear if you ever change this tweak's version! This should help new users know how to use this tweak, and tell you about any changes for more regular users.", smallLabelStyle);
+			GUILayout.Label("If there's a new version available, a window will prompt, just like this changelog, telling you to download it. This is also based on the version of CH you're running, so when v0.24 comes out, you won't be spammed on v0.23.2.2.", smallLabelStyle);
+			GUILayout.Label("The config window will now always try and show your mouse when you open it. One limitation is that if you try to open the configs for multiple tweaks, your mouse state may be hidden when you close some of them. In this case, just close and reopen the config window for the relative tweaks.", smallLabelStyle);
+
+			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
+				config.SeenChangelog = true;
+				config.TweakVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+				config.SaveConfig();
 			}
 			GUI.DragWindow();
 		}

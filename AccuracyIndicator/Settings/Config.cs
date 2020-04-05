@@ -12,6 +12,8 @@ namespace AccuracyIndicator.Settings {
 	[Serializable]
 	public class Config : IGUIConfigurable {
 		public int Version;
+		public string TweakVersion;
+		public bool SilenceUpdates;
 
 		public float ConfigX;
 		public float ConfigY;
@@ -48,9 +50,13 @@ namespace AccuracyIndicator.Settings {
 		private bool DraggableLabelsEnabled;
 		[XmlIgnore]
 		public bool ConfigWindowEnabled;
+		[XmlIgnore]
+		public bool SeenChangelog;
 
 		public Config() {
 			Version = 2;
+			TweakVersion = "0.0.0";
+			SilenceUpdates = false;
 
 			ConfigX = 300.0f;
 			ConfigY = 200.0f;
@@ -120,6 +126,8 @@ namespace AccuracyIndicator.Settings {
 
 		public Config(OldConfig oldConfig) {
 			Version = 2;
+			TweakVersion = "0.0.0";
+			SilenceUpdates = false;
 
 			ConfigX = oldConfig.ConfigX;
 			ConfigY = oldConfig.ConfigY;
