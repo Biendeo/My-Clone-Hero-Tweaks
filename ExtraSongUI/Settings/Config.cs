@@ -94,7 +94,7 @@ namespace ExtraSongUI.Settings {
 			};
 
 			TimeName = new FormattableColorablePositionableLabel {
-				Format = "Time: ",
+				Format = "Time:",
 				X = (int)(60.0f * widthScale),
 				Y = (int)(750.0f * heightScale),
 				Size = smallFontSize,
