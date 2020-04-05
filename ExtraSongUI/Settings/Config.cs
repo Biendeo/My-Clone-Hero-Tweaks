@@ -580,7 +580,7 @@ namespace ExtraSongUI.Settings {
 					wasMouseVisible = Cursor.visible;
 					Cursor.visible = true;
 				} else {
-					Cursor.visible = wasMouseVisible;
+					if (!wasMouseVisible) Cursor.visible = false;
 				}
 			}
 			if (EnabledKeyBind.IsPressed && !EnabledKeyBind.JustSet) {
