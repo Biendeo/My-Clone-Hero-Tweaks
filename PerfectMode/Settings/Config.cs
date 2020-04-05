@@ -39,6 +39,8 @@ namespace PerfectMode.Settings {
 		public bool ConfigWindowEnabled;
 		[XmlIgnore]
 		public bool SeenChangelog;
+		[XmlIgnore]
+		private bool wasMouseVisible;
 
 		public Config() {
 			Version = 2;
@@ -200,6 +202,12 @@ namespace PerfectMode.Settings {
 		public void HandleInput() {
 			if (ConfigKeyBind.IsPressed && !ConfigKeyBind.JustSet) {
 				ConfigWindowEnabled = !ConfigWindowEnabled;
+				if (ConfigWindowEnabled) {
+					wasMouseVisible = Cursor.visible;
+					Cursor.visible = true;
+				} else {
+					Cursor.visible = wasMouseVisible;
+				}
 			}
 			if (EnabledKeyBind.IsPressed && !EnabledKeyBind.JustSet) {
 				Enabled = !Enabled;
