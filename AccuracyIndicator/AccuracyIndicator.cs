@@ -65,11 +65,13 @@ namespace AccuracyIndicator {
 
 		private readonly VersionCheck VersionCheck;
 		private Rect ChangelogRect;
+		private string version;
 
 		public AccuracyIndicator() {
 			lastSongTime = -5.0;
 			VersionCheck = new VersionCheck(187002999);
 			ChangelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
+			version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 		}
 
 		#region Unity Methods
@@ -309,9 +311,10 @@ namespace AccuracyIndicator {
 		}
 
 		private void LateUpdate() {
+			string scene = SceneManager.GetActiveScene().name;
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
-				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
+				if (scene.Equals("Gameplay")) {
 					var gameManagerObject = GameObject.Find("Game Manager");
 					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
 					basePlayers = gameManager.BasePlayers;
@@ -361,19 +364,11 @@ namespace AccuracyIndicator {
 				} else {
 					DestroyAndNullGameplayLabels();
 				}
-				if (SceneManager.GetActiveScene().name.Equals("EndOfSong") && config.Enabled) {
+				if (config.Enabled && scene.Equals("EndOfSong")) {
 					InstantiateEndOfSongLabels();
 				}
 			}
-			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
-				if (config.SilenceUpdates) {
-					VersionCheck.HasVersionBeenChecked = true;
-				} else {
-					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					VersionCheck.CheckVersion(detectedVersion);
-				}
-			}
-			if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
+			if (scene.Equals("Gameplay")) {
 				//! In practice mode, the song time is set to 1.5s before the section or A/B. If it is looping, it is
 				//! initially set to 0, then to the appropriate time. As long as the user isn't on less than 10FPS, this should work.
 				if (Math.Abs(gameManager.SongTime - lastSongTime) > 1.5 && gameManager.PracticeUI.practiceUI != null) {
@@ -384,10 +379,19 @@ namespace AccuracyIndicator {
 					UpdateNotes();
 				}
 				UpdateLabels();
-			}
-			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
-				//TODO: Get the font directly from the bundle?
-				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
+			} else if (scene.Equals("Main Menu")) {
+				if (uiFont is null) {
+					//TODO: Get the font directly from the bundle?
+					uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
+				}
+				if (!VersionCheck.HasVersionBeenChecked) {
+					if (config.SilenceUpdates) {
+						VersionCheck.HasVersionBeenChecked = true;
+					} else {
+						string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
+						VersionCheck.CheckVersion(detectedVersion);
+					}
+				}
 			}
 			config.HandleInput();
 			if (gameManager != null) {
@@ -416,7 +420,7 @@ namespace AccuracyIndicator {
 			if (VersionCheck.IsShowingUpdateWindow) {
 				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
-			if (config.TweakVersion != FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion && !config.SeenChangelog) {
+			if (!config.SeenChangelog && config.TweakVersion != version) {
 				ChangelogRect = GUILayout.Window(187002998, ChangelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
 			}
 		}
