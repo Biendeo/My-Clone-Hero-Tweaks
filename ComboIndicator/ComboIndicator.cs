@@ -42,10 +42,12 @@ namespace ComboIndicator {
 
 		private readonly VersionCheck VersionCheck;
 		private Rect ChangelogRect;
+		private string version;
 
 		public ComboIndicator() {
 			VersionCheck = new VersionCheck(187003999);
 			ChangelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
+			version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 		}
 
 		#region Unity Methods
@@ -58,10 +60,10 @@ namespace ComboIndicator {
 		}
 
 		void LateUpdate() {
-			config = Config.LoadConfig();
+			string scene = SceneManager.GetActiveScene().name;
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
-				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
+				if (scene.Equals("Gameplay")) {
 					gameManager = new GameManagerWrapper(GameObject.Find("Game Manager")?.GetComponent<GameManager>());
 					if (gameManager != null) {
 
@@ -71,15 +73,7 @@ namespace ComboIndicator {
 					lastCombo = 0;
 				}
 			}
-			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
-				if (config.SilenceUpdates) {
-					VersionCheck.HasVersionBeenChecked = true;
-				} else {
-					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					VersionCheck.CheckVersion(detectedVersion);
-				}
-			}
-			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && scoreManager != null) {
+			if (scene.Equals("Gameplay") && scoreManager != null) {
 				int currentCombo = scoreManager.OverallCombo;
 				if (currentCombo > 0 && currentCombo != lastCombo && (currentCombo == 50 || currentCombo % 100 /*100*/ == 0)) {
 					var textElement = new GameObject(string.Empty, new Type[] {
@@ -91,10 +85,19 @@ namespace ComboIndicator {
 					textElement.GetComponent<DancingText>().RaisedForSolo = true; // Could be soloCounter.Bool2 but I want to gauge how people respond first.
 				}
 				lastCombo = currentCombo;
-			}
-			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
-				//TODO: Get the font directly from the bundle?
-				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
+			} else if (scene.Equals("Main Menu")) {
+				if (uiFont is null && scene.Equals("Main Menu")) {
+					//TODO: Get the font directly from the bundle?
+					uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
+				}
+				if (!VersionCheck.HasVersionBeenChecked) {
+					if (config.SilenceUpdates) {
+						VersionCheck.HasVersionBeenChecked = true;
+					} else {
+						string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
+						VersionCheck.CheckVersion(detectedVersion);
+					}
+				}
 			}
 		}
 
@@ -113,7 +116,7 @@ namespace ComboIndicator {
 			if (VersionCheck.IsShowingUpdateWindow) {
 				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
-			if (config.TweakVersion != FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion && !config.SeenChangelog) {
+			if (!config.SeenChangelog && config.TweakVersion != version) {
 				ChangelogRect = GUILayout.Window(187003998, ChangelogRect, OnChangelogWindow, new GUIContent($"Combo Indicator Changelog"), settingsWindowStyle);
 			}
 		}
