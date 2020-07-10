@@ -90,7 +90,6 @@ namespace SplashTextEditor {
 		void OnGUI() {
 			if (settingsWindowStyle is null) {
 				settingsWindowStyle = new GUIStyle(GUI.skin.window);
-				settingsWindowStyle.
 				settingsToggleStyle = new GUIStyle(GUI.skin.toggle);
 				settingsButtonStyle = new GUIStyle(GUI.skin.button);
 				settingsTextAreaStyle = new GUIStyle(GUI.skin.textArea);
