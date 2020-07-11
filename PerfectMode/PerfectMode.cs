@@ -48,18 +48,18 @@ namespace PerfectMode {
 		private GameObject remainingNotesLeftLabel;
 		private GameObject restartIndicatorLabel;
 
-		private readonly VersionCheck VersionCheck;
-		private Rect ChangelogRect;
+		private readonly VersionCheck versionCheck;
+		private Rect changelogRect;
 
 		public PerfectMode() {
 			settingsScrollPosition = new Vector2();
-			VersionCheck = new VersionCheck(187001999);
-			ChangelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
+			versionCheck = new VersionCheck(187001999);
+			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
 
-		void Start() {
+		public void Start() {
 			config = Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
@@ -84,10 +84,12 @@ namespace PerfectMode {
 			invokedSceneChange = false;
 		}
 
-		void LateUpdate() {
+		public void LateUpdate() {
+			string sceneName = SceneManager.GetActiveScene().name;
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
-				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
+				if (sceneName == "Gameplay") {
+					int uiLayerMask = LayerMask.NameToLayer("UI");
 					var gameManagerObject = GameObject.Find("Game Manager");
 					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
 					ResetGameplaySceneValues();
@@ -98,7 +100,7 @@ namespace PerfectMode {
 					displayImageLabel = new GameObject($"Perfect Mode Indicator", new Type[] {
 						typeof(Text)
 					});
-					displayImageLabel.layer = LayerMask.NameToLayer("UI");
+					displayImageLabel.layer = uiLayerMask;
 					displayImageLabel.transform.SetParent(canvasTransform);
 					displayImageLabel.transform.SetSiblingIndex(0);
 					displayImageLabel.transform.localEulerAngles = new Vector3();
@@ -110,7 +112,7 @@ namespace PerfectMode {
 					remainingNotesLeftLabel = new GameObject($"Perfect Mode Notes Remaining", new Type[] {
 						typeof(Text)
 					});
-					remainingNotesLeftLabel.layer = LayerMask.NameToLayer("UI");
+					remainingNotesLeftLabel.layer = uiLayerMask;
 					remainingNotesLeftLabel.transform.SetParent(canvasTransform);
 					remainingNotesLeftLabel.transform.SetSiblingIndex(0);
 					remainingNotesLeftLabel.transform.localEulerAngles = new Vector3();
@@ -122,7 +124,7 @@ namespace PerfectMode {
 					restartIndicatorLabel = new GameObject($"Perfect Mode Restart Message", new Type[] {
 						typeof(Text)
 					});
-					restartIndicatorLabel.layer = LayerMask.NameToLayer("UI");
+					restartIndicatorLabel.layer = uiLayerMask;
 					restartIndicatorLabel.transform.SetParent(canvasTransform);
 					restartIndicatorLabel.transform.SetSiblingIndex(0);
 					restartIndicatorLabel.transform.localEulerAngles = new Vector3();
@@ -134,15 +136,15 @@ namespace PerfectMode {
 					DestroyAndNullGameplayLabels();
 				}
 			}
-			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
+			if (sceneName == "Main Menu" && !versionCheck.HasVersionBeenChecked) {
 				if (config.SilenceUpdates) {
-					VersionCheck.HasVersionBeenChecked = true;
+					versionCheck.HasVersionBeenChecked = true;
 				} else {
 					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					VersionCheck.CheckVersion(detectedVersion);
+					versionCheck.CheckVersion(detectedVersion);
 				}
 			}
-			if (config.Enabled && SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null) {
+			if (config.Enabled && sceneName == "Gameplay" && gameManager != null) {
 				target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
 				isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
 				while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
@@ -202,19 +204,19 @@ namespace PerfectMode {
 				} else {
 					restartIndicatorLabel.GetComponent<Text>().enabled = false;
 				}
-			} else if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
+			} else if (sceneName == "Gameplay") {
 				displayImageLabel.GetComponent<Text>().enabled = false;
 				remainingNotesLeftLabel.GetComponent<Text>().enabled = false;
 				restartIndicatorLabel.GetComponent<Text>().enabled = false;
 			}
-			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
+			if (uiFont is null && sceneName == "Main Menu") {
 				//TODO: Get the font directly from the bundle?
 				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 			}
 			config.HandleInput();
 		}
 
-		void OnGUI() {
+		public void OnGUI() {
 			if (settingsWindowStyle is null) {
 				settingsWindowStyle = new GUIStyle(GUI.skin.window);
 				settingsToggleStyle = new GUIStyle(GUI.skin.toggle);
@@ -233,11 +235,11 @@ namespace PerfectMode {
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
-			if (VersionCheck.IsShowingUpdateWindow) {
-				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
+			if (versionCheck.IsShowingUpdateWindow) {
+				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
 			if (config.TweakVersion != FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion && !config.SeenChangelog) {
-				ChangelogRect = GUILayout.Window(187001998, ChangelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
+				changelogRect = GUILayout.Window(187001998, changelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
 			}
 		}
 
@@ -275,7 +277,7 @@ namespace PerfectMode {
 			});
 			GUILayout.Space(25.0f);
 
-			GUILayout.Label($"Perfect Mode v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}");
+			GUILayout.Label($"Perfect Mode v{versionCheck.AssemblyVersion}");
 			GUILayout.Label("Tweak by Biendeo");
 			GUILayout.Label("Thankyou for using this!");
 			GUILayout.EndScrollView();
@@ -316,7 +318,7 @@ namespace PerfectMode {
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
-				config.TweakVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+				config.TweakVersion = versionCheck.AssemblyVersion;
 				config.SaveConfig();
 			}
 			GUI.DragWindow();

@@ -113,18 +113,18 @@ namespace ExtraSongUI {
 		private GameObject CurrentComboCounterLabel;
 		private GameObject HighestComboCounterLabel;
 
-		private readonly VersionCheck VersionCheck;
-		private Rect ChangelogRect;
+		private readonly VersionCheck versionCheck;
+		private Rect changelogRect;
 
 		public SongUI() {
 			settingsOnWindow = OnWindowHead;
-			VersionCheck = new VersionCheck(187000999);
-			ChangelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
+			versionCheck = new VersionCheck(187000999);
+			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
 
-		void Start() {
+		public void Start() {
 			config = Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
@@ -230,10 +230,11 @@ namespace ExtraSongUI {
 			}
 		}
 
-		void LateUpdate() {
+		public void LateUpdate() {
+			string sceneName = SceneManager.GetActiveScene().name;
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
-				if (SceneManager.GetActiveScene().name.Equals("Gameplay")) {
+				if (sceneName == "Gameplay") {
 					// Song length
 					var gameManagerObject = GameObject.Find("Game Manager");
 					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
@@ -287,15 +288,15 @@ namespace ExtraSongUI {
 					DestroyAndNullGameplayLabels();
 				}
 			}
-			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
+			if (sceneName == "Main Menu" && !versionCheck.HasVersionBeenChecked) {
 				if (config.SilenceUpdates) {
-					VersionCheck.HasVersionBeenChecked = true;
+					versionCheck.HasVersionBeenChecked = true;
 				} else {
 					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					VersionCheck.CheckVersion(detectedVersion);
+					versionCheck.CheckVersion(detectedVersion);
 				}
 			}
-			if (SceneManager.GetActiveScene().name.Equals("Gameplay") && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
+			if (sceneName == "Gameplay" && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
 				// Song length
 				formattedSongTime = string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime));
 				formattedSongLength = string.Format(config.SongLength.Format, DoubleToTimeString(gameManager.SongLength));
@@ -364,14 +365,14 @@ namespace ExtraSongUI {
 				UpdateGameplayLabel(CurrentComboCounterLabel, config.CurrentComboCounter, string.Format(config.CurrentComboCounter.Format, currentCombo));
 				UpdateGameplayLabel(HighestComboCounterLabel, config.HighestComboCounter, string.Format(config.HighestComboCounter.Format, highestCombo));
 			}
-			if (uiFont is null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
+			if (uiFont is null && sceneName == "Main Menu") {
 				//TODO: Get the font directly from the bundle?
 				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 			}
 			config.HandleInput();
 		}
 
-		void OnGUI() {
+		public void OnGUI() {
 			if (settingsWindowStyle is null) {
 				settingsWindowStyle = new GUIStyle(GUI.skin.window);
 				settingsToggleStyle = new GUIStyle(GUI.skin.toggle);
@@ -389,11 +390,11 @@ namespace ExtraSongUI {
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
-			if (VersionCheck.IsShowingUpdateWindow) {
-				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
+			if (versionCheck.IsShowingUpdateWindow) {
+				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
-			if (config.TweakVersion != FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion && !config.SeenChangelog) {
-				ChangelogRect = GUILayout.Window(187000998, ChangelogRect, OnChangelogWindow, new GUIContent($"Extra Song UI Changelog"), settingsWindowStyle);
+			if (config.TweakVersion != versionCheck.AssemblyVersion && !config.SeenChangelog) {
+				changelogRect = GUILayout.Window(187000998, changelogRect, OnChangelogWindow, new GUIContent($"Extra Song UI Changelog"), settingsWindowStyle);
 			}
 		}
 
@@ -501,7 +502,7 @@ namespace ExtraSongUI {
 			if (GUILayout.Button("Save Config", settingsButtonStyle)) config.SaveConfig();
 			GUILayout.Space(50.0f);
 
-			GUILayout.Label($"Extra Song UI v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}");
+			GUILayout.Label($"Extra Song UI v{versionCheck.AssemblyVersion}");
 			GUILayout.Label("Tweak by Biendeo");
 			GUILayout.Label("Thankyou for using this!");
 			GUI.DragWindow();
@@ -842,7 +843,7 @@ namespace ExtraSongUI {
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
-				config.TweakVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+				config.TweakVersion = versionCheck.AssemblyVersion;
 				config.SaveConfig();
 			}
 			GUI.DragWindow();
@@ -870,7 +871,5 @@ namespace ExtraSongUI {
 
 			return sb.ToString();
 		}
-
-
 	}
 }

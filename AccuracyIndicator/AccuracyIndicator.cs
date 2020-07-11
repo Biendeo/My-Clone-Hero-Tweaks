@@ -63,20 +63,18 @@ namespace AccuracyIndicator {
 		private GameObject accuracyMessageLabel;
 		private GameObject averageAccuracyLabel;
 
-		private readonly VersionCheck VersionCheck;
-		private Rect ChangelogRect;
-		private string version;
+		private readonly VersionCheck versionCheck;
+		private Rect changelogRect;
 
 		public AccuracyIndicator() {
 			lastSongTime = -5.0;
-			VersionCheck = new VersionCheck(187002999);
-			ChangelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
-			version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+			versionCheck = new VersionCheck(187002999);
+			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
 
-		private void Start() {
+		public void Start() {
 			config = Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
@@ -138,56 +136,56 @@ namespace AccuracyIndicator {
 					textComponents[y].verticalOverflow = VerticalWrapMode.Overflow;
 				}
 				if (x == 0) {
-					textComponents[0].text = $"Very early ({(highestVeryEarly * 1000.0f).ToString("0.00")}ms):";
+					textComponents[0].text = $"Very early ({highestVeryEarly * 1000.0f:0.00}ms):";
 					int veryEarlies = noteHits.Count(nh => nh < highestVeryEarly);
 					textComponents[1].text = veryEarlies.ToString();
-					textComponents[2].text = $"({(veryEarlies * 100.0 / totalNoteCount).ToString("0.00")}%)";
+					textComponents[2].text = $"({veryEarlies * 100.0 / totalNoteCount:0.00}%)";
 					textComponents[0].color = config.ColorVeryEarly.Color;
 				} else if (x == 1) {
-					textComponents[0].text = $"Early ({(highestEarly * 1000.0f).ToString("0.00")}ms):";
+					textComponents[0].text = $"Early ({highestEarly * 1000.0f:0.00}ms):";
 					int earlies = noteHits.Count(nh => nh < highestEarly && nh >= highestVeryEarly);
 					textComponents[1].text = earlies.ToString();
-					textComponents[2].text = $"({(earlies * 100.0 / totalNoteCount).ToString("0.00")}%)";
+					textComponents[2].text = $"({earlies * 100.0 / totalNoteCount:0.00}%)";
 					textComponents[0].color = config.ColorEarly.Color;
 				} else if (x == 2) {
-					textComponents[0].text = $"Slightly early ({(highestSlightlyEarly * 1000.0f).ToString("0.00")}ms):";
+					textComponents[0].text = $"Slightly early ({highestSlightlyEarly * 1000.0f:0.00}ms):";
 					int slightlyEarlies = noteHits.Count(nh => nh < highestSlightlyEarly && nh >= highestEarly);
 					textComponents[1].text = slightlyEarlies.ToString();
-					textComponents[2].text = $"({(slightlyEarlies * 100.0 / totalNoteCount).ToString("0.00")}%)";
+					textComponents[2].text = $"({slightlyEarlies * 100.0 / totalNoteCount:0.00}%)";
 					textComponents[0].color = config.ColorSlightlyEarly.Color;
 				} else if (x == 3) {
 					textComponents[0].text = $"Perfect:";
 					int perfects = noteHits.Count(nh => nh <= highestSlightlyLate && nh >= highestSlightlyEarly);
 					textComponents[1].text = perfects.ToString();
-					textComponents[2].text = $"({(perfects * 100.0 / totalNoteCount).ToString("0.00")}%)";
+					textComponents[2].text = $"({perfects * 100.0 / totalNoteCount:0.00}%)";
 					textComponents[0].color = config.ColorPerfect.Color;
 				} else if (x == 4) {
-					textComponents[0].text = $"Slightly late ({(highestSlightlyLate * 1000.0f).ToString("0.00")}ms):";
+					textComponents[0].text = $"Slightly late ({highestSlightlyLate * 1000.0f:0.00}ms):";
 					int slightlyLates = noteHits.Count(nh => nh <= highestLate && nh > highestSlightlyLate);
 					textComponents[1].text = slightlyLates.ToString();
-					textComponents[2].text = $"({(slightlyLates * 100.0 / totalNoteCount).ToString("0.00")}%)";
+					textComponents[2].text = $"({slightlyLates * 100.0 / totalNoteCount:0.00}%)";
 					textComponents[0].color = config.ColorSlightlyLate.Color;
 				} else if (x == 5) {
-					textComponents[0].text = $"Late ({(highestLate * 1000.0f).ToString("0.00")}ms):";
+					textComponents[0].text = $"Late ({highestLate * 1000.0f:0.00}ms):";
 					int lates = noteHits.Count(nh => nh <= highestVeryLate && nh > highestLate);
 					textComponents[1].text = lates.ToString();
-					textComponents[2].text = $"({(lates * 100.0 / totalNoteCount).ToString("0.00")}%)";
+					textComponents[2].text = $"({lates * 100.0 / totalNoteCount:0.00}%)";
 					textComponents[0].color = config.ColorLate.Color;
 				} else if (x == 6) {
-					textComponents[0].text = $"Very late ({(highestVeryLate * 1000.0f).ToString("0.00")}ms):";
+					textComponents[0].text = $"Very late ({highestVeryLate * 1000.0f:0.00}ms):";
 					int veryLates = noteHits.Count(nh => nh > highestVeryLate);
 					textComponents[1].text = veryLates.ToString();
-					textComponents[2].text = $"({(veryLates * 100.0 / totalNoteCount).ToString("0.00")}%)";
+					textComponents[2].text = $"({veryLates * 100.0 / totalNoteCount:0.00}%)";
 					textComponents[0].color = config.ColorVeryLate.Color;
 				} else if (x == 7) {
 					textComponents[0].text = $"Missed:";
 					int misses = totalNoteCount - noteHits.Count();
 					textComponents[1].text = misses.ToString();
-					textComponents[2].text = $"({(misses * 100.0 / totalNoteCount).ToString("0.00")}%)";
+					textComponents[2].text = $"({misses * 100.0 / totalNoteCount:0.00}%)";
 					textComponents[0].color = config.ColorMissed.Color;
 				} else if (x == 8) {
 					textComponents[0].text = $"Average time:";
-					textComponents[2].text = $"{(noteHits.Average() * 1000.0f).ToString("0.00")}ms";
+					textComponents[2].text = $"{noteHits.Average() * 1000.0f:0.00}ms";
 					textComponents[0].color = config.ColorPerfect.Color;
 					Destroy(textComponents[1]);
 				}
@@ -240,8 +238,8 @@ namespace AccuracyIndicator {
 				double timeFromLastNote = gameManager.SongTime - lastNoteHitTime;
 
 				// Determine what color and message displays.
-				Color labelColor = Color.white;
-				string message = string.Empty;
+				Color labelColor;
+				string message;
 				if (lastNoteHitDifference == 0.07f) {
 					labelColor = config.ColorMissed.Color;
 					message = "Missed";
@@ -276,7 +274,7 @@ namespace AccuracyIndicator {
 					text.fontSize = config.AccuracyTime.Size;
 					text.alignment = config.AccuracyTime.Alignment;
 					text.fontStyle = (config.AccuracyTime.Bold ? FontStyle.Bold : FontStyle.Normal) | (config.AccuracyTime.Italic ? FontStyle.Italic : FontStyle.Normal);
-					text.text = $"{(lastNoteHitDifference * 1000.0f).ToString("0.00")}ms";
+					text.text = $"{lastNoteHitDifference * 1000.0f:0.00}ms";
 					text.color = new Color(labelColor.r, labelColor.g, labelColor.b, labelColor.a * (config.LayoutTest ? 1.0f : Math.Max(0.0f, Math.Min(1.0f, (float)(config.TimeOnScreen + lastNoteHitTime - gameManager.SongTime)) * 2.0f)));
 				} else {
 					accuracyIndicatorLabel.GetComponent<Text>().enabled = false;
@@ -302,7 +300,7 @@ namespace AccuracyIndicator {
 					text.fontSize = config.AverageAccuracy.Size;
 					text.alignment = config.AverageAccuracy.Alignment;
 					text.fontStyle = (config.AverageAccuracy.Bold ? FontStyle.Bold : FontStyle.Normal) | (config.AverageAccuracy.Italic ? FontStyle.Italic : FontStyle.Normal);
-					text.text = $"{(hitAccuracy * 1000.0f).ToString("0.00")}ms";
+					text.text = $"{hitAccuracy * 1000.0f:0.00}ms";
 					text.color = new Color(labelColor.r, labelColor.g, labelColor.b, labelColor.a * (config.LayoutTest ? 1.0f : Math.Max(0.0f, Math.Min(1.0f, (float)(config.TimeOnScreen + lastNoteHitTime - gameManager.SongTime)) * 2.0f)));
 				} else {
 					averageAccuracyLabel.GetComponent<Text>().enabled = false;
@@ -310,11 +308,12 @@ namespace AccuracyIndicator {
 			}
 		}
 
-		private void LateUpdate() {
-			string scene = SceneManager.GetActiveScene().name;
+		public void LateUpdate() {
+			string sceneName = SceneManager.GetActiveScene().name;
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
-				if (scene.Equals("Gameplay")) {
+				if (sceneName == "Gameplay") {
+					int uiLayerMask = LayerMask.NameToLayer("UI");
 					var gameManagerObject = GameObject.Find("Game Manager");
 					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
 					basePlayers = gameManager.BasePlayers;
@@ -327,7 +326,7 @@ namespace AccuracyIndicator {
 						typeof(Text),
 						typeof(DestroyOnSceneChange)
 					});
-					accuracyIndicatorLabel.layer = LayerMask.NameToLayer("UI");
+					accuracyIndicatorLabel.layer = uiLayerMask;
 					accuracyIndicatorLabel.transform.SetParent(canvasTransform);
 					accuracyIndicatorLabel.transform.SetSiblingIndex(0);
 					accuracyIndicatorLabel.transform.localEulerAngles = new Vector3();
@@ -340,7 +339,7 @@ namespace AccuracyIndicator {
 						typeof(Text),
 						typeof(DestroyOnSceneChange)
 					});
-					accuracyMessageLabel.layer = LayerMask.NameToLayer("UI");
+					accuracyMessageLabel.layer = uiLayerMask;
 					accuracyMessageLabel.transform.SetParent(canvasTransform);
 					accuracyMessageLabel.transform.SetSiblingIndex(0);
 					accuracyMessageLabel.transform.localEulerAngles = new Vector3();
@@ -353,7 +352,7 @@ namespace AccuracyIndicator {
 						typeof(Text),
 						typeof(DestroyOnSceneChange)
 					});
-					averageAccuracyLabel.layer = LayerMask.NameToLayer("UI");
+					averageAccuracyLabel.layer = uiLayerMask;
 					averageAccuracyLabel.transform.SetParent(canvasTransform);
 					averageAccuracyLabel.transform.SetSiblingIndex(0);
 					averageAccuracyLabel.transform.localEulerAngles = new Vector3();
@@ -364,11 +363,11 @@ namespace AccuracyIndicator {
 				} else {
 					DestroyAndNullGameplayLabels();
 				}
-				if (config.Enabled && scene.Equals("EndOfSong")) {
+				if (config.Enabled && sceneName == "EndOfSong") {
 					InstantiateEndOfSongLabels();
 				}
 			}
-			if (scene.Equals("Gameplay")) {
+			if (sceneName == "Gameplay") {
 				//! In practice mode, the song time is set to 1.5s before the section or A/B. If it is looping, it is
 				//! initially set to 0, then to the appropriate time. As long as the user isn't on less than 10FPS, this should work.
 				if (Math.Abs(gameManager.SongTime - lastSongTime) > 1.5 && gameManager.PracticeUI.practiceUI != null) {
@@ -379,17 +378,17 @@ namespace AccuracyIndicator {
 					UpdateNotes();
 				}
 				UpdateLabels();
-			} else if (scene.Equals("Main Menu")) {
+			} else if (sceneName == "Main Menu") {
 				if (uiFont is null) {
 					//TODO: Get the font directly from the bundle?
 					uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 				}
-				if (!VersionCheck.HasVersionBeenChecked) {
+				if (!versionCheck.HasVersionBeenChecked) {
 					if (config.SilenceUpdates) {
-						VersionCheck.HasVersionBeenChecked = true;
+						versionCheck.HasVersionBeenChecked = true;
 					} else {
 						string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-						VersionCheck.CheckVersion(detectedVersion);
+						versionCheck.CheckVersion(detectedVersion);
 					}
 				}
 			}
@@ -399,7 +398,7 @@ namespace AccuracyIndicator {
 			}
 		}
 
-		void OnGUI() {
+		public void OnGUI() {
 			if (settingsWindowStyle is null) {
 				settingsWindowStyle = new GUIStyle(GUI.skin.window);
 				settingsToggleStyle = new GUIStyle(GUI.skin.toggle);
@@ -417,11 +416,11 @@ namespace AccuracyIndicator {
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
-			if (VersionCheck.IsShowingUpdateWindow) {
-				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
+			if (versionCheck.IsShowingUpdateWindow) {
+				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
-			if (!config.SeenChangelog && config.TweakVersion != version) {
-				ChangelogRect = GUILayout.Window(187002998, ChangelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
+			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
+				changelogRect = GUILayout.Window(187002998, changelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
 			}
 		}
 
@@ -459,7 +458,7 @@ namespace AccuracyIndicator {
 			});
 			GUILayout.Space(25.0f);
 
-			GUILayout.Label($"Accuracy Indicator v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}");
+			GUILayout.Label($"Accuracy Indicator v{versionCheck.AssemblyVersion}");
 			GUILayout.Label("Tweak by Biendeo");
 			GUILayout.Label("Thankyou for using this!");
 			GUILayout.EndScrollView();
@@ -500,7 +499,7 @@ namespace AccuracyIndicator {
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
-				config.TweakVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+				config.TweakVersion = versionCheck.AssemblyVersion;
 				config.SaveConfig();
 			}
 			GUI.DragWindow();

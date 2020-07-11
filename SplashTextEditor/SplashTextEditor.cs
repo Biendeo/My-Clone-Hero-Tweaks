@@ -24,7 +24,7 @@ namespace SplashTextEditor {
 
 		private TextMeshProUGUI splashTextComponent;
 		private string currentSplashMessage;
-		private System.Random randomGenerator;
+		private readonly System.Random randomGenerator;
 
 		private GUIStyle settingsWindowStyle;
 		private GUIStyle settingsToggleStyle;
@@ -37,12 +37,12 @@ namespace SplashTextEditor {
 		private GUIStyle settingsHorizontalSliderThumbStyle;
 		private Vector2 settingsScrollPosition;
 
-		private readonly VersionCheck VersionCheck;
-		private Rect ChangelogRect;
+		private readonly VersionCheck versionCheck;
+		private Rect changelogRect;
 
 		public SplashTextEditor() {
-			VersionCheck = new VersionCheck(187004999);
-			ChangelogRect = new Rect(500.0f, 500.0f, 100.0f, 100.0f);
+			versionCheck = new VersionCheck(187004999);
+			changelogRect = new Rect(500.0f, 500.0f, 100.0f, 100.0f);
 			randomGenerator = new System.Random();
 			splashTextComponent = null;
 			currentSplashMessage = string.Empty;
@@ -50,7 +50,7 @@ namespace SplashTextEditor {
 
 		#region Unity Methods
 
-		void Start() {
+		public void Start() {
 			config = Config.LoadConfig();
 			config.ChangeActiveTextFunction = (string s) => currentSplashMessage = s;
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
@@ -58,13 +58,14 @@ namespace SplashTextEditor {
 			};
 		}
 
-		void LateUpdate() {
+		public void LateUpdate() {
+			string sceneName = SceneManager.GetActiveScene().name;
 			if (this.sceneChanged) {
 				splashTextComponent = null;
 				currentSplashMessage = string.Empty;
 				this.sceneChanged = false;
 			}
-			if (splashTextComponent == null && SceneManager.GetActiveScene().name.Equals("Main Menu")) {
+			if (splashTextComponent == null && sceneName == "Main Menu") {
 				var splashTextObject = GameObject.Find("Tag");
 				if (splashTextObject != null) {
 					splashTextComponent = splashTextObject.GetComponent<TextMeshProUGUI>();
@@ -76,18 +77,18 @@ namespace SplashTextEditor {
 			if (config.Enabled && splashTextComponent != null && currentSplashMessage != string.Empty) {
 				splashTextComponent.text = currentSplashMessage;
 			}
-			if (SceneManager.GetActiveScene().name == "Main Menu" && !VersionCheck.HasVersionBeenChecked) {
+			if (!versionCheck.HasVersionBeenChecked && sceneName == "Main Menu") {
 				if (config.SilenceUpdates) {
-					VersionCheck.HasVersionBeenChecked = true;
+					versionCheck.HasVersionBeenChecked = true;
 				} else {
 					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					VersionCheck.CheckVersion(detectedVersion);
+					versionCheck.CheckVersion(detectedVersion);
 				}
 			}
 			config.HandleInput();
 		}
 
-		void OnGUI() {
+		public void OnGUI() {
 			if (settingsWindowStyle is null) {
 				settingsWindowStyle = new GUIStyle(GUI.skin.window);
 				settingsToggleStyle = new GUIStyle(GUI.skin.toggle);
@@ -104,11 +105,11 @@ namespace SplashTextEditor {
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
-			if (VersionCheck.IsShowingUpdateWindow) {
-				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
+			if (versionCheck.IsShowingUpdateWindow) {
+				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
-			if (config.TweakVersion != FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion && !config.SeenChangelog) {
-				ChangelogRect = GUILayout.Window(187004998, ChangelogRect, OnChangelogWindow, new GUIContent($"Splash Text Editor Changelog"), settingsWindowStyle);
+			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
+				changelogRect = GUILayout.Window(187004998, changelogRect, OnChangelogWindow, new GUIContent($"Splash Text Editor Changelog"), settingsWindowStyle);
 			}
 		}
 
@@ -146,7 +147,7 @@ namespace SplashTextEditor {
 			});
 			GUILayout.Space(25.0f);
 
-			GUILayout.Label($"Splash Text Editor v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}");
+			GUILayout.Label($"Splash Text Editor v{versionCheck.AssemblyVersion}");
 			GUILayout.Label("Tweak by Biendeo");
 			GUILayout.Label("Thankyou for using this!");
 			GUILayout.EndScrollView();
@@ -183,7 +184,7 @@ namespace SplashTextEditor {
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
-				config.TweakVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+				config.TweakVersion = versionCheck.AssemblyVersion;
 				config.SaveConfig();
 			}
 			GUI.DragWindow();

@@ -11,9 +11,10 @@ using UnityEngine;
 
 namespace Common {
 	internal class VersionCheck {
-		private int windowId;
+		private readonly int windowId;
 		private Rect updateWindowRect;
 		private string latestVersion;
+		public readonly string AssemblyVersion;
 
 		private GUIStyle labelStyle;
 		private GUIStyle buttonStyle;
@@ -28,6 +29,7 @@ namespace Common {
 			IsShowingUpdateWindow = false;
 			labelStyle = null;
 			buttonStyle = null;
+			AssemblyVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 		}
 
 		public void CheckVersion(string intendedVersion) {

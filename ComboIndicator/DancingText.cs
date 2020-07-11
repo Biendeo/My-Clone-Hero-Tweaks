@@ -54,7 +54,7 @@ namespace ComboIndicator {
 			}
 		};
 
-		void Start() {
+		public void Start() {
 			Transform canvasTransform = null;
 			foreach (var gameObject in gameObject.scene.GetRootGameObjects()) {
 				if (gameObject.GetComponent<Canvas>() != null) {
@@ -78,7 +78,7 @@ namespace ComboIndicator {
 			timeAlive = 0.0f;
 		}
 
-		void Update() {
+		public void Update() {
 			if (!GameManager.IsPaused) {
 				timeAlive += Time.deltaTime;
 			}

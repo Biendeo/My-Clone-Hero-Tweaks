@@ -40,40 +40,37 @@ namespace ComboIndicator {
 		private GUIStyle settingsHorizontalSliderStyle;
 		private GUIStyle settingsHorizontalSliderThumbStyle;
 
-		private readonly VersionCheck VersionCheck;
-		private Rect ChangelogRect;
-		private string version;
+		private readonly VersionCheck versionCheck;
+		private Rect changelogRect;
 
 		public ComboIndicator() {
-			VersionCheck = new VersionCheck(187003999);
-			ChangelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
-			version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+			versionCheck = new VersionCheck(187003999);
+			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
 
-		void Start() {
+		public void Start() {
 			config = Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 			};
 		}
 
-		void LateUpdate() {
-			string scene = SceneManager.GetActiveScene().name;
+		public void LateUpdate() {
+			string sceneName = SceneManager.GetActiveScene().name;
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
-				if (scene.Equals("Gameplay")) {
+				if (sceneName == "Gameplay") {
 					gameManager = new GameManagerWrapper(GameObject.Find("Game Manager")?.GetComponent<GameManager>());
 					if (gameManager != null) {
-
 						soloCounter = gameManager.BasePlayers[0].SoloCounter;
 						scoreManager = gameManager.ScoreManager;
 					}
 					lastCombo = 0;
 				}
 			}
-			if (scene.Equals("Gameplay") && scoreManager != null) {
+			if (sceneName == "Gameplay" && scoreManager != null) {
 				int currentCombo = scoreManager.OverallCombo;
 				if (currentCombo > 0 && currentCombo != lastCombo && (currentCombo == 50 || currentCombo % 100 /*100*/ == 0)) {
 					var textElement = new GameObject(string.Empty, new Type[] {
@@ -85,23 +82,23 @@ namespace ComboIndicator {
 					textElement.GetComponent<DancingText>().RaisedForSolo = true; // Could be soloCounter.Bool2 but I want to gauge how people respond first.
 				}
 				lastCombo = currentCombo;
-			} else if (scene.Equals("Main Menu")) {
-				if (uiFont is null && scene.Equals("Main Menu")) {
+			} else if (sceneName == "Main Menu") {
+				if (uiFont is null) {
 					//TODO: Get the font directly from the bundle?
 					uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 				}
-				if (!VersionCheck.HasVersionBeenChecked) {
+				if (!versionCheck.HasVersionBeenChecked) {
 					if (config.SilenceUpdates) {
-						VersionCheck.HasVersionBeenChecked = true;
+						versionCheck.HasVersionBeenChecked = true;
 					} else {
 						string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-						VersionCheck.CheckVersion(detectedVersion);
+						versionCheck.CheckVersion(detectedVersion);
 					}
 				}
 			}
 		}
 
-		void OnGUI() {
+		public void OnGUI() {
 			if (settingsWindowStyle is null) {
 				settingsWindowStyle = new GUIStyle(GUI.skin.window);
 				settingsToggleStyle = new GUIStyle(GUI.skin.toggle);
@@ -113,11 +110,11 @@ namespace ComboIndicator {
 				settingsHorizontalSliderStyle = new GUIStyle(GUI.skin.horizontalSlider);
 				settingsHorizontalSliderThumbStyle = new GUIStyle(GUI.skin.horizontalSliderThumb);
 			}
-			if (VersionCheck.IsShowingUpdateWindow) {
-				VersionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
+			if (versionCheck.IsShowingUpdateWindow) {
+				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
-			if (!config.SeenChangelog && config.TweakVersion != version) {
-				ChangelogRect = GUILayout.Window(187003998, ChangelogRect, OnChangelogWindow, new GUIContent($"Combo Indicator Changelog"), settingsWindowStyle);
+			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
+				changelogRect = GUILayout.Window(187003998, changelogRect, OnChangelogWindow, new GUIContent($"Combo Indicator Changelog"), settingsWindowStyle);
 			}
 		}
 
@@ -153,7 +150,7 @@ namespace ComboIndicator {
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
-				config.TweakVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+				config.TweakVersion = versionCheck.AssemblyVersion;
 				config.SaveConfig();
 			}
 			GUI.DragWindow();
