@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Common.Wrappers {
 	//TODO: This inherits ChartObject so when that's done, make sure this inherits that.
 	[Wrapper("\u0311\u0311\u0314\u0317\u0319\u0316\u0312\u030F\u0311\u0315\u0312")]
-	internal class StarPowerWrapper {
+	internal struct StarPowerWrapper {
 		public readonly object starPower;
 
 		public uint Length => (uint)lengthField.GetValue(starPower);

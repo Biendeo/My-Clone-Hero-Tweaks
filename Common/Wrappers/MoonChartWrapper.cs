@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper("\u0311\u0318\u030F\u0314\u0315\u031B\u030F\u0316\u0313\u0316\u0316")]
-	internal class MoonChartWrapper {
+	internal struct MoonChartWrapper {
 		public readonly object moonChart;
 
 		// Old reference had base score and note count in there, maybe those shouldn't be relied on
@@ -22,9 +22,10 @@ namespace Common.Wrappers {
 		[WrapperField("\u0315\u030F\u0313\u0318\u0318\u0316\u0318\u031B\u030D\u0319\u0313")]
 		private static readonly FieldInfo unknownInt2Field;
 
-		public SongWrapper Song => new SongWrapper(songProperty.GetValue(moonChart));
-		[WrapperField("\u030F\u0315\u031A\u0316\u0318\u031A\u030E\u0319\u0316\u0311\u031A")]
-		private static readonly PropertyInfo songProperty;
+		//? This is the wrong string, so I goofed up somewhere.
+		//public SongWrapper Song => new SongWrapper(songProperty.GetValue(moonChart));
+		//[WrapperField("\u030F\u0315\u031A\u0316\u0318\u031A\u030E\u0319\u0316\u0311\u031A")]
+		//private static readonly PropertyInfo songProperty;
 
 		// A property for UnknownInt1.
 		public int UnknownInt1Property => (int)unknownInt1Property.GetValue(moonChart);

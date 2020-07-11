@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(SoloCounter))]
-	internal class SoloCounterWrapper {
+	internal struct SoloCounterWrapper {
 		public readonly SoloCounter soloCounter;
 
 		public GameManager GameManager => (GameManager)gameManagerField.GetValue(soloCounter);

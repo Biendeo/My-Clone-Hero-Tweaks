@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(ScoreManager))]
-	internal class ScoreManagerWrapper {
+	internal struct ScoreManagerWrapper {
 		public readonly ScoreManager scoreManager;
 
 		public StarProgressWrapper StarProgress => new StarProgressWrapper((StarProgress)starProgressField.GetValue(scoreManager));

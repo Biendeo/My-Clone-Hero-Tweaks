@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(PauseMenu))]
-	internal class PauseMenuWrapper {
+	internal struct PauseMenuWrapper {
 		public readonly PauseMenu pauseMenu;
 
 		public PauseMenuWrapper(PauseMenu pauseMenu) {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(PracticeUI))]
-	internal class PracticeUIWrapper {
+	internal struct PracticeUIWrapper {
 		public readonly PracticeUI practiceUI;
 
 		public float SomeFloat => (float)someFloatField.GetValue(this);

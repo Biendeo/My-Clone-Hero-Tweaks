@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Common.Wrappers {
 	[Wrapper("\u031A\u030E\u0315\u0319\u0313\u030D\u0310\u0311\u0315\u0311\u0313")]
-	internal class GameSettingWrapper {
+	internal struct GameSettingWrapper {
 		public readonly object gameSetting;
 
 		public GameSettingWrapper(object gameSetting) {

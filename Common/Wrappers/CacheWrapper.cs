@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Common.Wrappers {
 	[Wrapper("\u030F\u031A\u0311\u031B\u0314\u0319\u031B\u0312\u030F\u030E\u0319")]
-	internal class CacheWrapper {
+	internal struct CacheWrapper {
 		public readonly object cache;
 
 		public CacheWrapper(object cache) {
@@ -17,12 +17,15 @@ namespace Common.Wrappers {
 
 		#region Constructors
 
+		// I don't use this at the moment, but I can't have a parameterless constructor in a struct.
+		/*
 		public CacheWrapper() {
 			cache = defaultConstructor.Invoke(Array.Empty<object>());
 		}
 		[WrapperConstructor()]
 		private static readonly ConstructorInfo defaultConstructor;
 
+		*/
 		#endregion
 
 		#region Fields

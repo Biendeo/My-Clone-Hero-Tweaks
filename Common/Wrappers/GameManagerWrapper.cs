@@ -10,8 +10,14 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(GameManager))]
-	internal class GameManagerWrapper {
+	internal struct GameManagerWrapper {
 		public readonly GameManager gameManager;
+
+		public bool IsNull() => gameManager == null;
+
+		public override bool Equals(object obj) => gameManager.Equals(obj);
+
+		public override int GetHashCode() => gameManager.GetHashCode();
 
 		public BasePlayerWrapper[] BasePlayers => ((BasePlayer[])basePlayersField.GetValue(gameManager)).Select(bp => new BasePlayerWrapper(bp)).ToArray();
 		[WrapperField("\u0316\u0319\u0314\u0316\u0315\u0313\u0311\u0315\u031C\u0312\u0315")]

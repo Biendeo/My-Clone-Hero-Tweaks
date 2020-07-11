@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(SPBar))]
-	internal class SPBarWrapper {
+	internal struct SPBarWrapper {
 		public readonly SPBar spBar;
 
 		public SPBarWrapper(SPBar spBar) {

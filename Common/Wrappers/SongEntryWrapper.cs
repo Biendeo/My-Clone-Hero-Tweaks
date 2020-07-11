@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(SongEntry))]
-	internal class SongEntryWrapper {
+	internal struct SongEntryWrapper {
 		public readonly SongEntry songEntry;
 
 		public SongEntryWrapper(SongEntry songEntry) {

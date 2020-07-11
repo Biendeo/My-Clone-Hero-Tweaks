@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(StarProgress))]
-	internal class StarProgressWrapper {
+	internal struct StarProgressWrapper {
 		public readonly StarProgress starProgress;
 
 		public int LastScore => (int)lastScoreField.GetValue(starProgress);

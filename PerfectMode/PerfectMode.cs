@@ -144,7 +144,7 @@ namespace PerfectMode {
 					versionCheck.CheckVersion(detectedVersion);
 				}
 			}
-			if (config.Enabled && sceneName == "Gameplay" && gameManager != null) {
+			if (config.Enabled && sceneName == "Gameplay" && !gameManager.IsNull()) {
 				target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
 				isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
 				while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {

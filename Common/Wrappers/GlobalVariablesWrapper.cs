@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(GlobalVariables))]
-	internal class GlobalVariablesWrapper {
+	internal struct GlobalVariablesWrapper {
 		public readonly GlobalVariables globalVariables;
 
 		public GlobalVariablesWrapper(GlobalVariables globalVariables) {

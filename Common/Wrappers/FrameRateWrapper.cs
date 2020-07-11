@@ -9,7 +9,7 @@ using TMPro;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(FrameRate))]
-	internal class FrameRateWrapper {
+	internal struct FrameRateWrapper {
 		public readonly FrameRate frameRate;
 
 		public TextMeshProUGUI Text => (TextMeshProUGUI)textField.GetValue(frameRate);

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Common.Wrappers {
 	[Wrapper("\u030E\u0317\u0316\u031A\u0318\u0314\u0315\u030F\u0315\u0313\u0311")]
-	internal class INIParserWrapper {
+	internal struct INIParserWrapper {
 		public readonly object iniParser;
 
 		public INIParserWrapper(object iniParser) {

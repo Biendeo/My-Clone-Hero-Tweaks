@@ -393,7 +393,7 @@ namespace AccuracyIndicator {
 				}
 			}
 			config.HandleInput();
-			if (gameManager != null) {
+			if (!gameManager.IsNull()) {
 				lastSongTime = gameManager.SongTime;
 			}
 		}

@@ -296,7 +296,7 @@ namespace ExtraSongUI {
 					versionCheck.CheckVersion(detectedVersion);
 				}
 			}
-			if (sceneName == "Gameplay" && gameManager != null && gameManager.PracticeUI.practiceUI == null) {
+			if (sceneName == "Gameplay" && !gameManager.IsNull() && gameManager.PracticeUI.practiceUI == null) {
 				// Song length
 				formattedSongTime = string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime));
 				formattedSongLength = string.Format(config.SongLength.Format, DoubleToTimeString(gameManager.SongLength));

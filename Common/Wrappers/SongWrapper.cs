@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper("\u031B\u0317\u0310\u0316\u0319\u0313\u0312\u0316\u0313\u031B\u0310")]
-	internal class SongWrapper {
+	internal struct SongWrapper {
 		public readonly object song;
 
 		public MoonChartWrapper[] Charts => ((object[])chartsField.GetValue(song)).Select(c => new MoonChartWrapper(c)).ToArray();

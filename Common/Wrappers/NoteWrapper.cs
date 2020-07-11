@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper("\u030E\u0314\u030E\u0311\u0311\u0314\u030D\u030F\u0314\u0315\u0310")]
-	internal class NoteWrapper {
+	internal struct NoteWrapper {
 		public readonly object note;
 		public static Type NoteType;
 

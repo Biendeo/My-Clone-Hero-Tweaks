@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Common.Wrappers {
 	[Wrapper("\u0311\u0316\u0315\u031B\u0310\u0314\u0316\u030E\u0311\u0315\u031B")]
-	internal class PlayerProfileWrapper {
+	internal struct PlayerProfileWrapper {
 		public readonly object playerProfile;
 
 		public PlayerProfileWrapper(object playerProfile) {

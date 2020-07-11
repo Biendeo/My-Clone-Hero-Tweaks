@@ -6,6 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Common.Wrappers {
-	internal class MoonNoteWrapper {
+	internal struct MoonNoteWrapper {
 	}
 }

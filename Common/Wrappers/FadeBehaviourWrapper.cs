@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(FadeBehaviour))]
-	internal class FadeBehaviourWrapper {
+	internal struct FadeBehaviourWrapper {
 		public FadeBehaviour fadeBehaviour;
 
 		public FadeBehaviourWrapper(FadeBehaviour fadeBehaviour) {

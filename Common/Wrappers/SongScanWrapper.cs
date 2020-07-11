@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(SongScan))]
-	internal class SongScanWrapper {
+	internal struct SongScanWrapper {
 		public readonly SongScan songScan;
 
 		public SongScanWrapper(SongScan songScan) {

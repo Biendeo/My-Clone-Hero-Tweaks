@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Common.Wrappers {
 	[Wrapper(typeof(BasePlayer))]
-	internal class BasePlayerWrapper {
+	internal struct BasePlayerWrapper {
 		public readonly BasePlayer basePlayer;
 
 		public bool IsStreakNotActive => (bool)isStreakNotActiveField.GetValue(basePlayer);

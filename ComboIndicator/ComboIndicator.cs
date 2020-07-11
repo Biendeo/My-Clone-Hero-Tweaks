@@ -63,14 +63,14 @@ namespace ComboIndicator {
 				this.sceneChanged = false;
 				if (sceneName == "Gameplay") {
 					gameManager = new GameManagerWrapper(GameObject.Find("Game Manager")?.GetComponent<GameManager>());
-					if (gameManager != null) {
+					if (!gameManager.IsNull()) {
 						soloCounter = gameManager.BasePlayers[0].SoloCounter;
 						scoreManager = gameManager.ScoreManager;
 					}
 					lastCombo = 0;
 				}
 			}
-			if (sceneName == "Gameplay" && scoreManager != null) {
+			if (sceneName == "Gameplay" && !gameManager.IsNull()) {
 				int currentCombo = scoreManager.OverallCombo;
 				if (currentCombo > 0 && currentCombo != lastCombo && (currentCombo == 50 || currentCombo % 100 /*100*/ == 0)) {
 					var textElement = new GameObject(string.Empty, new Type[] {
