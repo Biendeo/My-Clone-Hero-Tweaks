@@ -393,7 +393,7 @@ namespace ExtraSongUI {
 			if (versionCheck.IsShowingUpdateWindow) {
 				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
-			if (config.TweakVersion != versionCheck.AssemblyVersion && !config.SeenChangelog) {
+			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
 				changelogRect = GUILayout.Window(187000998, changelogRect, OnChangelogWindow, new GUIContent($"Extra Song UI Changelog"), settingsWindowStyle);
 			}
 		}
