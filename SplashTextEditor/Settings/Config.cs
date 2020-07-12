@@ -130,8 +130,9 @@ namespace SplashTextEditor.Settings {
 		}
 
 		public void ConfigureGUI(GUIConfigurationStyles styles) {
-			var noteLabelStyle = styles.SmallLabel;
-			noteLabelStyle.fontStyle = FontStyle.Italic;
+			var noteLabelStyle = new GUIStyle(styles.SmallLabel) {
+				fontStyle = FontStyle.Italic
+			};
 
 			GUILayout.Label("Settings", styles.LargeLabel);
 			Enabled = GUILayout.Toggle(Enabled, "Enabled", styles.Toggle);
