@@ -37,6 +37,8 @@ artifacts:
     name: ExtraSongUI
   - path: PerfectMode\bin\Release\PerfectMode.dll
     name: PerfectMode
+  - path: SplashTextEditor\bin\Release\SplashTextEditor.dll
+    name: SplashTextEditor
 
 deploy:
   - provider: GitHub
@@ -45,7 +47,7 @@ deploy:
     description: 'Placeholder description: maybe I should add install instructions here?'
     auth_token:
       secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
-    artifact: AccuracyIndicator,ComboIndicator,ExtraSongUI,PerfectMode
+    artifact: AccuracyIndicator,ComboIndicator,ExtraSongUI,PerfectMode,SplashTextEditor
     on:
       branch: master
       APPVEYOR_REPO_TAG: true
