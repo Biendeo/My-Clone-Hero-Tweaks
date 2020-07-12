@@ -19,5 +19,14 @@ namespace Common.Wrappers {
 		#region Fields
 
 		#endregion
+
+		#region Properties
+
+		public SongEntryPropertyWrapper Artist => new SongEntryPropertyWrapper(artistProperty.GetValue(songEntry));
+		[WrapperProperty("Artist")]
+		private static readonly PropertyInfo artistProperty;
+
+		#endregion
+
 	}
 }

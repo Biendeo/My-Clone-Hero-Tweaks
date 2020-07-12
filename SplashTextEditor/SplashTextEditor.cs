@@ -2,6 +2,7 @@
 using Common.Wrappers;
 using SplashTextEditor.Settings;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -23,8 +24,9 @@ namespace SplashTextEditor {
 		private Config config;
 
 		private TextMeshProUGUI splashTextComponent;
-		private string currentSplashMessage;
 		private readonly System.Random randomGenerator;
+		private int currentSplashIndex;
+		private bool previewingMessage;
 
 		private GUIStyle settingsWindowStyle;
 		private GUIStyle settingsToggleStyle;
@@ -40,42 +42,116 @@ namespace SplashTextEditor {
 		private readonly VersionCheck versionCheck;
 		private Rect changelogRect;
 
+		private static readonly string[] aprilFoolsSplashMessages = new string[] {
+			 "WELCOME TO THE DISASTER :)",
+			 "YBOOBYYO TO DELETE DISASTER"
+		};
+		private static readonly string dragonforceSplashMessage = "NOT AS GOOD AS DOG ASMR";
+
 		public SplashTextEditor() {
 			versionCheck = new VersionCheck(187004999);
 			changelogRect = new Rect(500.0f, 500.0f, 100.0f, 100.0f);
 			randomGenerator = new System.Random();
 			splashTextComponent = null;
-			currentSplashMessage = string.Empty;
+			currentSplashIndex = 0;
+			previewingMessage = false;
 		}
 
 		#region Unity Methods
 
 		public void Start() {
 			config = Config.LoadConfig();
-			config.ChangeActiveTextFunction = (string s) => currentSplashMessage = s;
+			config.ResetSplashes = () => {
+				currentSplashIndex = GetNewSplashIndex();
+			};
+			config.InsertMessage = (int i) => {
+				if (i == -1) {
+					currentSplashIndex = 0;
+				} else if (currentSplashIndex > i) {
+					++currentSplashIndex;
+				}
+			};
+			config.DeleteMessage = (int i) => {
+				if (currentSplashIndex == i) {
+					currentSplashIndex = config.Messages.Count == 0 ? -1 : randomGenerator.Next(0, config.Messages.Count);
+					previewingMessage = false;
+				} else if (currentSplashIndex > i) {
+					--currentSplashIndex;
+				}
+			};
+			config.PreviewMessage = (int i) => {
+				currentSplashIndex = i;
+				previewingMessage = true;
+			};
+			config.ShiftUpMessage = (int i) => {
+				if (currentSplashIndex == i) {
+					--currentSplashIndex;
+				}
+			};
+			config.ShiftDownMessage = (int i) => {
+				if (currentSplashIndex == i) {
+					++currentSplashIndex;
+				}
+			};
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 			};
+			StartCoroutine(UpdateSplashIndex());
+			UnityEngine.Debug.LogError($"{GlobalVariablesWrapper.instance.splashMessages.Length} messages: [{string.Join(", ", GlobalVariablesWrapper.instance.splashMessages)}]");
+		}
+
+		private int GetNewSplashIndex() {
+			int range = config.Messages.Count;
+			if (config.VanillaSplashMessages) {
+				range += GlobalVariablesWrapper.instance.splashMessages.Length;
+				if (config.AprilFoolsSplashes && GlobalVariablesWrapper.instance.aprilFoolsMode) {
+					range += aprilFoolsSplashMessages.Length;
+				}
+			}
+			if (range == 0) {
+				return -1;
+			} else {
+				return randomGenerator.Next(range);
+			}
+		}
+
+		private IEnumerator UpdateSplashIndex() {
+			while (true) {
+				if (!previewingMessage) {
+					currentSplashIndex = GetNewSplashIndex();
+				}
+				yield return new WaitForSeconds(config.CycleTime);
+			}
 		}
 
 		public void LateUpdate() {
 			string sceneName = SceneManager.GetActiveScene().name;
 			if (this.sceneChanged) {
 				splashTextComponent = null;
-				currentSplashMessage = string.Empty;
+				previewingMessage = false;
 				this.sceneChanged = false;
 			}
 			if (splashTextComponent == null && sceneName == "Main Menu") {
 				var splashTextObject = GameObject.Find("Tag");
 				if (splashTextObject != null) {
 					splashTextComponent = splashTextObject.GetComponent<TextMeshProUGUI>();
-					if (config.Messages.Count > 0) {
-						currentSplashMessage = config.Messages[randomGenerator.Next(0, config.Messages.Count)];
-					}
 				}
 			}
-			if (config.Enabled && splashTextComponent != null && currentSplashMessage != string.Empty) {
-				splashTextComponent.text = currentSplashMessage;
+			if (config.Enabled && splashTextComponent != null) {
+				if (config.DragonforceOverride && BassAudioManagerWrapper.instance.menuSong.songEntry != null && BassAudioManagerWrapper.instance.menuSong.Artist.ValueLowerCase == "dragonforce") {
+					splashTextComponent.text = dragonforceSplashMessage;
+				} else if (currentSplashIndex >= 0) {
+					if (currentSplashIndex < config.Messages.Count) {
+						splashTextComponent.text = config.Messages[currentSplashIndex];
+					} else if (config.VanillaSplashMessages && currentSplashIndex < config.Messages.Count + GlobalVariablesWrapper.instance.splashMessages.Length) {
+						splashTextComponent.text = GlobalVariablesWrapper.instance.splashMessages[currentSplashIndex - config.Messages.Count];
+						if (splashTextComponent.text.Contains("{0}")) {
+							splashTextComponent.text = string.Format(splashTextComponent.text, Environment.UserName);
+						}
+					} else if (config.VanillaSplashMessages && config.AprilFoolsSplashes && GlobalVariablesWrapper.instance.aprilFoolsMode) {
+						splashTextComponent.text = aprilFoolsSplashMessages[currentSplashIndex - config.Messages.Count - GlobalVariablesWrapper.instance.splashMessages.Length];
+					}
+				}
 			}
 			if (!versionCheck.HasVersionBeenChecked && sceneName == "Main Menu") {
 				if (config.SilenceUpdates) {
@@ -175,8 +251,9 @@ namespace SplashTextEditor {
 			GUILayout.Label("Thankyou for downloading Splash Text Editor!", largeLabelStyle);
 			GUILayout.Label("Simply press Ctrl + Shift + F9 to bring up the config menu. From there you can add new splash messages that will randomly be shown on the title screen.", smallLabelStyle);
 			GUILayout.Label("In the config menu, unticking \"Enable\" will result in the original splash text appearing instead of your own. If your messages aren't showing, make sure you've got that ticked!", smallLabelStyle);
+			GUILayout.Label("You can also tick \"Vanilla Splash Messages\" to show the default splash messages, as \"DragonForce Override\" and \"April Fools Splash\" if you want those extra messages to appear when appropriate. Finally, you can change the amount of time spent between splash messages with the slider.", smallLabelStyle);
 			GUILayout.Label("To make a splash message, just click insert in the config menu. You can then edit the text of that message. You can add more splash messages by clicking insert more times (it'll add a new message directly underneath your last message). You can also click delete to remove that message, and shift up and shift down to organise the messages (note that the order does not affect how frequently the messages will appear).", smallLabelStyle);
-			GUILayout.Label("If you are on the main menu, you can also click \"Preview\" which immediately replaces the current splash text with that item. Do note the text doesn't update as you type, so you'll need to click \"Preview\" again to update it. However, when you return to the title screen, the changed splash text can be chosen.", smallLabelStyle);
+			GUILayout.Label("If you are on the main menu, you can also click \"Preview\" which immediately replaces the current splash text with that item. Splash messages won't be randomly cycled through until you either click \"Randomly select new splash\" or change scene (i.e. going into credits or a song).", smallLabelStyle);
 			GUILayout.Label("Make sure you press \"Save\" at the bottom of the config menu to ensure your messages persist when you reopen Clone Hero!", smallLabelStyle);
 			GUILayout.Label("Please refer to the README.md on the Github for more details or to submit bugs/new features.", smallLabelStyle);
 

@@ -57,6 +57,14 @@ namespace Common.Wrappers {
 		[WrapperField("\u0312\u0319\u0318\u0315\u031A\u031A\u0310\u030D\u0313\u0318\u031A")]
 		private static readonly FieldInfo languagesField;
 
+		public string[] splashMessages => (string[])splashMessagesField.GetValue(globalVariables);
+		[WrapperField("\u0312\u0316\u031C\u0311\u030F\u030F\u030D\u030E\u0314\u0316\u0315")]
+		private static readonly FieldInfo splashMessagesField;
+
+		public bool aprilFoolsMode => (bool)aprilFoolsModeField.GetValue(globalVariables);
+		[WrapperField("\u0318\u0319\u0316\u0315\u0315\u0313\u0310\u0311\u030F\u0313\u030E")]
+		private static readonly FieldInfo aprilFoolsModeField;
+
 		// Either sound device or SetWhammyFast?
 		public GameSettingWrapper volumeDevice => new GameSettingWrapper(volumeDeviceField.GetValue(globalVariables));
 		[WrapperField("\u030D\u0314\u0319\u030F\u0311\u031A\u0315\u0313\u0311\u030F\u031A")]
