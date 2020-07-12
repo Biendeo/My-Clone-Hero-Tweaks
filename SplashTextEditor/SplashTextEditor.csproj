@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\CH-Libraries\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,19 +46,19 @@
       <HintPath>..\CH-Libraries\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.dll</HintPath>
+      <HintPath>..\CH-Libraries\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\CH-Libraries\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\CH-Libraries\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>..\CH-Libraries\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\CH-Libraries\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
