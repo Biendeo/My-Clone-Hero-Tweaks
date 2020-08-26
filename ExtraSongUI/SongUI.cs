@@ -1,6 +1,7 @@
-﻿using Common;
-using Common.Settings;
-using Common.Wrappers;
+﻿using BepInEx;
+using BiendeoCHLib;
+using BiendeoCHLib.Settings;
+using BiendeoCHLib.Wrappers;
 using ExtraSongUI.Settings;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,9 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace ExtraSongUI {
-	public class SongUI : MonoBehaviour {
+	[BepInPlugin("com.biendeo.extrasongui", "Extra Song UI", "1.5.0.0")]
+	[BepInDependency("com.biendeo.biendeochlib")]
+	public class SongUI : BaseUnityPlugin {
 		private bool sceneChanged;
 
 		// Song length
@@ -118,14 +121,15 @@ namespace ExtraSongUI {
 
 		public SongUI() {
 			settingsOnWindow = OnWindowHead;
-			versionCheck = new VersionCheck(187000999);
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
 
 		public void Start() {
-			config = Config.LoadConfig();
+			config = Settings.Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 			};
@@ -288,14 +292,6 @@ namespace ExtraSongUI {
 					DestroyAndNullGameplayLabels();
 				}
 			}
-			if (sceneName == "Main Menu" && !versionCheck.HasVersionBeenChecked) {
-				if (config.SilenceUpdates) {
-					versionCheck.HasVersionBeenChecked = true;
-				} else {
-					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					versionCheck.CheckVersion(detectedVersion);
-				}
-			}
 			if (sceneName == "Gameplay" && !gameManager.IsNull() && gameManager.PracticeUI.practiceUI == null) {
 				// Song length
 				formattedSongTime = string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime));
@@ -389,9 +385,6 @@ namespace ExtraSongUI {
 				var outputRect = GUILayout.Window(187000001, new Rect(config.ConfigX, config.ConfigY, 320.0f, 807.0f), settingsOnWindow, new GUIContent("Extra Song UI Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
-			}
-			if (versionCheck.IsShowingUpdateWindow) {
-				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
 			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
 				changelogRect = GUILayout.Window(187000998, changelogRect, OnChangelogWindow, new GUIContent($"Extra Song UI Changelog"), settingsWindowStyle);

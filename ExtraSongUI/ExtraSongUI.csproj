@@ -38,6 +38,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\CH-Libraries\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>F:\Clone Hero\BepInEx Test\BepInEx\core\BepInEx.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -86,10 +89,17 @@
     <Compile Include="Settings\FormattedLabelSettings.cs" />
     <Compile Include="Settings\LabelSettings.cs" />
     <Compile Include="SongUI.cs" />
-    <Compile Include="Loader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Import Project="..\Common\Common.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\BiendeoCHLib\BiendeoCHLib.csproj">
+      <Project>{9b89d9f0-9d7f-4ab0-863a-c9bdeeec91bc}</Project>
+      <Name>BiendeoCHLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

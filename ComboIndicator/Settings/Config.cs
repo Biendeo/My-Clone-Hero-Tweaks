@@ -1,8 +1,8 @@
-﻿using Common.Settings;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -25,7 +25,7 @@ namespace ComboIndicator.Settings {
 		}
 
 		public static Config LoadConfig() {
-			var configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "ComboIndicatorConfig.xml"));
+			var configFilePath = new FileInfo(Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, "ComboIndicatorConfig.xml"));
 			if (configFilePath.Exists) {
 				var configString = File.ReadAllText(configFilePath.FullName);
 				var serializer = new XmlSerializer(typeof(Config));
@@ -40,7 +40,7 @@ namespace ComboIndicator.Settings {
 		}
 
 		public void SaveConfig() {
-			var configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "ComboIndicatorConfig.xml"));
+			var configFilePath = new FileInfo(Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, "ComboIndicatorConfig.xml"));
 			if (configFilePath.Exists) configFilePath.Delete();
 			var serializer = new XmlSerializer(typeof(Config));
 			using (var configOut = configFilePath.OpenWrite()) {

@@ -1,5 +1,7 @@
-﻿using Common;
-using Common.Wrappers;
+﻿using BepInEx;
+using BiendeoCHLib;
+using BiendeoCHLib.Settings;
+using BiendeoCHLib.Wrappers;
 using PerfectMode.Settings;
 using System;
 using System.Collections.Generic;
@@ -13,7 +15,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace PerfectMode {
-	public class PerfectMode : MonoBehaviour {
+	[BepInPlugin("com.biendeo.perfectmode", "Perfect Mode", "1.5.0.0")]
+	[BepInDependency("com.biendeo.biendeochlib")]
+	public class PerfectMode : BaseUnityPlugin {
 		private bool sceneChanged;
 
 		private GameManagerWrapper gameManager;
@@ -53,14 +57,15 @@ namespace PerfectMode {
 
 		public PerfectMode() {
 			settingsScrollPosition = new Vector2();
-			versionCheck = new VersionCheck(187001999);
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
 
 		public void Start() {
-			config = Config.LoadConfig();
+			config = Settings.Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 				failedObjective = false;
@@ -134,14 +139,6 @@ namespace PerfectMode {
 					restartIndicatorLabel.GetComponent<Text>().font = uiFont;
 				} else {
 					DestroyAndNullGameplayLabels();
-				}
-			}
-			if (sceneName == "Main Menu" && !versionCheck.HasVersionBeenChecked) {
-				if (config.SilenceUpdates) {
-					versionCheck.HasVersionBeenChecked = true;
-				} else {
-					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					versionCheck.CheckVersion(detectedVersion);
 				}
 			}
 			if (config.Enabled && sceneName == "Gameplay" && !gameManager.IsNull()) {
@@ -235,9 +232,6 @@ namespace PerfectMode {
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
-			if (versionCheck.IsShowingUpdateWindow) {
-				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
-			}
 			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
 				changelogRect = GUILayout.Window(187001998, changelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
 			}
@@ -262,7 +256,7 @@ namespace PerfectMode {
 				}
 			};
 			settingsScrollPosition = GUILayout.BeginScrollView(settingsScrollPosition);
-			config.ConfigureGUI(new Common.Settings.GUIConfigurationStyles {
+			config.ConfigureGUI(new GUIConfigurationStyles {
 				LargeLabel = largeLabelStyle,
 				SmallLabel = smallLabelStyle,
 				Window = settingsWindowStyle,

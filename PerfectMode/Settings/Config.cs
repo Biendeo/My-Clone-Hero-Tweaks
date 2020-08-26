@@ -1,8 +1,9 @@
-﻿using Common.Settings;
+﻿using BiendeoCHLib.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -163,7 +164,7 @@ namespace PerfectMode.Settings {
 		}
 
 		public static Config LoadConfig() {
-			var configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "PerfectModeConfig.xml"));
+			var configFilePath = new FileInfo(Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, "ExtraSongUIConfig.xml"));
 			if (configFilePath.Exists) {
 				// Determine if it's the old version. Without a version field, this is slightly tricky.
 				var configString = File.ReadAllText(configFilePath.FullName);
@@ -191,7 +192,7 @@ namespace PerfectMode.Settings {
 		}
 
 		public void SaveConfig() {
-			var configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "PerfectModeConfig.xml"));
+			var configFilePath = new FileInfo(Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, "ExtraSongUIConfig.xml"));
 			if (configFilePath.Exists) configFilePath.Delete();
 			var serializer = new XmlSerializer(typeof(Config));
 			using (var configOut = configFilePath.OpenWrite()) {

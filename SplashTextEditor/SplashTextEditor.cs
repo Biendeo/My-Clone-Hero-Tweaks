@@ -1,5 +1,7 @@
-﻿using Common;
-using Common.Wrappers;
+﻿using BepInEx;
+using BiendeoCHLib;
+using BiendeoCHLib.Settings;
+using BiendeoCHLib.Wrappers;
 using SplashTextEditor.Settings;
 using System;
 using System.Collections;
@@ -18,7 +20,9 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace SplashTextEditor {
-	public class SplashTextEditor : MonoBehaviour {
+	[BepInPlugin("com.biendeo.splashtexteditor", "Splash Text Editor", "1.5.0.0")]
+	[BepInDependency("com.biendeo.biendeochlib")]
+	public class SplashTextEditor : BaseUnityPlugin {
 		private bool sceneChanged;
 
 		private Config config;
@@ -49,7 +53,8 @@ namespace SplashTextEditor {
 		private static readonly string dragonforceSplashMessage = "NOT AS GOOD AS DOG ASMR";
 
 		public SplashTextEditor() {
-			versionCheck = new VersionCheck(187004999);
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(500.0f, 500.0f, 100.0f, 100.0f);
 			randomGenerator = new System.Random();
 			splashTextComponent = null;
@@ -60,7 +65,7 @@ namespace SplashTextEditor {
 		#region Unity Methods
 
 		public void Start() {
-			config = Config.LoadConfig();
+			config = Settings.Config.LoadConfig();
 			config.ResetSplashes = () => {
 				currentSplashIndex = GetNewSplashIndex();
 			};
@@ -97,14 +102,14 @@ namespace SplashTextEditor {
 				sceneChanged = true;
 			};
 			StartCoroutine(UpdateSplashIndex());
-			UnityEngine.Debug.LogError($"{GlobalVariablesWrapper.instance.splashMessages.Length} messages: [{string.Join(", ", GlobalVariablesWrapper.instance.splashMessages)}]");
+			UnityEngine.Debug.LogError($"{GlobalVariablesWrapper.Instance.SplashMessages.Length} messages: [{string.Join(", ", GlobalVariablesWrapper.Instance.SplashMessages)}]");
 		}
 
 		private int GetNewSplashIndex() {
 			int range = config.Messages.Count;
 			if (config.VanillaSplashMessages) {
-				range += GlobalVariablesWrapper.instance.splashMessages.Length;
-				if (config.AprilFoolsSplashes && GlobalVariablesWrapper.instance.aprilFoolsMode) {
+				range += GlobalVariablesWrapper.Instance.SplashMessages.Length;
+				if (config.AprilFoolsSplashes && GlobalVariablesWrapper.Instance.AprilFoolsMode) {
 					range += aprilFoolsSplashMessages.Length;
 				}
 			}
@@ -138,27 +143,19 @@ namespace SplashTextEditor {
 				}
 			}
 			if (config.Enabled && splashTextComponent != null) {
-				if (config.DragonforceOverride && BassAudioManagerWrapper.instance.menuSong.songEntry != null && BassAudioManagerWrapper.instance.menuSong.Artist.ValueLowerCase == "dragonforce") {
+				if (config.DragonforceOverride && BassAudioManagerWrapper.instance.menuSong.SongEntry != null && BassAudioManagerWrapper.instance.menuSong.Artist.ValueLowerCase == "dragonforce") {
 					splashTextComponent.text = dragonforceSplashMessage;
 				} else if (currentSplashIndex >= 0) {
 					if (currentSplashIndex < config.Messages.Count) {
 						splashTextComponent.text = config.Messages[currentSplashIndex];
-					} else if (config.VanillaSplashMessages && currentSplashIndex < config.Messages.Count + GlobalVariablesWrapper.instance.splashMessages.Length) {
-						splashTextComponent.text = GlobalVariablesWrapper.instance.splashMessages[currentSplashIndex - config.Messages.Count];
+					} else if (config.VanillaSplashMessages && currentSplashIndex < config.Messages.Count + GlobalVariablesWrapper.Instance.SplashMessages.Length) {
+						splashTextComponent.text = GlobalVariablesWrapper.Instance.SplashMessages[currentSplashIndex - config.Messages.Count];
 						if (splashTextComponent.text.Contains("{0}")) {
 							splashTextComponent.text = string.Format(splashTextComponent.text, Environment.UserName);
 						}
-					} else if (config.VanillaSplashMessages && config.AprilFoolsSplashes && GlobalVariablesWrapper.instance.aprilFoolsMode) {
-						splashTextComponent.text = aprilFoolsSplashMessages[currentSplashIndex - config.Messages.Count - GlobalVariablesWrapper.instance.splashMessages.Length];
+					} else if (config.VanillaSplashMessages && config.AprilFoolsSplashes && GlobalVariablesWrapper.Instance.AprilFoolsMode) {
+						splashTextComponent.text = aprilFoolsSplashMessages[currentSplashIndex - config.Messages.Count - GlobalVariablesWrapper.Instance.SplashMessages.Length];
 					}
-				}
-			}
-			if (!versionCheck.HasVersionBeenChecked && sceneName == "Main Menu") {
-				if (config.SilenceUpdates) {
-					versionCheck.HasVersionBeenChecked = true;
-				} else {
-					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					versionCheck.CheckVersion(detectedVersion);
 				}
 			}
 			config.HandleInput();
@@ -180,9 +177,6 @@ namespace SplashTextEditor {
 				var outputRect = GUILayout.Window(187004001, new Rect(config.ConfigX, config.ConfigY, 320.0f, 500.0f), OnWindow, new GUIContent("Splash Text Editor Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
-			}
-			if (versionCheck.IsShowingUpdateWindow) {
-				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
 			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
 				changelogRect = GUILayout.Window(187004998, changelogRect, OnChangelogWindow, new GUIContent($"Splash Text Editor Changelog"), settingsWindowStyle);
@@ -208,7 +202,7 @@ namespace SplashTextEditor {
 				}
 			};
 			settingsScrollPosition = GUILayout.BeginScrollView(settingsScrollPosition);
-			config.ConfigureGUI(new Common.Settings.GUIConfigurationStyles {
+			config.ConfigureGUI(new GUIConfigurationStyles {
 				LargeLabel = largeLabelStyle,
 				SmallLabel = smallLabelStyle,
 				Window = settingsWindowStyle,
