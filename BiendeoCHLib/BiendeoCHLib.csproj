@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9B89D9F0-9D7F-4AB0-863A-C9BDEEEC91BC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BiendeoCHLib</RootNamespace>
+    <AssemblyName>BiendeoCHLib</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\CH-Libraries\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\CH-Libraries\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>..\CH-Libraries\BepInEx.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>..\CH-Libraries\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\CH-Libraries\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\CH-Libraries\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\CH-Libraries\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BiendeoCHLib.cs" />
+    <Compile Include="Patches\Attributes\HarmonyCHPrefix.cs" />
+    <Compile Include="Patches\Attributes\HarmonyCHPostfix.cs" />
+    <Compile Include="Patches\Attributes\HarmonyCHPatch.cs" />
+    <Compile Include="Patches\PatchBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\ColorablePositionableLabel.cs" />
+    <Compile Include="Settings\ColorARGB.cs" />
+    <Compile Include="Settings\FormattableColorablePositionableLabel.cs" />
+    <Compile Include="Settings\GUIConfigurationStyles.cs" />
+    <Compile Include="Settings\IGUIConfigurable.cs" />
+    <Compile Include="Settings\KeyBind.cs" />
+    <Compile Include="Settings\PositionableLabel.cs" />
+    <Compile Include="VersionCheck.cs" />
+    <Compile Include="Wrappers\Attributes\Wrapper.cs" />
+    <Compile Include="Wrappers\Attributes\WrapperConstructor.cs" />
+    <Compile Include="Wrappers\Attributes\WrapperField.cs" />
+    <Compile Include="Wrappers\Attributes\WrapperMethod.cs" />
+    <Compile Include="Wrappers\Attributes\WrapperProperty.cs" />
+    <Compile Include="Wrappers\BasePlayerWrapper.cs" />
+    <Compile Include="Wrappers\BassAudioManagerWrapper.cs" />
+    <Compile Include="Wrappers\CacheWrapper.cs" />
+    <Compile Include="Wrappers\CHPlayerWrapper.cs" />
+    <Compile Include="Wrappers\FadeBehaviourWrapper.cs" />
+    <Compile Include="Wrappers\FrameRateWrapper.cs" />
+    <Compile Include="Wrappers\GameManagerWrapper.cs" />
+    <Compile Include="Wrappers\GameSettingWrapper.cs" />
+    <Compile Include="Wrappers\GlobalVariablesWrapper.cs" />
+    <Compile Include="Wrappers\INIParserWrapper.cs" />
+    <Compile Include="Wrappers\MoonChartWrapper.cs" />
+    <Compile Include="Wrappers\MoonNoteWrapper.cs" />
+    <Compile Include="Wrappers\EndOfSongWrapper.cs" />
+    <Compile Include="Wrappers\NoteWrapper.cs" />
+    <Compile Include="Wrappers\PauseMenuWrapper.cs" />
+    <Compile Include="Wrappers\PlayerProfileWrapper.cs" />
+    <Compile Include="Wrappers\PracticeUIWrapper.cs" />
+    <Compile Include="Wrappers\ScoreManagerWrapper.cs" />
+    <Compile Include="Wrappers\SoloCounterWrapper.cs" />
+    <Compile Include="Wrappers\SongDirectoryWrapper.cs" />
+    <Compile Include="Wrappers\SongEntryPropertyWrapper.cs" />
+    <Compile Include="Wrappers\SongEntryWrapper.cs" />
+    <Compile Include="Wrappers\MainMenuWrapper.cs" />
+    <Compile Include="Wrappers\SongScanWrapper.cs" />
+    <Compile Include="Wrappers\SongSelectWrapper.cs" />
+    <Compile Include="Wrappers\SongWrapper.cs" />
+    <Compile Include="Wrappers\SPBarWrapper.cs" />
+    <Compile Include="Wrappers\StarPowerWrapper.cs" />
+    <Compile Include="Wrappers\StarProgressWrapper.cs" />
+    <Compile Include="Wrappers\WrapperBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+    <None Include="Wrappers\README.md" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

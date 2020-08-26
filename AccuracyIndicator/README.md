@@ -7,10 +7,11 @@ By pressing `Ctrl + Shift + F7`, you can bring up a window that allows you to cu
 
 ## How to install
 - You will need Clone Hero **v0.23.2.2**.
-- Make sure you install CHLauncher first!
-  - Navigate to the `#ch-launcher` channel, and download the latest version of CHLauncher.exe.
-  - Run it, and patch your version of Clone Hero with it. You should now have a `Tweaks` folder in your Clone Hero folder.
-- Download the latest version of `AccuracyIndicator.dll` from [the releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and place it in your tweaks folder.
+- Make sure you install [BepInEx](https://github.com/BepInEx/BepInEx) first! If you don't have a `BepInEx` folder in your CH directory, you probably haven't done this yet!
+- Download the latest version of `AccuracyIndicator.zip` from [the releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and unzip it into `~YourCHFolder\BepInEx\plugins`.
+
+## How to uninstall
+- Delete the folder `~YourCHFolder\BepInEx\plugins\Accuracy Indicator`.
 
 ## How to use
 ### Default usage

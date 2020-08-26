@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
+
+namespace BiendeoCHLib.Wrappers.Attributes {
+	public sealed class WrapperConstructor : Attribute {
+		public readonly Type[] Types;
+
+		public WrapperConstructor(Type[] types) {
+			Types = types;
+		}
+
+		public WrapperConstructor() {
+			Types = Array.Empty<Type>();
+		}
+	}
+}

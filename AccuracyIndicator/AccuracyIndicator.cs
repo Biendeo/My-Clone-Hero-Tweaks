@@ -1,7 +1,11 @@
 ﻿using AccuracyIndicator.Components;
 using AccuracyIndicator.Settings;
-using Common;
-using Common.Wrappers;
+using BepInEx;
+using BiendeoCHLib;
+using BiendeoCHLib.Patches;
+using BiendeoCHLib.Patches.Attributes;
+using BiendeoCHLib.Wrappers;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,7 +22,20 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace AccuracyIndicator {
-	public class AccuracyIndicator : MonoBehaviour {
+	//This is just an example of patching, I'm not using it yet.
+	//[HarmonyCHPatch(typeof(SongScanWrapper), nameof(SongScanWrapper.InitializeScanSettings))]
+	//public class TestPatch3 {
+	//	[HarmonyCHPrefix]
+	//	static void Prefix() {
+	//		UnityEngine.Debug.Log("UnknownMethod3!");
+	//	}
+	//}
+
+	[BepInPlugin("com.biendeo.accuracyindicator", "Accuracy Indicator", "1.5.0.0")]
+	[BepInDependency("com.biendeo.biendeochlib")]
+	public class AccuracyIndicator : BaseUnityPlugin {
+		public static AccuracyIndicator Instance { get; private set; }
+
 		private bool sceneChanged;
 
 		private GameManagerWrapper gameManager;
@@ -66,16 +83,27 @@ namespace AccuracyIndicator {
 		private readonly VersionCheck versionCheck;
 		private Rect changelogRect;
 
+		private Harmony Harmony;
+
 		public AccuracyIndicator() {
+			Instance = this;
+			Harmony = new Harmony("com.biendeo.accuracyindicator");
+			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
+
 			lastSongTime = -5.0;
-			versionCheck = new VersionCheck(187002999);
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
+		}
+
+		~AccuracyIndicator() {
+			Harmony.UnpatchAll();
 		}
 
 		#region Unity Methods
 
 		public void Start() {
-			config = Config.LoadConfig();
+			config = Settings.Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 			};
@@ -383,14 +411,6 @@ namespace AccuracyIndicator {
 					//TODO: Get the font directly from the bundle?
 					uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 				}
-				if (!versionCheck.HasVersionBeenChecked) {
-					if (config.SilenceUpdates) {
-						versionCheck.HasVersionBeenChecked = true;
-					} else {
-						string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-						versionCheck.CheckVersion(detectedVersion);
-					}
-				}
 			}
 			config.HandleInput();
 			if (!gameManager.IsNull()) {
@@ -416,9 +436,6 @@ namespace AccuracyIndicator {
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
-			if (versionCheck.IsShowingUpdateWindow) {
-				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
-			}
 			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
 				changelogRect = GUILayout.Window(187002998, changelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
 			}
@@ -443,7 +460,7 @@ namespace AccuracyIndicator {
 				}
 			};
 			settingsScrollPosition = GUILayout.BeginScrollView(settingsScrollPosition);
-			config.ConfigureGUI(new Common.Settings.GUIConfigurationStyles {
+			config.ConfigureGUI(new BiendeoCHLib.Settings.GUIConfigurationStyles {
 				LargeLabel = largeLabelStyle,
 				SmallLabel = smallLabelStyle,
 				Window = settingsWindowStyle,
