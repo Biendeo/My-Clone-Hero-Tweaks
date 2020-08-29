@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplashTextEditor", "SplashT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiendeoCHLib", "BiendeoCHLib\BiendeoCHLib.csproj", "{9B89D9F0-9D7F-4AB0-863A-C9BDEEEC91BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyModLoader", "LegacyModLoader\LegacyModLoader.csproj", "{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{706a2c43-585e-4fe2-834f-aeaea234735c}*SharedItemsImports = 4
@@ -90,6 +92,14 @@ Global
 		{9B89D9F0-9D7F-4AB0-863A-C9BDEEEC91BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9B89D9F0-9D7F-4AB0-863A-C9BDEEEC91BC}.Release|x64.ActiveCfg = Release|Any CPU
 		{9B89D9F0-9D7F-4AB0-863A-C9BDEEEC91BC}.Release|x64.Build.0 = Release|Any CPU
+		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Debug|x64.Build.0 = Debug|Any CPU
+		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Release|x64.ActiveCfg = Release|Any CPU
+		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
