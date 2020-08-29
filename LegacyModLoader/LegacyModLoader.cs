@@ -19,7 +19,18 @@ namespace LegacyModLoader {
 
 		private bool isMainMenu;
 		private ConfigEntry<bool> showMainMenuLabel;
+		private string versionNumber;
 		private string mainMenuLabelContent;
+
+		private GUIStyle labelStyle;
+		private GUIStyle buttonStyle;
+		private GUIStyle windowStyle;
+		private GUIStyle disabledButtonStyle;
+
+		private ConfigEntry<bool> enableUnloadFeature;
+		private bool showingLoaderMenu;
+		private Rect loaderMenuRect;
+		private int loaderMenuId;
 
 		private List<LoaderInfo> loaders;
 
@@ -27,10 +38,18 @@ namespace LegacyModLoader {
 			Instance = this;
 			isMainMenu = true;
 			showMainMenuLabel = Config.Bind("Visuals", "Show Main Menu Label", true);
+			labelStyle = null;
+			buttonStyle = null;
+			windowStyle = null;
+			enableUnloadFeature = Config.Bind("Features", "Enable Unload Feature", false);
+			showingLoaderMenu = false;
+			loaderMenuRect = new Rect(10.0f, 10.0f, 300.0f, 500.0f);
+			loaderMenuId = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
 			loaders = new List<LoaderInfo>();
 			LoadModInfo();
 			InitialiseMods();
-			mainMenuLabelContent = $"Biendeo's Legacy Mod Loader v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion} - {loaders.Count(l => l.Instance != null)} mods loaded";
+			versionNumber = $"v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
+			mainMenuLabelContent = string.Empty;
 		}
 
 		private void LoadModInfo() {
@@ -65,16 +84,30 @@ namespace LegacyModLoader {
 
 		private void InitialiseMods() {
 			foreach (var loader in loaders) {
-				try {
-					if (loader.Instance == null) {
-						loader.Instance = Activator.CreateInstance(loader.LoaderType);
-						loader.LoadTweakMethod.Invoke(loader.Instance, Array.Empty<object>());
-						Logger.LogInfo($"Initialised mod {loader.Assembly.FullName}");
-					}
-				} catch (Exception exc) {
-					loader.Instance = null;
-					Logger.LogError($"Could not load mod {loader.Assembly.FullName}: {exc}");
+				if (loader.Instance == null) {
+					LoadMod(loader);
 				}
+			}
+		}
+
+		private void LoadMod(LoaderInfo loader) {
+			try {
+				loader.Instance = Activator.CreateInstance(loader.LoaderType);
+				loader.LoadTweakMethod.Invoke(loader.Instance, Array.Empty<object>());
+				Logger.LogInfo($"Loaded mod {loader.Assembly.FullName}");
+			} catch (Exception exc) {
+				loader.Instance = null;
+				Logger.LogError($"Could not load mod {loader.Assembly.FullName}: {exc}");
+			}
+		}
+
+		private void UnloadMod(LoaderInfo loader) {
+			try {
+				loader.UnloadTweakMethod.Invoke(loader.Instance, Array.Empty<object>());
+				Logger.LogInfo($"Unloaded mod {loader.Assembly.FullName}");
+				loader.Instance = null;
+			} catch (Exception exc) {
+				Logger.LogError($"Could not unload mod {loader.Assembly.FullName}: {exc}");
 			}
 		}
 
@@ -86,11 +119,76 @@ namespace LegacyModLoader {
 			};
 		}
 
-		public void OnGUI() {
-			if (isMainMenu && showMainMenuLabel.Value) {
-				GUI.Box(new Rect(0.0f, 0.0f, 330.0f, 22.0f), string.Empty);
-				GUI.Label(new Rect(0.0f, 0.0f, 330.0f, 100.0f), mainMenuLabelContent);
+		public void Update() {
+			mainMenuLabelContent = $"Biendeo's Legacy Mod Loader {versionNumber} - {loaders.Count(l => l.Instance != null)} mods loaded";
+			if (Input.GetKeyDown(KeyCode.F1)) {
+				showingLoaderMenu = !showingLoaderMenu;
 			}
+		}
+
+		public void OnGUI() {
+			if (labelStyle == null || buttonStyle == null || windowStyle == null) {
+				labelStyle = new GUIStyle(GUI.skin.label);
+				buttonStyle = new GUIStyle(GUI.skin.button);
+				windowStyle = new GUIStyle(GUI.skin.window);
+				var disabledButtonTexture = new Texture2D(buttonStyle.normal.background.width, buttonStyle.normal.background.height);
+				Graphics.CopyTexture(buttonStyle.normal.background, 0, 0, disabledButtonTexture, 0, 0);
+				disabledButtonTexture.Apply();
+				disabledButtonTexture.SetPixels(disabledButtonTexture.GetPixels().Select(c => new Color(c.r * 0.3f, c.g * 0.3f, c.b * 0.3f, c.a)).ToArray());
+				disabledButtonTexture.Apply();
+				disabledButtonStyle = new GUIStyle(GUI.skin.button) {
+					normal = new GUIStyleState() {
+						background = disabledButtonTexture,
+						textColor = Color.white
+					},
+					active = new GUIStyleState() {
+						background = disabledButtonTexture,
+						textColor = Color.white
+					},
+					focused = new GUIStyleState() {
+						background = disabledButtonTexture,
+						textColor = Color.white
+					},
+					hover = new GUIStyleState() {
+						background = disabledButtonTexture,
+						textColor = Color.white
+					}
+				};
+			}
+			if (isMainMenu && showMainMenuLabel.Value) {
+				GUI.Box(new Rect(0.0f, 0.0f, 350.0f, 22.0f), string.Empty);
+				GUI.Label(new Rect(0.0f, 0.0f, 350.0f, 100.0f), mainMenuLabelContent);
+			}
+			if (showingLoaderMenu) {
+				loaderMenuRect = GUILayout.Window(loaderMenuId, loaderMenuRect, DrawLoaderMenu, new GUIContent("Biendeo's Legacy Mod Loader"), windowStyle);
+			}
+		}
+
+		private void DrawLoaderMenu(int id) {
+			foreach (var loader in loaders) {
+				if (!enableUnloadFeature.Value) {
+					GUILayout.Button(new GUIContent(loader.Assembly.GetName().Name), disabledButtonStyle);
+				} else {
+					string loaderText;
+					if (loader.Instance == null) {
+						loaderText = $"Load {loader.Assembly.GetName().Name}";
+					} else {
+						loaderText = $"Unload {loader.Assembly.GetName().Name}";
+					}
+					if (GUILayout.Button(new GUIContent(loaderText), buttonStyle)) {
+						if (loader.Instance == null) {
+							LoadMod(loader);
+						} else {
+							UnloadMod(loader);
+						}
+					}
+				}
+			}
+			GUILayout.Space(25.0f);
+
+			GUILayout.Label($"Biendeo's Legacy Mod Loader {versionNumber}");
+			GUILayout.Label("Thankyou for using this!");
+			GUI.DragWindow();
 		}
 
 		#endregion
