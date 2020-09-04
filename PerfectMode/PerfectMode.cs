@@ -1,7 +1,10 @@
 ﻿using BepInEx;
 using BiendeoCHLib;
+using BiendeoCHLib.Patches;
+using BiendeoCHLib.Patches.Attributes;
 using BiendeoCHLib.Settings;
 using BiendeoCHLib.Wrappers;
+using HarmonyLib;
 using PerfectMode.Settings;
 using System;
 using System.Collections.Generic;
@@ -15,13 +18,24 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace PerfectMode {
+
+	[HarmonyCHPatch(typeof(BasePlayerWrapper), nameof(BasePlayerWrapper.MissNote))]
+	public class MissNoteHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(object __0) {
+			var note = NoteWrapper.Wrap(__0);
+			PerfectMode.Instance.MissNote(note);
+		}
+	}
+
 	[BepInPlugin("com.biendeo.perfectmode", "Perfect Mode", "1.5.0.0")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class PerfectMode : BaseUnityPlugin {
+		public static PerfectMode Instance { get; private set; }
+
 		private bool sceneChanged;
 
 		private GameManagerWrapper gameManager;
-		private List<NoteWrapper> notes;
 
 		private bool failedObjective;
 		private float remainingTimeBeforeRestart;
@@ -45,8 +59,6 @@ namespace PerfectMode {
 		private string target;
 		private bool isStillFC;
 		private int missedNotes;
-		private int totalNoteCount;
-		private int currentNoteIndex;
 
 		private GameObject displayImageLabel;
 		private GameObject remainingNotesLeftLabel;
@@ -55,7 +67,13 @@ namespace PerfectMode {
 		private readonly VersionCheck versionCheck;
 		private Rect changelogRect;
 
+		private Harmony Harmony;
+
 		public PerfectMode() {
+			Instance = this;
+			Harmony = new Harmony("com.biendeo.perfectmode");
+			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
+
 			settingsScrollPosition = new Vector2();
 			versionCheck = gameObject.AddComponent<VersionCheck>();
 			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
@@ -82,9 +100,6 @@ namespace PerfectMode {
 		}
 
 		private void ResetGameplaySceneValues() {
-			notes = gameManager.BasePlayers[0].Notes;
-			totalNoteCount = notes?.Count ?? 0;
-			currentNoteIndex = 0;
 			missedNotes = 0;
 			invokedSceneChange = false;
 		}
@@ -144,12 +159,6 @@ namespace PerfectMode {
 			if (config.Enabled && sceneName == "Gameplay" && !gameManager.IsNull()) {
 				target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
 				isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
-				while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
-					if (!notes[currentNoteIndex].WasHit && notes[currentNoteIndex].WasMissed) {
-						++missedNotes;
-					}
-					++currentNoteIndex;
-				}
 				if (!failedObjective && (config.FC && !isStillFC || config.NotesMissed < missedNotes)) {
 					failedObjective = true;
 					remainingTimeBeforeRestart = Math.Min(config.FailDelay, (float)(gameManager.SongLength - gameManager.SongTime));
@@ -238,6 +247,10 @@ namespace PerfectMode {
 		}
 
 		#endregion
+
+		internal void MissNote(NoteWrapper note) {
+			++missedNotes;
+		}
 
 		private void OnWindow(int id) {
 			var largeLabelStyle = new GUIStyle {
