@@ -16,6 +16,14 @@ public static CacheWrapper Wrap(object cache) => new CacheWrapper {
 };
 ```
 
+### Casts
+- Any wrappers where the underlying class directly inherits or is directly inherited by another class must contain a cast method for each type.
+- The cast must be a method with the naming scheme `CastToX` where `X` is the name of the wrapper class.
+- If the underlying class is not a CH class, then it is okay to just perform a straight cast on the wrapped object.
+```cs
+public BasePlayerWrapper CastToBasePlayer() => BasePlayerWrapper.Wrap(BaseGuitarPlayer);
+```
+
 ### Constructors
 - If any constructors are defined, a region called `Constructors` must be declared.
 - Inside this region, all constructors of the class must be exposed as static methods with the name `Construct`. Arguments should directly map to the arguments of the constructor. If the arguments consist of obfuscated typenames, `object` can be used instead. If using `object` causes multiple constructors to have the same prototype, a descriptive name can be used for the method.

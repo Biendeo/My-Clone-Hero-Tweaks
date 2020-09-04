@@ -22,14 +22,23 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace AccuracyIndicator {
-	//This is just an example of patching, I'm not using it yet.
-	//[HarmonyCHPatch(typeof(SongScanWrapper), nameof(SongScanWrapper.InitializeScanSettings))]
-	//public class TestPatch3 {
-	//	[HarmonyCHPrefix]
-	//	static void Prefix() {
-	//		UnityEngine.Debug.Log("UnknownMethod3!");
-	//	}
-	//}
+	[HarmonyCHPatch(typeof(BaseGuitarPlayerWrapper), nameof(BaseGuitarPlayerWrapper.HitNote))]
+	public class HitNoteHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(object __0) {
+			var note = NoteWrapper.Wrap(__0);
+			AccuracyIndicator.Instance.HitNote(note);
+		}
+	}
+
+	[HarmonyCHPatch(typeof(BasePlayerWrapper), nameof(BasePlayerWrapper.MissNote))]
+	public class MissNoteHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(object __0) {
+			var note = NoteWrapper.Wrap(__0);
+			AccuracyIndicator.Instance.MissNote(note);
+		}
+	}
 
 	[BepInPlugin("com.biendeo.accuracyindicator", "Accuracy Indicator", "1.5.0.0")]
 	[BepInDependency("com.biendeo.biendeochlib")]
@@ -39,8 +48,6 @@ namespace AccuracyIndicator {
 		private bool sceneChanged;
 
 		private GameManagerWrapper gameManager;
-		private BasePlayerWrapper[] basePlayers;
-		private List<NoteWrapper> notes;
 
 		private Font uiFont;
 
@@ -59,7 +66,6 @@ namespace AccuracyIndicator {
 		private Vector2 settingsScrollPosition;
 
 		private int totalNoteCount;
-		private int currentNoteIndex;
 
 		private double lastNoteHitTime;
 		private float lastNoteHitDifference;
@@ -119,8 +125,7 @@ namespace AccuracyIndicator {
 		}
 
 		private void ResetGameplaySceneValues() {
-			notes = basePlayers[0].Notes;
-			currentNoteIndex = 0;
+			var notes = gameManager.BasePlayers[0].Notes;
 			totalNoteCount = notes?.Count ?? 0;
 			lastNoteHitTime = -5.0;
 			lastNoteHitDifference = 0.0f;
@@ -233,34 +238,6 @@ namespace AccuracyIndicator {
 			highestVeryEarly = Math.Min(highestVeryEarly, -config.CutoffVeryEarly);
 		}
 
-		private void UpdateNotes() {
-			while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
-				lastNoteActualTime = notes[currentNoteIndex].Time;
-				lastNoteHitTime = gameManager.SongTime;
-				if (notes[currentNoteIndex].WasHit) {
-					if (lastNoteHitTime > lastNoteActualTime && (lastNoteHitTime - Time.deltaTime) < lastNoteActualTime) {
-						lastNoteHitDifference = 0.0f;
-					} else if (lastNoteHitTime > lastNoteActualTime) {
-						lastNoteHitDifference = (float)(lastNoteHitTime - Time.deltaTime - lastNoteActualTime);
-					} else if (lastNoteHitTime < lastNoteActualTime) {
-						lastNoteHitDifference = (float)(lastNoteHitTime - lastNoteActualTime);
-					} else {
-						UnityEngine.Debug.LogError($"Panic?");
-					}
-					noteHits.Add(lastNoteHitDifference);
-					if (hitNotes == 0) {
-						hitAccuracy = lastNoteHitDifference;
-					} else {
-						hitAccuracy = (hitAccuracy * hitNotes + lastNoteHitDifference) / (hitNotes + 1);
-					}
-					++hitNotes;
-				} else if (notes[currentNoteIndex].WasMissed) {
-					lastNoteHitDifference = 0.07f;
-				}
-				++currentNoteIndex;
-			}
-		}
-
 		private void UpdateLabels() {
 			if (config.Enabled) {
 				double timeFromLastNote = gameManager.SongTime - lastNoteHitTime;
@@ -344,7 +321,6 @@ namespace AccuracyIndicator {
 					int uiLayerMask = LayerMask.NameToLayer("UI");
 					var gameManagerObject = GameObject.Find("Game Manager");
 					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
-					basePlayers = gameManager.BasePlayers;
 					ResetGameplaySceneValues();
 
 					DestroyAndNullGameplayLabels();
@@ -402,9 +378,6 @@ namespace AccuracyIndicator {
 					ResetGameplaySceneValues();
 				}
 				UpdateGreatestThresholds();
-				if (notes != null) {
-					UpdateNotes();
-				}
 				UpdateLabels();
 			} else if (sceneName == "Main Menu") {
 				if (uiFont is null) {
@@ -442,6 +415,32 @@ namespace AccuracyIndicator {
 		}
 
 		#endregion
+
+		internal void HitNote(NoteWrapper note) {
+			lastNoteActualTime = note.Time;
+			lastNoteHitTime = gameManager.SongTime;
+			if (lastNoteHitTime > lastNoteActualTime && (lastNoteHitTime - Time.deltaTime) < lastNoteActualTime) {
+				lastNoteHitDifference = 0.0f;
+			} else if (lastNoteHitTime > lastNoteActualTime) {
+				lastNoteHitDifference = (float)(lastNoteHitTime - Time.deltaTime - lastNoteActualTime);
+			} else if (lastNoteHitTime < lastNoteActualTime) {
+				lastNoteHitDifference = (float)(lastNoteHitTime - lastNoteActualTime);
+			} else {
+				Logger.LogError("Panic?");
+			}
+			noteHits.Add(lastNoteHitDifference);
+			if (hitNotes == 0) {
+				hitAccuracy = lastNoteHitDifference;
+			} else {
+				hitAccuracy = (hitAccuracy * hitNotes + lastNoteHitDifference) / (hitNotes + 1);
+			}
+		}
+
+		internal void MissNote(NoteWrapper note) {
+			lastNoteActualTime = note.Time;
+			lastNoteHitTime = gameManager.SongTime;
+			lastNoteHitDifference = 0.07f;
+		}
 
 		private void OnWindow(int id) {
 			var largeLabelStyle = new GUIStyle {

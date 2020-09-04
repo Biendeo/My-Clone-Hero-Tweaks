@@ -88,6 +88,7 @@
     <Compile Include="Wrappers\Attributes\WrapperField.cs" />
     <Compile Include="Wrappers\Attributes\WrapperMethod.cs" />
     <Compile Include="Wrappers\Attributes\WrapperProperty.cs" />
+    <Compile Include="Wrappers\BaseGuitarPlayerWrapper.cs" />
     <Compile Include="Wrappers\BasePlayerWrapper.cs" />
     <Compile Include="Wrappers\BassAudioManagerWrapper.cs" />
     <Compile Include="Wrappers\CacheWrapper.cs" />

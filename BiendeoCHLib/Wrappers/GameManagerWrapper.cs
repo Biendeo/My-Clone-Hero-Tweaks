@@ -19,11 +19,11 @@ namespace BiendeoCHLib.Wrappers {
 
 		public override int GetHashCode() => gameManager.GetHashCode();
 
-		public BasePlayerWrapper[] BasePlayers => ((BasePlayer[])basePlayersField.GetValue(gameManager)).Select(bp => new BasePlayerWrapper(bp)).ToArray();
+		public BasePlayerWrapper[] BasePlayers => ((BasePlayer[])basePlayersField.GetValue(gameManager)).Select(bp => BasePlayerWrapper.Wrap(bp)).ToArray();
 		[WrapperField("\u0316\u0319\u0314\u0316\u0315\u0313\u0311\u0315\u031C\u0312\u0315")]
 		private static readonly FieldInfo basePlayersField;
 
-		public BasePlayerWrapper UnknownBasePlayer => new BasePlayerWrapper((BasePlayer)unknownBasePlayerField.GetValue(gameManager)); //? It's null for me. 🤷‍
+		public BasePlayerWrapper UnknownBasePlayer => BasePlayerWrapper.Wrap((BasePlayer)unknownBasePlayerField.GetValue(gameManager)); //? It's null for me. 🤷‍
 		[WrapperField("\u0316\u031C\u0312\u0312\u031C\u0315\u0314\u0310\u031A\u0314\u0317")]
 		private static readonly FieldInfo unknownBasePlayerField;
 
@@ -72,7 +72,7 @@ namespace BiendeoCHLib.Wrappers {
 		/// <returns></returns>
 		public List<NoteWrapper> GetNotesFromChart(CHPlayerWrapper player, bool recomputeStars) {
 			var notes = (ICollection)getNotesFromChartMethod.Invoke(gameManager, new object[] { player.chPlayer, recomputeStars });
-			return notes.Cast<object>().Select(o => new NoteWrapper(o)).ToList();
+			return notes.Cast<object>().Select(o => NoteWrapper.Wrap(o)).ToList();
 		}
 		[WrapperMethod("\u0318\u030D\u031A\u031C\u031B\u0310\u031A\u030F\u030D\u0314\u031B")]
 		private static readonly MethodInfo getNotesFromChartMethod;
