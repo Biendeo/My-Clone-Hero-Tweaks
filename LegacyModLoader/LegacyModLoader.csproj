@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BepInEx">
-      <HintPath>F:\Clone Hero\BepInEx Test\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>..\BepInEx-Libraries\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

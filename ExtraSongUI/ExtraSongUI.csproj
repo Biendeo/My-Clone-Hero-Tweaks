@@ -32,14 +32,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>F:\Clone Hero\BepInEx Test\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>..\BepInEx-Libraries\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\CH-Libraries\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>F:\Clone Hero\BepInEx Test\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>..\BepInEx-Libraries\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
