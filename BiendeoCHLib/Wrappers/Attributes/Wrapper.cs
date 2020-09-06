@@ -52,13 +52,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 					if (wrapperMethod != null) {
 						var methodInfo = wrapperMethod.GetMethodInfo(WrappedType);
 						if (methodInfo != null) {
-							logger.LogDebug(methodInfo.MetadataToken.ToString("X2"));
-							try {
-								field.SetValue(null, MethodInvoker.GetHandler(methodInfo));
-							} catch (InvalidProgramException exc) {
-								logger.LogError(exc);
-								field.SetValue(null, null);
-							}
+							field.SetValue(null, MethodInvoker.GetHandler(methodInfo));
 							methodsSeen.Add(methodInfo);
 							logger.LogInfo($"Loaded method {wrapperType.Name}.{field.Name}");
 						}

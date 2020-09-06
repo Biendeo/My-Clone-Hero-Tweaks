@@ -23,6 +23,7 @@ namespace BiendeoCHLib.Patches.Attributes {
 			MethodInfo targetMethod = null;
 			var wrapperField = wrapperType.GetField($"{wrapperMethodName.ToLower()[0]}{wrapperMethodName.Substring(1)}Method", BindingFlags.Static | BindingFlags.NonPublic);
 			if (wrapperField != null) {
+				//TODO: Is there a better way than re-invoking the wrapper stuff?
 				targetMethod = wrapperField.GetCustomAttribute<WrapperMethod>().GetMethodInfo(wrapperType.GetCustomAttribute<Wrapper>().WrappedType);
 				logger.LogInfo($"Found matching method for patch {wrapperType.Name}.{wrapperMethodName}");
 			} else {
