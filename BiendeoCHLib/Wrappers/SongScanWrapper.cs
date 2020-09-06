@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -149,29 +150,29 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
-		public IEnumerator ScanForSongsThread(bool fullScan) => (IEnumerator)scanForSongsThreadMethod.Invoke(SongScan, new object[] { fullScan });
+		public IEnumerator ScanForSongsThread(bool fullScan) => (IEnumerator)scanForSongsThreadMethod(SongScan, fullScan);
 		[WrapperMethod("\u031B\u031C\u031B\u030D\u0315\u031B\u031B\u0313\u0318\u0319\u0314")]
-		private static readonly MethodInfo scanForSongsThreadMethod;
+		private static readonly FastInvokeHandler scanForSongsThreadMethod;
 
-		public void DisplayStatus(CacheWrapper songCache) => displayStatusMethod.Invoke(SongScan, new object[] { songCache.Cache });
+		public void DisplayStatus(CacheWrapper songCache) => displayStatusMethod(SongScan, songCache.Cache);
 		[WrapperMethod("\u0317\u0312\u031B\u0314\u0310\u0314\u0315\u0314\u0311\u0311\u031C")]
-		private static readonly MethodInfo displayStatusMethod;
+		private static readonly FastInvokeHandler displayStatusMethod;
 
-		public void OnApplicationQuit() => onApplicationQuitMethod.Invoke(SongScan, Array.Empty<object>());
+		public void OnApplicationQuit() => onApplicationQuitMethod(SongScan);
 		[WrapperMethod("OnApplicationQuit")]
-		private static readonly MethodInfo onApplicationQuitMethod;
+		private static readonly FastInvokeHandler onApplicationQuitMethod;
 
-		public void AbortScan() => abortScanMethod.Invoke(SongScan, Array.Empty<object>());
+		public void AbortScan() => abortScanMethod(SongScan);
 		[WrapperMethod("\u0312\u0318\u0311\u0316\u0316\u0313\u0314\u030E\u031B\u0310\u0317")]
-		private static readonly MethodInfo abortScanMethod;
+		private static readonly FastInvokeHandler abortScanMethod;
 
-		public void InitializeScanSettings() => initializeScanSettingsMethod.Invoke(SongScan, Array.Empty<object>());
+		public void InitializeScanSettings() => initializeScanSettingsMethod(SongScan);
 		[WrapperMethod("\u0319\u0317\u0316\u0314\u030F\u0319\u0318\u0319\u0311\u0310\u0314")]
-		private static readonly MethodInfo initializeScanSettingsMethod;
+		private static readonly FastInvokeHandler initializeScanSettingsMethod;
 
-		public Coroutine StartScan(bool fullScan) => (Coroutine)startScanMethod.Invoke(SongScan, new object[] { fullScan });
+		public Coroutine StartScan(bool fullScan) => (Coroutine)startScanMethod(SongScan, fullScan);
 		[WrapperMethod("\u031C\u0311\u0310\u030D\u0315\u0315\u031B\u030D\u0313\u0310\u0312")]
-		private static readonly MethodInfo startScanMethod;
+		private static readonly FastInvokeHandler startScanMethod;
 
 		#endregion
 
@@ -180,37 +181,37 @@ namespace BiendeoCHLib.Wrappers {
 
 		// These three methods are all identical to the main one, including which functions they do call.
 		[WrapperMethod("\u030E\u030E\u0315\u0316\u030F\u0316\u0315\u0312\u031C\u0314\u030D")]
-		private static readonly MethodInfo scanForSongsThreadMethodDuplicate1;
+		private static readonly FastInvokeHandler scanForSongsThreadMethodDuplicate1;
 
 		[WrapperMethod("\u031A\u0318\u030F\u0318\u0318\u031A\u031A\u030E\u0318\u0318\u030E")]
-		private static readonly MethodInfo scanForSongsThreadMethodDuplicate2;
+		private static readonly FastInvokeHandler scanForSongsThreadMethodDuplicate2;
 
 		[WrapperMethod("\u0316\u0310\u0317\u030D\u030F\u030D\u030F\u0316\u0318\u031A\u0313")]
-		private static readonly MethodInfo scanForSongsThreadMethodDuplicate3;
+		private static readonly FastInvokeHandler scanForSongsThreadMethodDuplicate3;
 
 		[WrapperMethod("\u030E\u030D\u0319\u030F\u031C\u030F\u030E\u0311\u0318\u0318\u030E")]
-		private static readonly MethodInfo onApplicationQuitMethodDuplicate1;
+		private static readonly FastInvokeHandler onApplicationQuitMethodDuplicate1;
 
 		[WrapperMethod("\u0312\u0318\u0311\u0316\u0316\u0313\u0314\u030E\u031B\u0310\u0317")]
-		private static readonly MethodInfo onApplicationQuitMethodDuplicate2;
+		private static readonly FastInvokeHandler onApplicationQuitMethodDuplicate2;
 
 		[WrapperMethod("\u031A\u0314\u030E\u0312\u0311\u0315\u0318\u030E\u031A\u031C\u0318")]
-		private static readonly MethodInfo onApplicationQuitMethodDuplicate3;
+		private static readonly FastInvokeHandler onApplicationQuitMethodDuplicate3;
 
 		[WrapperMethod("\u031C\u031A\u031A\u030E\u030D\u0314\u031B\u0310\u0315\u030D\u031C")]
-		private static readonly MethodInfo displayStatusMethodDuplicate1;
+		private static readonly FastInvokeHandler displayStatusMethodDuplicate1;
 
 		[WrapperMethod("\u0310\u031C\u0315\u0314\u0315\u030D\u031C\u031C\u0313\u031C\u0318")]
-		private static readonly MethodInfo displayStatusMethodDuplicate2;
+		private static readonly FastInvokeHandler displayStatusMethodDuplicate2;
 
 		[WrapperMethod("\u030E\u0310\u0314\u031C\u0311\u031B\u0315\u0317\u030E\u030F\u030F")]
-		private static readonly MethodInfo startScanMethodDuplicate1;
+		private static readonly FastInvokeHandler startScanMethodDuplicate1;
 
 		[WrapperMethod("\u0312\u031A\u0314\u030D\u0315\u0314\u0313\u0310\u0315\u0316\u0314")]
-		private static readonly MethodInfo initializeScanSettingsMethodDuplicate1;
+		private static readonly FastInvokeHandler initializeScanSettingsMethodDuplicate1;
 
 		[WrapperMethod("\u0316\u0312\u0315\u0316\u0318\u0313\u031C\u0313\u031B\u030E\u030E")]
-		private static readonly MethodInfo initializeScanSettingsMethodDuplicate2;
+		private static readonly FastInvokeHandler initializeScanSettingsMethodDuplicate2;
 
 #pragma warning restore IDE0051, CS0169 // Remove unused private members
 		#endregion

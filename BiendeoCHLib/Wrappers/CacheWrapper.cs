@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -189,17 +190,17 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
-		public void ScanSongsFull() => scanSongsFullMethod.Invoke(Cache, Array.Empty<object>());
+		public void ScanSongsFull() => scanSongsFullMethod(Cache);
 		[WrapperMethod("\u030E\u0316\u0316\u031A\u0313\u030E\u031C\u031B\u031B\u0312\u030D")]
-		private static readonly MethodInfo scanSongsFullMethod;
+		private static readonly FastInvokeHandler scanSongsFullMethod;
 
-		public void ScanSongsFast() => scanSongsFastMethod.Invoke(Cache, Array.Empty<object>());
+		public void ScanSongsFast() => scanSongsFastMethod(Cache);
 		[WrapperMethod("\u031C\u031C\u030D\u0318\u030D\u0314\u030E\u030F\u0316\u031C\u0318")]
-		private static readonly MethodInfo scanSongsFastMethod;
+		private static readonly FastInvokeHandler scanSongsFastMethod;
 
-		public void ScanSongsInternal(bool fullScan) => scanSongsInternalMethod.Invoke(Cache, new object[] { fullScan });
+		public void ScanSongsInternal(bool fullScan) => scanSongsInternalMethod(Cache, fullScan);
 		[WrapperMethod("\u0310\u031A\u030E\u0318\u0318\u0313\u0316\u0310\u0314\u0318\u0312")]
-		private static readonly MethodInfo scanSongsInternalMethod;
+		private static readonly FastInvokeHandler scanSongsInternalMethod;
 
 		#endregion
 
@@ -224,16 +225,16 @@ namespace BiendeoCHLib.Wrappers {
 #pragma warning disable IDE0051, CS0169 // Remove unused private members
 
 		[WrapperMethod("\u0310\u0318\u0318\u030E\u031C\u030D\u030E\u030F\u030E\u030D\u0319")]
-		private static readonly MethodInfo scanSongsInternalMethodDuplicate1;
+		private static readonly FastInvokeHandler scanSongsInternalMethodDuplicate1;
 
 		[WrapperMethod("\u0315\u0310\u0313\u0318\u030D\u0317\u031A\u030E\u030E\u0314\u0317")]
-		private static readonly MethodInfo scanSongsInternalMethodDuplicate2;
+		private static readonly FastInvokeHandler scanSongsInternalMethodDuplicate2;
 
 		[WrapperMethod("\u0318\u030D\u031A\u031C\u0314\u0311\u031A\u0313\u0315\u0314\u031B")]
-		private static readonly MethodInfo scanSongsInternalMethodDuplicate3;
+		private static readonly FastInvokeHandler scanSongsInternalMethodDuplicate3;
 
 		[WrapperMethod("\u0318\u0315\u0315\u0312\u0317\u0315\u031C\u0317\u0318\u0315\u0310")]
-		private static readonly MethodInfo scanSongsInternalMethodDuplicate4;
+		private static readonly FastInvokeHandler scanSongsInternalMethodDuplicate4;
 
 #pragma warning restore IDE0051, CS0169 // Remove unused private members
 		#endregion

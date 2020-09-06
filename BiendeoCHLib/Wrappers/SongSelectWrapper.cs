@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,9 +33,9 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
-		public void ResetIndex() => resetIndexMethod.Invoke(SongSelect, Array.Empty<object>());
+		public void ResetIndex() => resetIndexMethod(SongSelect);
 		[WrapperMethod("\u0311\u031A\u0318\u0317\u0318\u0314\u031A\u030D\u0313\u030E\u031A")]
-		private static readonly MethodInfo resetIndexMethod;
+		private static readonly FastInvokeHandler resetIndexMethod;
 
 		#endregion
 	}

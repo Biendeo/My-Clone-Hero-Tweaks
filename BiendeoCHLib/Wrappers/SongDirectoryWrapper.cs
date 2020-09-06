@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,9 +37,9 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
-		public static void Sort(string forceSort, bool something) => sortMethod.Invoke(null, new object[] { forceSort, something });
+		public static void Sort(string forceSort, bool something) => sortMethod.Invoke(null, forceSort, something);
 		[WrapperMethod("\u0313\u0311\u030F\u0311\u0317\u0312\u0315\u031B\u0313\u031A\u031B")]
-		private static readonly MethodInfo sortMethod;
+		private static readonly FastInvokeHandler sortMethod;
 
 		#endregion
 

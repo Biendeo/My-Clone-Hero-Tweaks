@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -71,11 +72,11 @@ namespace BiendeoCHLib.Wrappers {
 		/// <param name="recomputeStars"></param>
 		/// <returns></returns>
 		public List<NoteWrapper> GetNotesFromChart(CHPlayerWrapper player, bool recomputeStars) {
-			var notes = (ICollection)getNotesFromChartMethod.Invoke(gameManager, new object[] { player.chPlayer, recomputeStars });
+			var notes = (ICollection)getNotesFromChartMethod(gameManager, player.chPlayer, recomputeStars);
 			return notes.Cast<object>().Select(o => NoteWrapper.Wrap(o)).ToList();
 		}
 		[WrapperMethod("\u0318\u030D\u031A\u031C\u031B\u0310\u031A\u030F\u030D\u0314\u031B")]
-		private static readonly MethodInfo getNotesFromChartMethod;
+		private static readonly FastInvokeHandler getNotesFromChartMethod;
 
 		public GameManagerWrapper(GameManager gameManager) {
 			this.gameManager = gameManager;

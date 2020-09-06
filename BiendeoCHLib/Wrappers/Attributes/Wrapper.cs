@@ -1,21 +1,23 @@
 ﻿using BepInEx.Logging;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml.Schema;
 using UnityEngine;
 
 namespace BiendeoCHLib.Wrappers.Attributes {
 	public sealed class Wrapper : Attribute {
-		private readonly Type type;
+		public readonly Type WrappedType;
 
 		public Wrapper(Type type) {
-			this.type = type;
+			WrappedType = type;
 		}
 
 		public Wrapper(string typeName) {
-			type = Assembly.Load("Assembly-CSharp.dll").GetType(typeName);
+			WrappedType = Assembly.Load("Assembly-CSharp.dll").GetType(typeName);
 		}
 
 		public void InitializeSingletons(Type wrapperType, ManualLogSource logger) {
@@ -28,7 +30,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 				if (field.FieldType == typeof(FieldInfo) && field.GetValue(null) == null) {
 					var wrapperMember = field.GetCustomAttribute<WrapperField>();
 					if (wrapperMember != null) {
-						var fieldInfo = type.GetField(wrapperMember.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+						var fieldInfo = WrappedType.GetField(wrapperMember.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 						if (fieldInfo != null) {
 							field.SetValue(null, fieldInfo);
 							fieldsSeen.Add(fieldInfo);
@@ -38,24 +40,25 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 				} else if (field.FieldType == typeof(PropertyInfo) && field.GetValue(null) == null) {
 					var wrapperProperty = field.GetCustomAttribute<WrapperProperty>();
 					if (wrapperProperty != null) {
-						var propertyInfo = type.GetProperty(wrapperProperty.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+						var propertyInfo = WrappedType.GetProperty(wrapperProperty.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 						if (propertyInfo != null) {
 							field.SetValue(null, propertyInfo);
 							propertiesSeen.Add(propertyInfo);
 							logger.LogInfo($"Loaded property {wrapperType.Name}.{field.Name}");
 						}
 					}
-				} else if (field.FieldType == typeof(MethodInfo) && field.GetValue(null) == null) {
+				} else if (field.FieldType == typeof(FastInvokeHandler) && field.GetValue(null) == null) {
 					var wrapperMethod = field.GetCustomAttribute<WrapperMethod>();
 					if (wrapperMethod != null) {
-						MethodInfo methodInfo;
-						if (wrapperMethod.Types.Length == 0) {
-							methodInfo = type.GetMethod(wrapperMethod.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-						} else {
-							methodInfo = type.GetMethod(wrapperMethod.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, wrapperMethod.Types, Array.Empty<ParameterModifier>());
-						}
+						var methodInfo = wrapperMethod.GetMethodInfo(WrappedType);
 						if (methodInfo != null) {
-							field.SetValue(null, methodInfo);
+							logger.LogDebug(methodInfo.MetadataToken.ToString("X2"));
+							try {
+								field.SetValue(null, MethodInvoker.GetHandler(methodInfo));
+							} catch (InvalidProgramException exc) {
+								logger.LogError(exc);
+								field.SetValue(null, null);
+							}
 							methodsSeen.Add(methodInfo);
 							logger.LogInfo($"Loaded method {wrapperType.Name}.{field.Name}");
 						}
@@ -63,7 +66,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 				} else if (field.FieldType == typeof(ConstructorInfo) && field.GetValue(null) == null) {
 					var wrapperConstructor = field.GetCustomAttribute<WrapperConstructor>();
 					if (wrapperConstructor != null) {
-						var constructorInfo = type.GetConstructor(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, wrapperConstructor.Types, null);
+						var constructorInfo = WrappedType.GetConstructor(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, wrapperConstructor.Types, null);
 						if (constructorInfo != null) {
 							field.SetValue(null, constructorInfo);
 							constructorsSeen.Add(constructorInfo);
@@ -80,10 +83,10 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 				}
 			}
 #if DEBUG
-			var remainingFields = type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Except(fieldsSeen).ToList();
-			var remainingProperties = type.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Except(propertiesSeen).ToList();
-			var remainingMethods = type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Except(methodsSeen).ToList();
-			var remainingConstructors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Except(constructorsSeen).ToList();
+			var remainingFields = WrappedType.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Except(fieldsSeen).ToList();
+			var remainingProperties = WrappedType.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Except(propertiesSeen).ToList();
+			var remainingMethods = WrappedType.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Except(methodsSeen).ToList();
+			var remainingConstructors = WrappedType.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Except(constructorsSeen).ToList();
 
 			if (remainingFields.Count > 0) {
 				logger.LogWarning($"Wrapper {wrapperType.Name} is missing {remainingFields.Count} fields, first is {remainingFields.First().Name.DecodeUnicode()}.");

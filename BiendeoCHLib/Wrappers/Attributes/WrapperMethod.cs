@@ -17,5 +17,13 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 			ObfuscatedName = obfuscatedName;
 			Types = types;
 		}
+
+		public MethodInfo GetMethodInfo(Type type) {
+			if (Types.Length == 0) {
+				return type.GetMethod(ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+			} else {
+				return type.GetMethod(ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, Types, Array.Empty<ParameterModifier>());
+			}
+		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,9 +38,9 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
-		public IEnumerator InvokeSceneChange(string sceneName) => (IEnumerator)invokeSceneChangeMethod.Invoke(fadeBehaviour, new object[] { sceneName });
+		public IEnumerator InvokeSceneChange(string sceneName) => (IEnumerator)invokeSceneChangeMethod(fadeBehaviour, sceneName);
 		[WrapperMethod("\u0318\u031C\u0315\u0318\u030E\u031B\u0315\u0310\u030D\u0314\u0314")]
-		private static readonly MethodInfo invokeSceneChangeMethod;
+		private static readonly FastInvokeHandler invokeSceneChangeMethod;
 
 		#endregion
 	}

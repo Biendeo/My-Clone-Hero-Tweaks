@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using BiendeoCHLib.Wrappers.Attributes;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace BiendeoCHLib.Patches.Attributes {
 			MethodInfo targetMethod = null;
 			var wrapperField = wrapperType.GetField($"{wrapperMethodName.ToLower()[0]}{wrapperMethodName.Substring(1)}Method", BindingFlags.Static | BindingFlags.NonPublic);
 			if (wrapperField != null) {
-				targetMethod = wrapperField.GetValue(null) as MethodInfo;
+				targetMethod = wrapperField.GetCustomAttribute<WrapperMethod>().GetMethodInfo(wrapperType.GetCustomAttribute<Wrapper>().WrappedType);
 				logger.LogInfo($"Found matching method for patch {wrapperType.Name}.{wrapperMethodName}");
 			} else {
 				logger.LogError($"Could not find matching method for patch {wrapperType.Name}.{wrapperMethodName}");

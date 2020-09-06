@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,9 +25,9 @@ namespace BiendeoCHLib.Wrappers {
 		/// <param name="instrument"></param>
 		/// <param name="difficulty"></param>
 		/// <returns></returns>
-		public MoonChartWrapper GetChart(sbyte instrument, sbyte difficulty) => new MoonChartWrapper(getChartMethod.Invoke(song, new object[] { instrument, difficulty }));
+		public MoonChartWrapper GetChart(sbyte instrument, sbyte difficulty) => new MoonChartWrapper(getChartMethod(song, instrument, difficulty));
 		[WrapperMethod("\u030D\u0311\u0313\u0316\u0311\u0313\u0318\u030F\u0318\u0319\u0316")]
-		private static readonly MethodInfo getChartMethod; //TODO: Make this use the enums
+		private static readonly FastInvokeHandler getChartMethod; //TODO: Make this use the enums
 
 		public static string QUOTEVALIDATE => (string)quoteValidateField.GetValue(null); //! Regex
 		[WrapperField("\u030E\u0311\u0317\u0310\u0310\u031A\u0311\u0319\u030F\u0318\u0310")]

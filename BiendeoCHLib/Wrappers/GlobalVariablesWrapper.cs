@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -342,13 +343,13 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
-		public void LoadSettings() => loadSettingsMethod.Invoke(globalVariables, Array.Empty<object>());
+		public void LoadSettings() => loadSettingsMethod(globalVariables);
 		[WrapperMethod("\u0317\u0313\u0316\u0311\u031B\u0318\u0317\u0314\u031C\u031A\u0319")]
-		private static readonly MethodInfo loadSettingsMethod;
+		private static readonly FastInvokeHandler loadSettingsMethod;
 
-		public void WriteSettings() => writeSettingsMethod.Invoke(globalVariables, Array.Empty<object>());
+		public void WriteSettings() => writeSettingsMethod(globalVariables);
 		[WrapperMethod("\u0318\u031C\u0313\u0312\u0317\u0315\u030D\u0312\u030D\u031A\u0317")]
-		private static readonly MethodInfo writeSettingsMethod;
+		private static readonly FastInvokeHandler writeSettingsMethod;
 
 		#endregion
 	}

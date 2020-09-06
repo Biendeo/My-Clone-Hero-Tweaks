@@ -1,9 +1,11 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -33,9 +35,9 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
-		public void MissNote(NoteWrapper hitNote) => missNoteMethod.Invoke(BasePlayer, new object[] { hitNote.Note });
+		public void MissNote(NoteWrapper hitNote) => missNoteMethod(BasePlayer, hitNote.Note);
 		[WrapperMethod("\u0318\u030F\u0314\u031C\u0310\u0317\u0313\u031B\u030E\u031A\u031A")]
-		private static readonly MethodInfo missNoteMethod;
+		private static readonly FastInvokeHandler missNoteMethod;
 
 		#endregion
 

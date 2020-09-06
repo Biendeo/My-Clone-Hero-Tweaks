@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -125,105 +126,105 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
-		public void ClampValue() => clampValueMethod.Invoke(gameSetting, Array.Empty<object>());
+		public void ClampValue() => clampValueMethod(gameSetting);
 		[WrapperMethod("\u0317\u0319\u0315\u031B\u0319\u0313\u031C\u0313\u030E\u031A\u030F")]
-		private static readonly MethodInfo clampValueMethod;
+		private static readonly FastInvokeHandler clampValueMethod;
 
-		public void ClampValue2() => clampValueMethod2.Invoke(gameSetting, Array.Empty<object>());
+		public void ClampValue2() => clampValueMethod2(gameSetting);
 		[WrapperMethod("\u030E\u0319\u0316\u031B\u031B\u0311\u0310\u030D\u031B\u0311\u031C")]
-		private static readonly MethodInfo clampValueMethod2;
+		private static readonly FastInvokeHandler clampValueMethod2;
 
-		public void ClampValue3() => clampValueMethod3.Invoke(gameSetting, Array.Empty<object>());
+		public void ClampValue3() => clampValueMethod3(gameSetting);
 		[WrapperMethod("\u030F\u0311\u0317\u0312\u0315\u0315\u030D\u030F\u0311\u030F\u031B")]
-		private static readonly MethodInfo clampValueMethod3;
+		private static readonly FastInvokeHandler clampValueMethod3;
 
-		public void ClampValue4() => clampValueMethod4.Invoke(gameSetting, Array.Empty<object>());
+		public void ClampValue4() => clampValueMethod4(gameSetting);
 		[WrapperMethod("\u030D\u0314\u0310\u0319\u0317\u0319\u031C\u0311\u0317\u030F\u0311")]
-		private static readonly MethodInfo clampValueMethod4;
+		private static readonly FastInvokeHandler clampValueMethod4;
 
-		public void ClampValue5() => clampValueMethod5.Invoke(gameSetting, Array.Empty<object>());
+		public void ClampValue5() => clampValueMethod5(gameSetting);
 		[WrapperMethod("\u0314\u0319\u0314\u0318\u0317\u031A\u0319\u0311\u0312\u0318\u0318")]
-		private static readonly MethodInfo clampValueMethod5;
+		private static readonly FastInvokeHandler clampValueMethod5;
 
-		public void Increment() => incrementMethod.Invoke(gameSetting, Array.Empty<object>());
+		public void Increment() => incrementMethod(gameSetting);
 		[WrapperMethod("\u030E\u0318\u0313\u0319\u0313\u0313\u0314\u0311\u0316\u0312\u0312")]
-		private static readonly MethodInfo incrementMethod;
+		private static readonly FastInvokeHandler incrementMethod;
 
-		public void Increment2() => incrementMethod2.Invoke(gameSetting, Array.Empty<object>());
+		public void Increment2() => incrementMethod2(gameSetting);
 		[WrapperMethod("\u0314\u0313\u0314\u0310\u0314\u0319\u0310\u0317\u0313\u030E\u030D")]
-		private static readonly MethodInfo incrementMethod2;
+		private static readonly FastInvokeHandler incrementMethod2;
 
-		public void Increment3() => incrementMethod3.Invoke(gameSetting, Array.Empty<object>());
+		public void Increment3() => incrementMethod3(gameSetting);
 		[WrapperMethod("\u031C\u030E\u0317\u0313\u031A\u031B\u031B\u0313\u031B\u0316\u0315")]
-		private static readonly MethodInfo incrementMethod3;
+		private static readonly FastInvokeHandler incrementMethod3;
 
-		public void Increment4() => incrementMethod4.Invoke(gameSetting, Array.Empty<object>());
+		public void Increment4() => incrementMethod4(gameSetting);
 		[WrapperMethod("\u0318\u0312\u031B\u030D\u0316\u031A\u0316\u0319\u0317\u030E\u0311")]
-		private static readonly MethodInfo incrementMethod4;
+		private static readonly FastInvokeHandler incrementMethod4;
 
-		public void Increment5() => incrementMethod5.Invoke(gameSetting, Array.Empty<object>());
+		public void Increment5() => incrementMethod5(gameSetting);
 		[WrapperMethod("\u0317\u031A\u0310\u0319\u0311\u031C\u030F\u0313\u031C\u0311\u0311")]
-		private static readonly MethodInfo incrementMethod5;
+		private static readonly FastInvokeHandler incrementMethod5;
 
-		public void Increment6() => incrementMethod6.Invoke(gameSetting, Array.Empty<object>());
+		public void Increment6() => incrementMethod6(gameSetting);
 		[WrapperMethod("\u030F\u031B\u0315\u0312\u0317\u0316\u031A\u031B\u030E\u0318\u031C")]
-		private static readonly MethodInfo incrementMethod6;
+		private static readonly FastInvokeHandler incrementMethod6;
 
-		public void Decrement() => decrementMethod.Invoke(gameSetting, Array.Empty<object>());
+		public void Decrement() => decrementMethod(gameSetting);
 		[WrapperMethod("\u0313\u031B\u031B\u0313\u0314\u031C\u030F\u031A\u0319\u030E\u0312")]
-		private static readonly MethodInfo decrementMethod;
+		private static readonly FastInvokeHandler decrementMethod;
 
-		public void Decrement2() => decrementMethod2.Invoke(gameSetting, Array.Empty<object>());
+		public void Decrement2() => decrementMethod2(gameSetting);
 		[WrapperMethod("\u0310\u0310\u0311\u030E\u031B\u0313\u030E\u030F\u0311\u030F\u0313")]
-		private static readonly MethodInfo decrementMethod2;
+		private static readonly FastInvokeHandler decrementMethod2;
 
-		public void Decrement3() => decrementMethod3.Invoke(gameSetting, Array.Empty<object>());
+		public void Decrement3() => decrementMethod3(gameSetting);
 		[WrapperMethod("\u0316\u0313\u0310\u031B\u0316\u030F\u031C\u030E\u0313\u0317\u0315")]
-		private static readonly MethodInfo decrementMethod3;
+		private static readonly FastInvokeHandler decrementMethod3;
 
-		public void Reset() => resetMethod.Invoke(gameSetting, Array.Empty<object>());
+		public void Reset() => resetMethod(gameSetting);
 		[WrapperMethod("\u0316\u0311\u0317\u0316\u031B\u0315\u0313\u031B\u0318\u0315\u0312")]
-		private static readonly MethodInfo resetMethod;
+		private static readonly FastInvokeHandler resetMethod;
 
-		public void Reset2() => resetMethod2.Invoke(gameSetting, Array.Empty<object>());
+		public void Reset2() => resetMethod2(gameSetting);
 		[WrapperMethod("\u0310\u0311\u030D\u0315\u031C\u0313\u0318\u0317\u030F\u030E\u030F")]
-		private static readonly MethodInfo resetMethod2;
+		private static readonly FastInvokeHandler resetMethod2;
 
-		public void Reset3() => resetMethod3.Invoke(gameSetting, Array.Empty<object>());
+		public void Reset3() => resetMethod3(gameSetting);
 		[WrapperMethod("\u0312\u0317\u0311\u0314\u030F\u0315\u0314\u0317\u030F\u030F\u0314")]
-		private static readonly MethodInfo resetMethod3;
+		private static readonly FastInvokeHandler resetMethod3;
 
-		public void Reset4() => resetMethod4.Invoke(gameSetting, Array.Empty<object>());
+		public void Reset4() => resetMethod4(gameSetting);
 		[WrapperMethod("\u0316\u0311\u0319\u031B\u0317\u0318\u030D\u0318\u0316\u0311\u0314")]
-		private static readonly MethodInfo resetMethod4;
+		private static readonly FastInvokeHandler resetMethod4;
 
-		public void Reset5() => resetMethod5.Invoke(gameSetting, Array.Empty<object>());
+		public void Reset5() => resetMethod5(gameSetting);
 		[WrapperMethod("\u0314\u0313\u0312\u0312\u030E\u0319\u031A\u031A\u031C\u0314\u031A")]
-		private static readonly MethodInfo resetMethod5;
+		private static readonly FastInvokeHandler resetMethod5;
 
-		public PlayerProfileWrapper.ControllerType GetControllerType2() => (PlayerProfileWrapper.ControllerType)getControllerTypeMethod2.Invoke(gameSetting, Array.Empty<object>());
+		public PlayerProfileWrapper.ControllerType GetControllerType2() => (PlayerProfileWrapper.ControllerType)getControllerTypeMethod2(gameSetting);
 		[WrapperMethod("\u030E\u0319\u0316\u0317\u0316\u0311\u0317\u0310\u0316\u030E\u030E")]
-		private static readonly MethodInfo getControllerTypeMethod2;
+		private static readonly FastInvokeHandler getControllerTypeMethod2;
 
-		public PlayerProfileWrapper.ControllerType GetControllerType3() => (PlayerProfileWrapper.ControllerType)getControllerTypeMethod3.Invoke(gameSetting, Array.Empty<object>());
+		public PlayerProfileWrapper.ControllerType GetControllerType3() => (PlayerProfileWrapper.ControllerType)getControllerTypeMethod3(gameSetting);
 		[WrapperMethod("\u0317\u031A\u031A\u0312\u031C\u0319\u031B\u030D\u030D\u0318\u0318")]
-		private static readonly MethodInfo getControllerTypeMethod3;
+		private static readonly FastInvokeHandler getControllerTypeMethod3;
 
-		public bool GetBoolValue2() => (bool)getBoolValueMethod2.Invoke(gameSetting, Array.Empty<object>());
+		public bool GetBoolValue2() => (bool)getBoolValueMethod2(gameSetting);
 		[WrapperMethod("\u030E\u030E\u0312\u0319\u0317\u0311\u0319\u031A\u031B\u0317\u0317")]
-		private static readonly MethodInfo getBoolValueMethod2;
+		private static readonly FastInvokeHandler getBoolValueMethod2;
 
-		public static bool operator true(GameSettingWrapper gameSetting) => (bool)operatorTrueMethod.Invoke(gameSetting, new object[] { gameSetting.gameSetting });
+		public static bool operator true(GameSettingWrapper gameSetting) => (bool)operatorTrueMethod(gameSetting, gameSetting.gameSetting);
 		[WrapperMethod("\u030F\u030F\u0314\u0319\u0319\u0312\u0313\u030D\u030F\u0311\u0311")]
-		private static readonly MethodInfo operatorTrueMethod;
+		private static readonly FastInvokeHandler operatorTrueMethod;
 
-		public static bool operator false(GameSettingWrapper gameSetting) => (bool)operatorFalseMethod.Invoke(gameSetting, new object[] { gameSetting.gameSetting });
+		public static bool operator false(GameSettingWrapper gameSetting) => (bool)operatorFalseMethod(gameSetting, gameSetting.gameSetting);
 		[WrapperMethod("\u030E\u030D\u0319\u030E\u0318\u031B\u031A\u0310\u031B\u030F\u0314")]
-		private static readonly MethodInfo operatorFalseMethod;
+		private static readonly FastInvokeHandler operatorFalseMethod;
 
-		public static bool operator !(GameSettingWrapper gameSetting) => (bool)operatorLogicalNotMethod.Invoke(gameSetting, new object[] { gameSetting.gameSetting });
+		public static bool operator !(GameSettingWrapper gameSetting) => (bool)operatorLogicalNotMethod(gameSetting, gameSetting.gameSetting);
 		[WrapperMethod("\u0314\u0315\u0313\u0314\u0316\u031B\u0318\u030F\u0313\u0316\u0315")]
-		private static readonly MethodInfo operatorLogicalNotMethod;
+		private static readonly FastInvokeHandler operatorLogicalNotMethod;
 
 		#endregion
 	}

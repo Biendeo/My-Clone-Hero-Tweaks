@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +18,13 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
-		public void RestartInPracticeMode() => restartInPracticeModeMethod.Invoke(pauseMenu, Array.Empty<object>());
+		public void RestartInPracticeMode() => restartInPracticeModeMethod(pauseMenu);
 		[WrapperMethod("\u0318\u031A\u0317\u030D\u031B\u031B\u0318\u0313\u030D\u030F\u0314")]
-		private static readonly MethodInfo restartInPracticeModeMethod;
+		private static readonly FastInvokeHandler restartInPracticeModeMethod;
 
-		public void RestartSong() => restartSongMethod.Invoke(pauseMenu, Array.Empty<object>());
+		public void RestartSong() => restartSongMethod(pauseMenu);
 		[WrapperMethod("\u030E\u0315\u0315\u0310\u0312\u030E\u0312\u031A\u0313\u0314\u0310")]
-		private static readonly MethodInfo restartSongMethod;
+		private static readonly FastInvokeHandler restartSongMethod;
 
 		#endregion
 	}

@@ -65,9 +65,9 @@ private static readonly PropertyInfo int3Property;
 - The same rules for field types and naming applies to methods.
 - Only non-duplicated methods should exist in this region. Harmony can be used to determine which ones actually get called or not.
 ```cs
-public void ScanSongsInternal(bool fullScan) => scanSongsInternalMethod.Invoke(Cache, new object[] { fullScan });
+public void ScanSongsInternal(bool fullScan) => scanSongsInternalMethod(Cache, fullScan);
 [WrapperMethod("\u0310\u031A\u030E\u0318\u0318\u0313\u0316\u0310\u0314\u0318\u0312")]
-private static readonly MethodInfo scanSongsInternalMethod;
+private static readonly FastInvokeHandler scanSongsInternalMethod;
 ```
 
 ### Enumerations
@@ -93,16 +93,16 @@ public enum CacheState {
 ### Duplicate Methods
 - If any duplicate methods are defined in this class, a region called `Duplicate Methods` must be declared.
 - The region should have IDE0051 and CS0169 warnings disabled because these fields are intentionally unused.
-- Inside this region, all methods that exist purely for obfuscation should only exist as MethodInfos with the `WrapperMethod` attribute. This is so the wrapper search knows that these methods exist without exposing them.
+- Inside this region, all methods that exist purely for obfuscation should only exist as FastInvokeHandlers with the `WrapperMethod` attribute. This is so the wrapper search knows that these methods exist without exposing them.
 - The underlying name isn't important but it's best to match the original method name with `Duplicate1` and such at the end.
 ```cs
 #pragma warning disable IDE0051, CS0169 // Remove unused private members
 
 [WrapperMethod("\u0310\u0318\u0318\u030E\u031C\u030D\u030E\u030F\u030E\u030D\u0319")]
-private static readonly MethodInfo scanSongsInternalMethodDuplicate1;
+private static readonly FastInvokeHandler scanSongsInternalMethodDuplicate1;
 
 [WrapperMethod("\u0315\u0310\u0313\u0318\u030D\u0317\u031A\u030E\u030E\u0314\u0317")]
-private static readonly MethodInfo scanSongsInternalMethodDuplicate2;
+private static readonly FastInvokeHandler scanSongsInternalMethodDuplicate2;
 
 #pragma warning restore IDE0051, CS0169 // Remove unused private members
 ```
