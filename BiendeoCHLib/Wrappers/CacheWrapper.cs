@@ -18,6 +18,12 @@ namespace BiendeoCHLib.Wrappers {
 			Cache = cache
 		};
 
+		public override bool Equals(object obj) => Cache.Equals(obj);
+
+		public override int GetHashCode() => Cache.GetHashCode();
+
+		public bool IsNull() => Cache == null;
+
 		#region Constructors
 
 		public static CacheWrapper Construct() => new CacheWrapper {

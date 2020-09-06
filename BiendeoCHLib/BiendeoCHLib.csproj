@@ -89,6 +89,15 @@
     <Compile Include="Wrappers\Attributes\WrapperMethod.cs" />
     <Compile Include="Wrappers\Attributes\WrapperProperty.cs" />
     <Compile Include="Wrappers\BaseGuitarPlayerWrapper.cs" />
+    <Compile Include="Wrappers\BarrelRollWrapper.cs" />
+    <Compile Include="Wrappers\SpNeckRendererWrapper.cs" />
+    <Compile Include="Wrappers\CameraShakeWrapper.cs" />
+    <Compile Include="Wrappers\CountdownWrapper.cs" />
+    <Compile Include="Wrappers\BaseNeckControllerWrapper.cs" />
+    <Compile Include="Wrappers\HighwayScrollWrapper.cs" />
+    <Compile Include="Wrappers\HealthContainerWrapper.cs" />
+    <Compile Include="Wrappers\ComboColorWrapper.cs" />
+    <Compile Include="Wrappers\BaseNoteRendererWrapper.cs" />
     <Compile Include="Wrappers\BasePlayerWrapper.cs" />
     <Compile Include="Wrappers\BassAudioManagerWrapper.cs" />
     <Compile Include="Wrappers\CacheWrapper.cs" />

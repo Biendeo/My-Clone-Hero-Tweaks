@@ -15,6 +15,12 @@ public static CacheWrapper Wrap(object cache) => new CacheWrapper {
 	Cache = cache
 };
 ```
+- Wrappers should also implement `Equals`, `GetHashCode` and `IsNull` as such:
+```cs
+public override bool Equals(object obj) => Cache.Equals(obj);
+public override int GetHashCode() => Cache.GetHashCode();
+public bool IsNull() => Cache == null;
+```
 
 ### Casts
 - Any wrappers where the underlying class directly inherits or is directly inherited by another class must contain a cast method for each type.
@@ -42,11 +48,11 @@ private static readonly ConstructorInfo defaultConstructor;
 - The name of the field **must** be PascalCase naming, and the underlying FieldInfo must be camelCase with `Field` at the end of its name.
 ```cs
 public int Int1 {
-	get => (int)int1Field.GetValue(Cache);
-	set => int1Field.SetValue(Cache, value);
+	get => int1Field(Cache);
+	set => int1Field(Cache) = value;
 }
 [WrapperField("\u0313\u0315\u0314\u0317\u0310\u0319\u0310\u030E\u031B\u0317\u0314")]
-private static readonly FieldInfo int1Field;
+private static readonly AccessTools.FieldRef<object, int> int1Field;
 ```
 
 ### Properties

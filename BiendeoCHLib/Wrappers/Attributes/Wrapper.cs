@@ -27,7 +27,17 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 			var constructorsSeen = new HashSet<ConstructorInfo>();
 
 			foreach (var field in wrapperType.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)) {
-				if (field.FieldType == typeof(FieldInfo) && field.GetValue(null) == null) {
+				if (field.FieldType.IsGenericType && typeof(AccessTools.FieldRef<object, object>).GetGenericTypeDefinition() == field.FieldType.GetGenericTypeDefinition() && field.GetValue(null) == null) {
+					var wrapperMember = field.GetCustomAttribute<WrapperField>();
+					if (wrapperMember != null) {
+						var fieldInfo = WrappedType.GetField(wrapperMember.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+						if (fieldInfo != null) {
+							field.SetValue(null, AccessTools.Method(typeof(AccessTools), nameof(AccessTools.FieldRefAccess), new Type[] { typeof(FieldInfo) }).MakeGenericMethod(field.FieldType.GenericTypeArguments).Invoke(null, new object[] { fieldInfo }));
+							fieldsSeen.Add(fieldInfo);
+							logger.LogInfo($"Loaded field {wrapperType.Name}.{field.Name}");
+						}
+					}
+				} else if (field.FieldType == typeof(FieldInfo) && field.GetValue(null) == null) {
 					var wrapperMember = field.GetCustomAttribute<WrapperField>();
 					if (wrapperMember != null) {
 						var fieldInfo = WrappedType.GetField(wrapperMember.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
@@ -35,6 +45,9 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 							field.SetValue(null, fieldInfo);
 							fieldsSeen.Add(fieldInfo);
 							logger.LogInfo($"Loaded field {wrapperType.Name}.{field.Name}");
+#if DEBUG
+							logger.LogWarning($"This is a FieldInfo field, please replace it with a FieldRefAccess version!");
+#endif
 						}
 					}
 				} else if (field.FieldType == typeof(PropertyInfo) && field.GetValue(null) == null) {

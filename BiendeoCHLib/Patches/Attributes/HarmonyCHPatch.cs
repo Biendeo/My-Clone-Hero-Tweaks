@@ -21,8 +21,8 @@ namespace BiendeoCHLib.Patches.Attributes {
 		public void InitializePatch(Harmony harmony, Type patchType, ManualLogSource logger) {
 			// Assert that the wrapper type indeed has the methodInfo expected.
 			MethodInfo targetMethod = null;
-			var wrapperField = wrapperType.GetField($"{wrapperMethodName.ToLower()[0]}{wrapperMethodName.Substring(1)}Method", BindingFlags.Static | BindingFlags.NonPublic);
-			if (wrapperField != null) {
+			var wrapperField = wrapperType.GetFields(BindingFlags.Static | BindingFlags.NonPublic).SingleOrDefault(f => f.Name.ToLower() == $"{wrapperMethodName}Method".ToLower());
+			if (wrapperField != default) {
 				//TODO: Is there a better way than re-invoking the wrapper stuff?
 				targetMethod = wrapperField.GetCustomAttribute<WrapperMethod>().GetMethodInfo(wrapperType.GetCustomAttribute<Wrapper>().WrappedType);
 				logger.LogInfo($"Found matching method for patch {wrapperType.Name}.{wrapperMethodName}");

@@ -22,6 +22,8 @@ namespace BiendeoCHLib.Wrappers {
 
 		public override int GetHashCode() => BaseGuitarPlayer.GetHashCode();
 
+		public bool IsNull() => BaseGuitarPlayer == null;
+
 		#region Casts
 
 		public BasePlayerWrapper CastToBasePlayer() => BasePlayerWrapper.Wrap(BaseGuitarPlayer);

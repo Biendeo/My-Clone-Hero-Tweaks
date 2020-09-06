@@ -323,7 +323,7 @@ namespace ExtraSongUI {
 
 				starPowersGotten = basePlayers[0].StarPowersHit;
 				starPowerPercentage = totalStarPowers == 0 ? 100.0 : starPowersGotten * 100.0 / totalStarPowers;
-				currentStarPower = basePlayers[0].spBar.someFloat * 100.0;
+				currentStarPower = basePlayers[0].SPBar.someFloat * 100.0;
 
 				currentCombo = basePlayers[0].Combo;
 				highestCombo = basePlayers[0].HighestCombo;
