@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ namespace BiendeoCHLib.Wrappers {
 
 		public override int GetHashCode() => Note.GetHashCode();
 
+		public bool IsNull() => Note == null;
+
 		#region Constructors
 
 		#endregion
@@ -28,90 +31,90 @@ namespace BiendeoCHLib.Wrappers {
 		#region Fields
 
 		public float Time {
-			get => (float)timeField.GetValue(Note);
-			set => timeField.SetValue(Note, value);
+			get => timeField(Note);
+			set => timeField(Note) = value;
 		}
 		[WrapperField("\u0310\u0310\u030F\u0310\u0313\u0313\u030F\u0318\u0312\u031A\u030E")]
-		private static readonly FieldInfo timeField;
+		private static readonly AccessTools.FieldRef<object, float> timeField;
 
 		public float Length {
-			get => (float)lengthField.GetValue(Note);
-			set => lengthField.SetValue(Note, value);
+			get => lengthField(Note);
+			set => lengthField(Note) = value;
 		}
 		[WrapperField("\u031C\u031C\u0312\u0319\u0314\u0312\u0317\u031C\u031C\u031C\u031A")]
-		private static readonly FieldInfo lengthField;
+		private static readonly AccessTools.FieldRef<object, float> lengthField;
 
 		public byte NoteMask {
-			get => (byte)noteMaskField.GetValue(Note);
-			set => noteMaskField.SetValue(Note, value);
+			get => noteMaskField(Note);
+			set => noteMaskField(Note) = value;
 		}
 		[WrapperField("\u0318\u0316\u0315\u031A\u0313\u0310\u0316\u030E\u0310\u031A\u0318")]
-		private static readonly FieldInfo noteMaskField;
+		private static readonly AccessTools.FieldRef<object, byte> noteMaskField;
 
 		// Seems to be always a null field for me 🤷‍
 		public NoteWrapper Note1 {
-			get => NoteWrapper.Wrap(note1Field.GetValue(Note));
-			set => note1Field.SetValue(Note, value.Note);
+			get => Wrap(note1Field(Note));
+			set => note1Field(Note) = value.Note;
 		}
 		[WrapperField("\u0310\u0318\u0319\u0310\u0316\u0316\u0319\u0317\u031C\u0316\u0318")]
-		private static readonly FieldInfo note1Field;
+		private static readonly AccessTools.FieldRef<object, object> note1Field;
 
 		// Seems to be always a null field for me 🤷‍
 		public NoteWrapper Note2 {
-			get => NoteWrapper.Wrap(note2Field.GetValue(Note));
-			set => note2Field.SetValue(Note, value.Note);
+			get => Wrap(note2Field(Note));
+			set => note2Field(Note) = value.Note;
 		}
 		[WrapperField("\u030F\u0314\u030D\u0314\u030D\u031B\u0316\u0314\u0316\u0318\u031A")]
-		private static readonly FieldInfo note2Field;
+		private static readonly AccessTools.FieldRef<object, object> note2Field;
 
 		public bool WasHit {
-			get => (bool)wasHitField.GetValue(Note);
-			set => wasHitField.SetValue(Note, value);
+			get => wasHitField(Note);
+			set => wasHitField(Note) = value;
 		}
 		[WrapperField("\u031B\u030F\u0318\u030F\u0312\u0315\u031B\u0310\u0310\u0314\u0315")]
-		private static readonly FieldInfo wasHitField;
+		private static readonly AccessTools.FieldRef<object, bool> wasHitField;
 
 		public bool WasMissed {
-			get => (bool)wasMissedField.GetValue(Note);
-			set => wasMissedField.SetValue(Note, value);
+			get => wasMissedField(Note);
+			set => wasMissedField(Note) = value;
 		}
 		[WrapperField("\u0312\u030E\u0319\u030F\u0310\u0314\u0312\u0311\u0319\u0316\u0312")]
-		private static readonly FieldInfo wasMissedField;
+		private static readonly AccessTools.FieldRef<object, bool> wasMissedField;
 
 		public bool IsSustaining {
-			get => (bool)isSustainingField.GetValue(Note);
-			set => isSustainingField.SetValue(Note, value);
+			get => isSustainingField(Note);
+			set => isSustainingField(Note) = value;
 		}
 		[WrapperField("\u0316\u031C\u030E\u031A\u0316\u0314\u0316\u0318\u030D\u030F\u030D")]
-		private static readonly FieldInfo isSustainingField;
+		private static readonly AccessTools.FieldRef<object, bool> isSustainingField;
 
 		public MoonNoteWrapper.NoteType NoteType {
-			get => (MoonNoteWrapper.NoteType)noteTypeField.GetValue(Note);
-			set => noteTypeField.SetValue(Note, value);
+			get => (MoonNoteWrapper.NoteType)noteTypeField(Note);
+			set => noteTypeField(Note) = value;
 		}
 		[WrapperField("\u030F\u031A\u031B\u031B\u031A\u031A\u031C\u0310\u0315\u030E\u0319")]
-		private static readonly FieldInfo noteTypeField;
+		private static readonly AccessTools.FieldRef<object, object> noteTypeField;
 
 		public NoteFlags Flags {
-			get => (NoteFlags)flagsField.GetValue(Note);
-			set => flagsField.SetValue(Note, value);
+			get => (NoteFlags)flagsField(Note);
+			set => flagsField(Note) = value;
 		}
 		[WrapperField("\u030E\u031B\u0316\u0314\u031C\u0311\u031C\u030D\u0312\u0317\u0316")]
-		private static readonly FieldInfo flagsField;
+		private static readonly AccessTools.FieldRef<object, object> flagsField;
 
 		public uint TickPosition {
-			get => (uint)tickPositionField.GetValue(Note);
-			set => tickPositionField.SetValue(Note, value);
+			get => tickPositionField(Note);
+			set => tickPositionField(Note) = value;
 		}
 		[WrapperField("\u031B\u0310\u0316\u0316\u0314\u0318\u0313\u030E\u0315\u0316\u031C")]
-		private static readonly FieldInfo tickPositionField;
+		private static readonly AccessTools.FieldRef<object, uint> tickPositionField;
 
 		public int TickLength {
-			get => (int)tickLengthField.GetValue(Note);
-			set => tickLengthField.SetValue(Note, value);
+			get => tickLengthField(Note);
+			set => tickLengthField(Note) = value;
 		}
 		[WrapperField("\u030F\u031A\u030F\u0314\u030F\u0318\u0312\u031C\u0317\u0316\u0317")]
-		private static readonly FieldInfo tickLengthField;
+		private static readonly AccessTools.FieldRef<object, int> tickLengthField;
 
 		#endregion
 

@@ -111,11 +111,11 @@ namespace PerfectMode {
 				if (sceneName == "Gameplay") {
 					int uiLayerMask = LayerMask.NameToLayer("UI");
 					var gameManagerObject = GameObject.Find("Game Manager");
-					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
+					gameManager = GameManagerWrapper.Wrap(gameManagerObject.GetComponent<GameManager>());
 					ResetGameplaySceneValues();
 
 					DestroyAndNullGameplayLabels();
-					Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
+					Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
 
 					displayImageLabel = new GameObject($"Perfect Mode Indicator", new Type[] {
 						typeof(Text)
@@ -167,7 +167,7 @@ namespace PerfectMode {
 					remainingTimeBeforeRestart -= Time.deltaTime;
 					if (remainingTimeBeforeRestart < 0.0f && !invokedSceneChange) {
 						//TODO: Double-check that multiplayer works fine with this.
-						StartCoroutine(FadeBehaviourWrapper.instance.InvokeSceneChange("Gameplay"));
+						StartCoroutine(FadeBehaviourWrapper.Instance.InvokeSceneChange("Gameplay"));
 						invokedSceneChange = true;
 					}
 				}

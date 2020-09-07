@@ -10,270 +10,468 @@ using System.Threading.Tasks;
 namespace BiendeoCHLib.Wrappers {
 	[Wrapper(typeof(GlobalVariables))]
 	public struct GlobalVariablesWrapper {
-		public readonly GlobalVariables globalVariables;
+		public GlobalVariables GlobalVariables { get; private set; }
 
-		public GlobalVariablesWrapper(GlobalVariables globalVariables) {
-			this.globalVariables = globalVariables;
-		}
+		public static GlobalVariablesWrapper Wrap(GlobalVariables globalVariables) => new GlobalVariablesWrapper {
+			GlobalVariables = globalVariables
+		};
+
+		public override bool Equals(object obj) => GlobalVariables.Equals(obj);
+
+		public override int GetHashCode() => GlobalVariables.GetHashCode();
+
+		public bool IsNull() => GlobalVariables == null;
 
 		#region Fields
 
-		public static GlobalVariablesWrapper Instance => new GlobalVariablesWrapper((GlobalVariables)instanceField.GetValue(null));
+		public static GlobalVariablesWrapper Instance {
+			get => Wrap((GlobalVariables)instanceField.GetValue(null));
+			set => instanceField.SetValue(null, value.GlobalVariables);
+		}
 		[WrapperField("\u0312\u0313\u0310\u0315\u030E\u0319\u030D\u0318\u0313\u030E\u031A")]
 		private static readonly FieldInfo instanceField;
 
-		public static bool IsSaving => (bool)isSavingField.GetValue(null);
+		public static bool IsSaving {
+			get => (bool)isSavingField.GetValue(null);
+			set => isSavingField.SetValue(null, value);
+		}
 		[WrapperField("\u0314\u0314\u0310\u031A\u031A\u0317\u0319\u0310\u0313\u030E\u0316")]
 		private static readonly FieldInfo isSavingField;
 
-		public static int ProfileFileVersion => (int)profileFileVersionField.GetValue(null);
+		public static int ProfileFileVersion {
+			get => (int)profileFileVersionField.GetValue(null);
+			set => profileFileVersionField.SetValue(null, value);
+		}
 		[WrapperField("\u0311\u031C\u0313\u031A\u0314\u0311\u031C\u031C\u0310\u0312\u0315")]
 		private static readonly FieldInfo profileFileVersionField;
 
-		public string ScreenshotsPath => (string)screenshotsPathField.GetValue(globalVariables);
+		public string ScreenshotsPath {
+			get => screenshotsPathField(GlobalVariables);
+			set => screenshotsPathField(GlobalVariables) = value;
+		}
 		[WrapperField("\u030D\u030D\u0315\u0318\u031A\u0313\u031A\u0315\u0311\u0310\u0318")]
-		private static readonly FieldInfo screenshotsPathField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, string> screenshotsPathField;
 
-		public string SettingsPath => (string)settingsPathField.GetValue(globalVariables);
+		public string SettingsPath {
+			get => settingsPathField(GlobalVariables);
+			set => settingsPathField(GlobalVariables) = value;
+		}
 		[WrapperField("\u031C\u0317\u030F\u030E\u030D\u030F\u031C\u0318\u031C\u0318\u0315")]
-		private static readonly FieldInfo settingsPathField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, string> settingsPathField;
 
-		public List<string> SongPaths => (List<string>)songPathsField.GetValue(globalVariables);
+		public List<string> SongPaths {
+			get => songPathsField(GlobalVariables);
+			set => songPathsField(GlobalVariables) = value;
+		}
 		[WrapperField("\u0310\u031A\u0313\u030D\u031C\u0319\u0310\u0316\u0310\u0319\u0312")]
-		private static readonly FieldInfo songPathsField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, List<string>> songPathsField;
 
-		public List<string> UniqueSongPaths => (List<string>)uniqueSongPathsField.GetValue(globalVariables);
+		public List<string> UniqueSongPaths {
+			get => uniqueSongPathsField(GlobalVariables);
+			set => uniqueSongPathsField(GlobalVariables) = value;
+		}
 		[WrapperField("\u031B\u0310\u0313\u0315\u0313\u0318\u0313\u0318\u0319\u030D\u0313")]
-		private static readonly FieldInfo uniqueSongPathsField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, List<string>> uniqueSongPathsField;
 
-		public string CustomSongExport => (string)customSongExportField.GetValue(globalVariables);
+		public string CustomSongExport {
+			get => customSongExportField(GlobalVariables);
+			set => customSongExportField(GlobalVariables) = value;
+		}
 		[WrapperField("\u031C\u0317\u030F\u030E\u030D\u030F\u031C\u0318\u031C\u0318\u0315")]
-		private static readonly FieldInfo customSongExportField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, string> customSongExportField;
 
-		public string BuildVersion => (string)buildVersionField.GetValue(globalVariables);
+		public string BuildVersion {
+			get => buildVersionField(GlobalVariables);
+			set => buildVersionField(GlobalVariables) = value;
+		}
 		[WrapperField("\u030E\u030E\u0313\u030D\u0319\u031A\u030E\u0319\u0314\u0318\u031C")]
-		private static readonly FieldInfo buildVersionField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, string> buildVersionField;
 
-		public string[] Languages => (string[])languagesField.GetValue(globalVariables);
-		[WrapperField("\u0312\u0319\u0318\u0315\u031A\u031A\u0310\u030D\u0313\u0318\u031A")]
-		private static readonly FieldInfo languagesField;
+		public string[] Languages {
+			get => languagesField(GlobalVariables);
+			set => languagesField(GlobalVariables) = value;
+		}
+		[WrapperField("\u030F\u0313\u030E\u030D\u0318\u0311\u0312\u031C\u0313\u031C\u031A")]
+		private static readonly AccessTools.FieldRef<GlobalVariables, string[]> languagesField;
 
-		public string[] SplashMessages => (string[])splashMessagesField.GetValue(globalVariables);
+		public string[] SplashMessages {
+			get => splashMessagesField(GlobalVariables);
+			set => splashMessagesField(GlobalVariables) = value;
+		}
 		[WrapperField("\u0312\u0316\u031C\u0311\u030F\u030F\u030D\u030E\u0314\u0316\u0315")]
-		private static readonly FieldInfo splashMessagesField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, string[]> splashMessagesField;
 
-		public bool AprilFoolsMode => (bool)aprilFoolsModeField.GetValue(globalVariables);
+		public bool AprilFoolsMode {
+			get => aprilFoolsModeField(GlobalVariables);
+			set => aprilFoolsModeField(GlobalVariables) = value;
+		}
 		[WrapperField("\u0318\u0319\u0316\u0315\u0315\u0313\u0310\u0311\u030F\u0313\u030E")]
-		private static readonly FieldInfo aprilFoolsModeField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, bool> aprilFoolsModeField;
 
 		// Either sound device or SetWhammyFast?
-		public GameSettingWrapper VolumeDevice => new GameSettingWrapper(volumeDeviceField.GetValue(globalVariables));
+		public GameSettingWrapper VolumeDevice {
+			get => GameSettingWrapper.Wrap(volumeDeviceField(GlobalVariables));
+			set => volumeDeviceField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u030D\u0314\u0319\u030F\u0311\u031A\u0315\u0313\u0311\u030F\u031A")]
-		private static readonly FieldInfo volumeDeviceField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> volumeDeviceField;
 
-		public GameSettingWrapper LowLatencyMode => new GameSettingWrapper(lowLatencyModeField.GetValue(globalVariables));
+		public GameSettingWrapper LowLatencyMode {
+			get => GameSettingWrapper.Wrap(lowLatencyModeField(GlobalVariables));
+			set => lowLatencyModeField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u030D\u0316\u0311\u0311\u031C\u0319\u0312\u0318\u030F\u031C\u0318")]
-		private static readonly FieldInfo lowLatencyModeField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> lowLatencyModeField;
 
-		public GameSettingWrapper StreamerHighwayPlacement => new GameSettingWrapper(streamerHighwayPlacementField.GetValue(globalVariables));
+		public GameSettingWrapper StreamerHighwayPlacement {
+			get => GameSettingWrapper.Wrap(streamerHighwayPlacementField(GlobalVariables));
+			set => streamerHighwayPlacementField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u030E\u030D\u030D\u0311\u030F\u031A\u0319\u031B\u031B\u0316\u0313")]
-		private static readonly FieldInfo streamerHighwayPlacementField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> streamerHighwayPlacementField;
 
-		public GameSettingWrapper GameShowBotScore => new GameSettingWrapper(gameShowBotScoreField.GetValue(globalVariables));
+		public GameSettingWrapper GameShowBotScore {
+			get => GameSettingWrapper.Wrap(gameShowBotScoreField(GlobalVariables));
+			set => gameShowBotScoreField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u030E\u0310\u030E\u0312\u030F\u0311\u0311\u031B\u0316\u0319\u0316")]
-		private static readonly FieldInfo gameShowBotScoreField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameShowBotScoreField;
 
-		public GameSettingWrapper GameMuteOnMiss => new GameSettingWrapper(gameMuteOnMissField.GetValue(globalVariables));
+		public GameSettingWrapper GameMuteOnMiss {
+			get => GameSettingWrapper.Wrap(gameMuteOnMissField(GlobalVariables));
+			set => gameMuteOnMissField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u030E\u0317\u030F\u0315\u0313\u0312\u0313\u0317\u0319\u030F\u0313")]
-		private static readonly FieldInfo gameMuteOnMissField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameMuteOnMissField;
 
-		public GameSettingWrapper GameFullPlaylist => new GameSettingWrapper(gameFullPlaylistField.GetValue(globalVariables));
+		public GameSettingWrapper GameFullPlaylist {
+			get => GameSettingWrapper.Wrap(gameFullPlaylistField(GlobalVariables));
+			set => gameFullPlaylistField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u030F\u030F\u0310\u0312\u0312\u031B\u0315\u0310\u0316\u031A\u0314")]
-		private static readonly FieldInfo gameFullPlaylistField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameFullPlaylistField;
 
-		public GameSettingWrapper VideoHighwayLightning => new GameSettingWrapper(videoHighwayLightningField.GetValue(globalVariables));
+		public GameSettingWrapper VideoHighwayLightning {
+			get => GameSettingWrapper.Wrap(videoHighwayLightningField(GlobalVariables));
+			set => videoHighwayLightningField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u030F\u0310\u0314\u0314\u031C\u0313\u0319\u031C\u030E\u030F\u030E")]
-		private static readonly FieldInfo videoHighwayLightningField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoHighwayLightningField;
 
-		public GameSettingWrapper VideoFrameRate => new GameSettingWrapper(videoFrameRateField.GetValue(globalVariables));
+		public GameSettingWrapper VideoFrameRate {
+			get => GameSettingWrapper.Wrap(videoFrameRateField(GlobalVariables));
+			set => videoFrameRateField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u030F\u0313\u0310\u0314\u0319\u030D\u0315\u0318\u0315\u0314\u0316")]
-		private static readonly FieldInfo videoFrameRateField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoFrameRateField;
 
-		public GameSettingWrapper GameEnableCursor => new GameSettingWrapper(gameEnableCursorField.GetValue(globalVariables));
+		public GameSettingWrapper GameEnableCursor {
+			get => GameSettingWrapper.Wrap(gameEnableCursorField(GlobalVariables));
+			set => gameEnableCursorField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0310\u030E\u030E\u0318\u0311\u0314\u0314\u0310\u0314\u0317\u0312")]
-		private static readonly FieldInfo gameEnableCursorField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameEnableCursorField;
 
-		public GameSettingWrapper VideoVsync => new GameSettingWrapper(videoVsyncField.GetValue(globalVariables));
+		public GameSettingWrapper VideoVsync {
+			get => GameSettingWrapper.Wrap(videoVsyncField(GlobalVariables));
+			set => videoVsyncField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0310\u030F\u030F\u0314\u0315\u0311\u030E\u030F\u0313\u031C\u031C")]
-		private static readonly FieldInfo videoVsyncField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoVsyncField;
 
-		public GameSettingWrapper OnlineShowRemoteNames => new GameSettingWrapper(onlineShowRemoteNamesField.GetValue(globalVariables));
+		public GameSettingWrapper OnlineShowRemoteNames {
+			get => GameSettingWrapper.Wrap(onlineShowRemoteNamesField(GlobalVariables));
+			set => onlineShowRemoteNamesField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0310\u0312\u030F\u030D\u0314\u0315\u0319\u0316\u030F\u031A\u030E")]
-		private static readonly FieldInfo onlineShowRemoteNamesField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> onlineShowRemoteNamesField;
 
-		public GameSettingWrapper VolumePreviewVolume => new GameSettingWrapper(volumePreviewVolumeField.GetValue(globalVariables));
+		public GameSettingWrapper VolumePreviewVolume {
+			get => GameSettingWrapper.Wrap(volumePreviewVolumeField(GlobalVariables));
+			set => volumePreviewVolumeField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0310\u0315\u031A\u0310\u030D\u0315\u0311\u0314\u0317\u0315\u0318")]
-		private static readonly FieldInfo volumePreviewVolumeField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> volumePreviewVolumeField;
 
-		public GameSettingWrapper CustomSongBackgrounds => new GameSettingWrapper(customSongBackgroundsField.GetValue(globalVariables));
+		public GameSettingWrapper CustomSongBackgrounds {
+			get => GameSettingWrapper.Wrap(customSongBackgroundsField(GlobalVariables));
+			set => customSongBackgroundsField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0310\u0315\u031B\u0316\u031B\u0316\u0315\u0316\u030F\u0310\u030F")]
-		private static readonly FieldInfo customSongBackgroundsField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> customSongBackgroundsField;
 
-		public GameSettingWrapper GameEnableLyrics => new GameSettingWrapper(gameEnableLyricsField.GetValue(globalVariables));
+		public GameSettingWrapper GameEnableLyrics {
+			get => GameSettingWrapper.Wrap(gameEnableLyricsField(GlobalVariables));
+			set => gameEnableLyricsField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0310\u0319\u031A\u0317\u0312\u0313\u031A\u030E\u0316\u030F\u031C")]
-		private static readonly FieldInfo gameEnableLyricsField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameEnableLyricsField;
 
-		public GameSettingWrapper GameLanguage => new GameSettingWrapper(gameLanguageField.GetValue(globalVariables));
+		public GameSettingWrapper GameLanguage {
+			get => GameSettingWrapper.Wrap(gameLanguageField(GlobalVariables));
+			set => gameLanguageField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0310\u031C\u030D\u031C\u030F\u0319\u031B\u0313\u0310\u0318\u0319")]
-		private static readonly FieldInfo gameLanguageField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameLanguageField;
 
-		public GameSettingWrapper GameHighwayShake => new GameSettingWrapper(gameHighwayShakeField.GetValue(globalVariables));
+		public GameSettingWrapper GameHighwayShake {
+			get => GameSettingWrapper.Wrap(gameHighwayShakeField(GlobalVariables));
+			set => gameHighwayShakeField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0311\u0310\u0310\u0313\u031A\u030E\u031C\u0318\u030F\u0310\u031B")]
-		private static readonly FieldInfo gameHighwayShakeField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameHighwayShakeField;
 
-		public GameSettingWrapper VolumeBackend => new GameSettingWrapper(volumeBackendField.GetValue(globalVariables));
+		public GameSettingWrapper VolumeBackend {
+			get => GameSettingWrapper.Wrap(volumeBackendField(GlobalVariables));
+			set => volumeBackendField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0311\u0315\u030F\u0315\u030F\u0312\u031B\u0315\u0317\u0315\u031A")]
-		private static readonly FieldInfo volumeBackendField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> volumeBackendField;
 
-		public GameSettingWrapper OffsetsVideo => new GameSettingWrapper(offsetsVideoField.GetValue(globalVariables));
+		public GameSettingWrapper OffsetsVideo {
+			get => GameSettingWrapper.Wrap(offsetsVideoField(GlobalVariables));
+			set => offsetsVideoField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0311\u0316\u0316\u030F\u031B\u0314\u0310\u030E\u031A\u0312\u031B")]
-		private static readonly FieldInfo offsetsVideoField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> offsetsVideoField;
 
-		public GameSettingWrapper OnlineLowSongSpeed => new GameSettingWrapper(onlineLowSongSpeedField.GetValue(globalVariables));
+		public GameSettingWrapper OnlineLowSongSpeed {
+			get => GameSettingWrapper.Wrap(onlineLowSongSpeedField(GlobalVariables));
+			set => onlineLowSongSpeedField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0311\u031A\u030D\u0312\u030F\u0316\u031A\u031A\u0319\u0310\u030F")]
-		private static readonly FieldInfo onlineLowSongSpeedField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> onlineLowSongSpeedField;
 
-		public GameSettingWrapper VideoStarAnimation => new GameSettingWrapper(videoStarAnimationField.GetValue(globalVariables));
+		public GameSettingWrapper VideoStarAnimation {
+			get => GameSettingWrapper.Wrap(videoStarAnimationField(GlobalVariables));
+			set => videoStarAnimationField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0312\u0311\u0318\u0316\u030F\u031B\u031A\u0313\u031A\u030F\u0311")]
-		private static readonly FieldInfo videoStarAnimationField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoStarAnimationField;
 
-		public GameSettingWrapper OffsetsAudio => new GameSettingWrapper(offsetsAudioField.GetValue(globalVariables));
+		public GameSettingWrapper OffsetsAudio {
+			get => GameSettingWrapper.Wrap(offsetsAudioField(GlobalVariables));
+			set => offsetsAudioField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0312\u0314\u031B\u0318\u0318\u0312\u0319\u0311\u0315\u031C\u030E")]
-		private static readonly FieldInfo offsetsAudioField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> offsetsAudioField;
 
-		public GameSettingWrapper VideoMsaa => new GameSettingWrapper(videoMsaaField.GetValue(globalVariables));
+		public GameSettingWrapper VideoMsaa {
+			get => GameSettingWrapper.Wrap(videoMsaaField(GlobalVariables));
+			set => videoMsaaField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0312\u0319\u0314\u0316\u0313\u0314\u030D\u0317\u031C\u030D\u0311")]
-		private static readonly FieldInfo videoMsaaField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoMsaaField;
 
-		public GameSettingWrapper VideoDebugFPS => new GameSettingWrapper(videoDebugFPSField.GetValue(globalVariables));
+		public GameSettingWrapper VideoDebugFPS {
+			get => GameSettingWrapper.Wrap(videoDebugFPSField(GlobalVariables));
+			set => videoDebugFPSField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0312\u0319\u0318\u031B\u031B\u0311\u031C\u0319\u031A\u0315\u0311")]
-		private static readonly FieldInfo videoDebugFPSField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoDebugFPSField;
 
-		public GameSettingWrapper VolumeSounds => new GameSettingWrapper(volumeSoundsField.GetValue(globalVariables));
+		public GameSettingWrapper VolumeSounds {
+			get => GameSettingWrapper.Wrap(volumeSoundsField(GlobalVariables));
+			set => volumeSoundsField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0312\u031B\u0319\u0310\u0317\u0316\u030F\u031A\u0318\u031B\u031A")]
-		private static readonly FieldInfo volumeSoundsField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> volumeSoundsField;
 
-		public GameSettingWrapper SongSpeed => new GameSettingWrapper(songSpeedField.GetValue(globalVariables));
+		public GameSettingWrapper SongSpeed {
+			get => GameSettingWrapper.Wrap(songSpeedField(GlobalVariables));
+			set => songSpeedField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0313\u030E\u0310\u031C\u0319\u0313\u0313\u031B\u0314\u0312\u0314")]
-		private static readonly FieldInfo songSpeedField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> songSpeedField;
 
-		public GameSettingWrapper OnlineHighwayPlacement => new GameSettingWrapper(onlineHighwayPlacementField.GetValue(globalVariables));
+		public GameSettingWrapper OnlineHighwayPlacement {
+			get => GameSettingWrapper.Wrap(onlineHighwayPlacementField(GlobalVariables));
+			set => onlineHighwayPlacementField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0313\u030F\u030E\u0311\u0313\u031C\u0314\u0313\u0310\u0317\u031B")]
-		private static readonly FieldInfo onlineHighwayPlacementField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> onlineHighwayPlacementField;
 
-		public GameSettingWrapper GameMenuMusic => new GameSettingWrapper(gameMenuMusicField.GetValue(globalVariables));
+		public GameSettingWrapper GameMenuMusic {
+			get => GameSettingWrapper.Wrap(gameMenuMusicField(GlobalVariables));
+			set => gameMenuMusicField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0313\u0310\u0316\u0319\u031B\u031C\u030D\u030E\u030F\u0315\u0316")]
-		private static readonly FieldInfo gameMenuMusicField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameMenuMusicField;
 
-		public GameSettingWrapper GameSortFilter => new GameSettingWrapper(gameSortFilterField.GetValue(globalVariables));
+		public GameSettingWrapper GameSortFilter {
+			get => GameSettingWrapper.Wrap(gameSortFilterField(GlobalVariables));
+			set => gameSortFilterField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0313\u0315\u0310\u0318\u031A\u0316\u0315\u0319\u0319\u0319\u030D")]
-		private static readonly FieldInfo gameSortFilterField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameSortFilterField;
 
-		public GameSettingWrapper VolumeMuteVolume => new GameSettingWrapper(volumeMuteVolumeField.GetValue(globalVariables));
+		public GameSettingWrapper VolumeMuteVolume {
+			get => GameSettingWrapper.Wrap(volumeMuteVolumeField(GlobalVariables));
+			set => volumeMuteVolumeField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0313\u0315\u0312\u030F\u031C\u0311\u0313\u0317\u0319\u0317\u0311")]
-		private static readonly FieldInfo volumeMuteVolumeField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> volumeMuteVolumeField;
 
-		public GameSettingWrapper CustomBackgroundImage => new GameSettingWrapper(customBackgroundImageField.GetValue(globalVariables));
+		public GameSettingWrapper CustomBackgroundImage {
+			get => GameSettingWrapper.Wrap(customBackgroundImageField(GlobalVariables));
+			set => customBackgroundImageField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0313\u0318\u030E\u0315\u0319\u030E\u030E\u030E\u031C\u0319\u031A")]
-		private static readonly FieldInfo customBackgroundImageField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> customBackgroundImageField;
 
-		public GameSettingWrapper GameShowHitWindow => new GameSettingWrapper(gameShowHitWindowField.GetValue(globalVariables));
+		public GameSettingWrapper GameShowHitWindow {
+			get => GameSettingWrapper.Wrap(gameShowHitWindowField(GlobalVariables));
+			set => gameShowHitWindowField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0314\u0312\u030F\u030E\u030F\u031C\u031A\u0316\u031C\u0317\u0317")]
-		private static readonly FieldInfo gameShowHitWindowField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameShowHitWindowField;
 
-		public GameSettingWrapper GamePauseOnFocusLost => new GameSettingWrapper(gamePauseOnFocusLostField.GetValue(globalVariables));
+		public GameSettingWrapper GamePauseOnFocusLost {
+			get => GameSettingWrapper.Wrap(gamePauseOnFocusLostField(GlobalVariables));
+			set => gamePauseOnFocusLostField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0314\u031B\u0313\u0310\u0318\u030F\u0311\u030E\u031A\u0316\u0319")]
-		private static readonly FieldInfo gamePauseOnFocusLostField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gamePauseOnFocusLostField;
 
-		public GameSettingWrapper VideoHighwaySP => new GameSettingWrapper(videoHighwaySPField.GetValue(globalVariables));
+		public GameSettingWrapper VideoHighwaySP {
+			get => GameSettingWrapper.Wrap(videoHighwaySPField(GlobalVariables));
+			set => videoHighwaySPField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0315\u0315\u0312\u0317\u0314\u031A\u031A\u030E\u0319\u0316\u031C")]
-		private static readonly FieldInfo videoHighwaySPField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoHighwaySPField;
 
-		public GameSettingWrapper GameGemSize => new GameSettingWrapper(gameGemSizeField.GetValue(globalVariables));
+		public GameSettingWrapper GameGemSize {
+			get => GameSettingWrapper.Wrap(gameGemSizeField(GlobalVariables));
+			set => gameGemSizeField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0316\u030D\u030D\u0310\u0313\u0317\u030F\u0314\u0310\u0319\u0314")]
-		private static readonly FieldInfo gameGemSizeField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameGemSizeField;
 
-		public GameSettingWrapper VideoFlames => new GameSettingWrapper(videoFlamesField.GetValue(globalVariables));
+		public GameSettingWrapper VideoFlames {
+			get => GameSettingWrapper.Wrap(videoFlamesField(GlobalVariables));
+			set => videoFlamesField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0316\u0310\u030D\u030F\u030D\u031A\u031B\u0312\u0315\u0314\u0315")]
-		private static readonly FieldInfo videoFlamesField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoFlamesField;
 
-		public GameSettingWrapper VideoParticles => new GameSettingWrapper(videoParticlesField.GetValue(globalVariables));
+		public GameSettingWrapper VideoParticles {
+			get => GameSettingWrapper.Wrap(videoParticlesField(GlobalVariables));
+			set => videoParticlesField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0316\u0311\u030E\u0314\u0314\u0310\u0313\u0313\u0316\u0314\u0315")]
-		private static readonly FieldInfo videoParticlesField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoParticlesField;
 
-		public GameSettingWrapper GamePollRate => new GameSettingWrapper(gamePollRateField.GetValue(globalVariables));
+		public GameSettingWrapper GamePollRate {
+			get => GameSettingWrapper.Wrap(gamePollRateField(GlobalVariables));
+			set => gamePollRateField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0316\u0318\u0312\u0314\u0317\u0318\u030D\u0312\u0311\u0314\u0318")]
-		private static readonly FieldInfo gamePollRateField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gamePollRateField;
 
-		public GameSettingWrapper GameAllowDuplicateSongs => new GameSettingWrapper(gameAllowDuplicateSongsField.GetValue(globalVariables));
+		public GameSettingWrapper GameAllowDuplicateSongs {
+			get => GameSettingWrapper.Wrap(gameAllowDuplicateSongsField(GlobalVariables));
+			set => gameAllowDuplicateSongsField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0317\u0317\u0319\u0318\u030D\u0314\u0319\u0316\u031A\u0316\u0318")]
-		private static readonly FieldInfo gameAllowDuplicateSongsField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameAllowDuplicateSongsField;
 
-		public GameSettingWrapper VolumeMasterVolume => new GameSettingWrapper(volumeMasterVolumeField.GetValue(globalVariables));
+		public GameSettingWrapper VolumeMasterVolume {
+			get => GameSettingWrapper.Wrap(volumeMasterVolumeField(GlobalVariables));
+			set => volumeMasterVolumeField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0318\u030D\u0313\u031B\u0315\u030F\u030D\u0315\u030D\u0317\u030D")]
-		private static readonly FieldInfo volumeMasterVolumeField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> volumeMasterVolumeField;
 
-		public GameSettingWrapper VideoNoteAnimation => new GameSettingWrapper(videoNoteAnimationField.GetValue(globalVariables));
+		public GameSettingWrapper VideoNoteAnimation {
+			get => GameSettingWrapper.Wrap(videoNoteAnimationField(GlobalVariables));
+			set => videoNoteAnimationField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0318\u030F\u030E\u030D\u0310\u0319\u0315\u030D\u0315\u0314\u0315")]
-		private static readonly FieldInfo videoNoteAnimationField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoNoteAnimationField;
 
-		public GameSettingWrapper StreamerSongExport => new GameSettingWrapper(streamerSongExportField.GetValue(globalVariables));
+		public GameSettingWrapper StreamerSongExport {
+			get => GameSettingWrapper.Wrap(streamerSongExportField(GlobalVariables));
+			set => streamerSongExportField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0319\u030D\u031A\u0314\u0315\u0316\u031B\u0312\u0316\u031A\u031A")]
-		private static readonly FieldInfo streamerSongExportField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> streamerSongExportField;
 
-		public GameSettingWrapper GameSongPreview => new GameSettingWrapper(gameSongPreviewField.GetValue(globalVariables));
+		public GameSettingWrapper GameSongPreview {
+			get => GameSettingWrapper.Wrap(gameSongPreviewField(GlobalVariables));
+			set => gameSongPreviewField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0319\u0310\u030E\u030F\u030D\u0312\u0316\u0312\u031A\u0317\u0313")]
-		private static readonly FieldInfo gameSongPreviewField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameSongPreviewField;
 
-		public GameSettingWrapper CustomSongVideos => new GameSettingWrapper(customSongVideosField.GetValue(globalVariables));
+		public GameSettingWrapper CustomSongVideos {
+			get => GameSettingWrapper.Wrap(customSongVideosField(GlobalVariables));
+			set => customSongVideosField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0319\u0318\u031B\u0313\u0318\u031B\u0313\u030F\u030E\u030E\u030E")]
-		private static readonly FieldInfo customSongVideosField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> customSongVideosField;
 
-		public GameSettingWrapper VolumeMenuVolume => new GameSettingWrapper(volumeMenuVolumeField.GetValue(globalVariables));
+		public GameSettingWrapper VolumeMenuVolume {
+			get => GameSettingWrapper.Wrap(volumeMenuVolumeField(GlobalVariables));
+			set => volumeMenuVolumeField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u0319\u031B\u0319\u0317\u0310\u0316\u0319\u030F\u0317\u0316\u0319")]
-		private static readonly FieldInfo volumeMenuVolumeField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> volumeMenuVolumeField;
 
-		public GameSettingWrapper CustomBackgroundVideo => new GameSettingWrapper(customBackgroundVideoField.GetValue(globalVariables));
+		public GameSettingWrapper CustomBackgroundVideo {
+			get => GameSettingWrapper.Wrap(customBackgroundVideoField(GlobalVariables));
+			set => customBackgroundVideoField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u031A\u030E\u0312\u0310\u0314\u0318\u0311\u030D\u030E\u030E\u030E")]
-		private static readonly FieldInfo customBackgroundVideoField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> customBackgroundVideoField;
 
-		public GameSettingWrapper GameNoFail => new GameSettingWrapper(gameNoFailField.GetValue(globalVariables));
+		public GameSettingWrapper GameNoFail {
+			get => GameSettingWrapper.Wrap(gameNoFailField(GlobalVariables));
+			set => gameNoFailField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u031A\u0312\u0312\u0313\u0316\u0315\u031B\u0318\u0316\u0318\u0311")]
-		private static readonly FieldInfo gameNoFailField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> gameNoFailField;
 
-		public GameSettingWrapper OnlineSongsPerClient => new GameSettingWrapper(onlineSongsPerClientField.GetValue(globalVariables));
+		public GameSettingWrapper OnlineSongsPerClient {
+			get => GameSettingWrapper.Wrap(onlineSongsPerClientField(GlobalVariables));
+			set => onlineSongsPerClientField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u031A\u0317\u031B\u0312\u030E\u0314\u030D\u031C\u0312\u030D\u031B")]
-		private static readonly FieldInfo onlineSongsPerClientField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> onlineSongsPerClientField;
 
-		public GameSettingWrapper OnlineClientRemoveSongs => new GameSettingWrapper(onlineClientRemoveSongsField.GetValue(globalVariables));
+		public GameSettingWrapper OnlineClientRemoveSongs {
+			get => GameSettingWrapper.Wrap(onlineClientRemoveSongsField(GlobalVariables));
+			set => onlineClientRemoveSongsField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u031A\u031B\u030F\u0312\u030F\u030E\u0317\u0319\u0311\u030E\u0316")]
-		private static readonly FieldInfo onlineClientRemoveSongsField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> onlineClientRemoveSongsField;
 
-		public GameSettingWrapper VideoMenuBackground => new GameSettingWrapper(videoMenuBackgroundField.GetValue(globalVariables));
+		public GameSettingWrapper VideoMenuBackground {
+			get => GameSettingWrapper.Wrap(videoMenuBackgroundField(GlobalVariables));
+			set => videoMenuBackgroundField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u031A\u031C\u0319\u0319\u031B\u0315\u030D\u0310\u0318\u0318\u0314")]
-		private static readonly FieldInfo videoMenuBackgroundField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoMenuBackgroundField;
 
-		public GameSettingWrapper VideoSongDisplay => new GameSettingWrapper(videoSongDisplayField.GetValue(globalVariables));
+		public GameSettingWrapper VideoSongDisplay {
+			get => GameSettingWrapper.Wrap(videoSongDisplayField(GlobalVariables));
+			set => videoSongDisplayField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u031B\u0316\u031B\u0312\u0318\u030E\u0316\u0318\u031B\u0310\u031B")]
-		private static readonly FieldInfo videoSongDisplayField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> videoSongDisplayField;
 
-		public GameSettingWrapper OnlineMaxSongSpeed => new GameSettingWrapper(onlineMaxSongSpeedField.GetValue(globalVariables));
+		public GameSettingWrapper OnlineMaxSongSpeed {
+			get => GameSettingWrapper.Wrap(onlineMaxSongSpeedField(GlobalVariables));
+			set => onlineMaxSongSpeedField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u031B\u0317\u0311\u031C\u0311\u0316\u0319\u030D\u0312\u0312\u0311")]
-		private static readonly FieldInfo onlineMaxSongSpeedField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> onlineMaxSongSpeedField;
 
-		public GameSettingWrapper OnlineServerTickRate => new GameSettingWrapper(onlineServerTickRateField.GetValue(globalVariables));
+		public GameSettingWrapper OnlineServerTickRate {
+			get => GameSettingWrapper.Wrap(onlineServerTickRateField(GlobalVariables));
+			set => onlineServerTickRateField(GlobalVariables) = value.GameSetting;
+		}
 		[WrapperField("\u031B\u0318\u0311\u0311\u031C\u031A\u030F\u0316\u0311\u0316\u0310")]
-		private static readonly FieldInfo onlineServerTickRateField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> onlineServerTickRateField;
 
 		// The stem values are as followed:
 		// [0]: Guitar volume
@@ -285,69 +483,78 @@ namespace BiendeoCHLib.Wrappers {
 		// [12]: Song volume
 		// [13]: Crowd volume
 		// Duplicate indicies are just shared references. I think they may be used in BassAudioManager only.
-		public GameSettingWrapper[] VolumeStems => ((object[])volumeStemsField.GetValue(globalVariables)).Select(bp => new GameSettingWrapper(bp)).ToArray();
+		public GameSettingWrapper[] VolumeStems {
+			get => volumeStemsField(GlobalVariables).Select(o => GameSettingWrapper.Wrap(o)).ToArray();
+			set => volumeStemsField(GlobalVariables) = value.Select(o => o.GameSetting).ToArray();
+		}
 		[WrapperField("\u031B\u0315\u031B\u0319\u030D\u0313\u0319\u0317\u031A\u0318\u0312")]
-		private static readonly FieldInfo volumeStemsField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object[]> volumeStemsField;
 
-		public bool IsInPracticeMode => (bool)isInPracticeModeField.GetValue(globalVariables);
+		public bool IsInPracticeMode {
+			get => isInPracticeModeField(GlobalVariables);
+			set => isInPracticeModeField(GlobalVariables) = value;
+		}
 		[WrapperField("\u0318\u030E\u0310\u0315\u0313\u0318\u031C\u0318\u030E\u0313\u031A")]
-		private static readonly FieldInfo isInPracticeModeField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, bool> isInPracticeModeField;
 
-		public string CachePath => (string)cachePathField.GetValue(globalVariables);
+		public string CachePath {
+			get => cachePathField(GlobalVariables);
+			set => cachePathField(GlobalVariables) = value;
+		}
 		[WrapperField("\u0315\u0312\u0315\u0314\u0319\u0316\u0312\u030D\u030D\u031A\u030E")]
-		private static readonly FieldInfo cachePathField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, string> cachePathField;
 
 		// Just duplicates SongEntry, so use that instead.
 		public object SongEntryObject {
-			get => songEntryObjectField.GetValue(globalVariables);
-			set => songEntryObjectField.SetValue(globalVariables, value);
+			get => songEntryObjectField(GlobalVariables);
+			set => songEntryObjectField(GlobalVariables) = value;
 		}
 		[WrapperField("\u0317\u0313\u0311\u0317\u031B\u0314\u0314\u0313\u031B\u0315\u0317")]
-		private static readonly FieldInfo songEntryObjectField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, object> songEntryObjectField;
 
 		// Changes when selecting the instrument after deciding a song.
 		public SongEntryWrapper SongEntry {
-			get => SongEntryWrapper.Wrap((SongEntry)songEntryField.GetValue(globalVariables));
-			set => songEntryField.SetValue(globalVariables, value.SongEntry);
+			get => SongEntryWrapper.Wrap(songEntryField(GlobalVariables));
+			set => songEntryField(GlobalVariables) = value.SongEntry;
 		}
 		[WrapperField("\u0310\u030E\u0313\u0310\u0313\u0314\u030D\u031B\u0313\u031C\u0313")]
-		private static readonly FieldInfo songEntryField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, SongEntry> songEntryField;
 
 		// Always true, but it seems to control background music on app focus.
 		// There's an existing menu music setting though.
 		//TODO: Is this an appropriate name?
 		public bool IsBackgroundMusicEnabled {
-			get => (bool)isBackgroundMusicEnabledField.GetValue(globalVariables);
-			set => isBackgroundMusicEnabledField.SetValue(globalVariables, value);
+			get => isBackgroundMusicEnabledField(GlobalVariables);
+			set => isBackgroundMusicEnabledField(GlobalVariables) = value;
 		}
 		[WrapperField("\u030E\u0318\u0314\u0314\u0313\u031C\u0316\u0314\u031B\u0310\u0313")]
-		private static readonly FieldInfo isBackgroundMusicEnabledField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, bool> isBackgroundMusicEnabledField;
 
 		public int NumberOfPlayers {
-			get => (int)numberOfPlayersField.GetValue(globalVariables);
-			set => numberOfPlayersField.SetValue(globalVariables, value);
+			get => numberOfPlayersField(GlobalVariables);
+			set => numberOfPlayersField(GlobalVariables) = value;
 		}
 		[WrapperField("\u0317\u030D\u0310\u030E\u030D\u0317\u0315\u031A\u0316\u0312\u030D")]
-		private static readonly FieldInfo numberOfPlayersField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, int> numberOfPlayersField;
 
 		// Not too sure what this is but it's often 0 or 1, and is used as an index in GameManager.Awake(), which should
 		// highlight its purpose.
 		public int SomeInt {
-			get => (int)someIntField.GetValue(globalVariables);
-			set => someIntField.SetValue(globalVariables, value);
+			get => someIntField(GlobalVariables);
+			set => someIntField(GlobalVariables) = value;
 		}
 		[WrapperField("\u0318\u0310\u0317\u0311\u031A\u030F\u0318\u0315\u0312\u0310\u0315")]
-		private static readonly FieldInfo someIntField;
+		private static readonly AccessTools.FieldRef<GlobalVariables, int> someIntField;
 
 		#endregion
 
 		#region Methods
 
-		public void LoadSettings() => loadSettingsMethod(globalVariables);
+		public void LoadSettings() => loadSettingsMethod(GlobalVariables);
 		[WrapperMethod("\u0317\u0313\u0316\u0311\u031B\u0318\u0317\u0314\u031C\u031A\u0319")]
 		private static readonly FastInvokeHandler loadSettingsMethod;
 
-		public void WriteSettings() => writeSettingsMethod(globalVariables);
+		public void WriteSettings() => writeSettingsMethod(GlobalVariables);
 		[WrapperMethod("\u0318\u031C\u0313\u0312\u0317\u0315\u030D\u0312\u030D\u031A\u0317")]
 		private static readonly FastInvokeHandler writeSettingsMethod;
 

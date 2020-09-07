@@ -19,6 +19,12 @@ namespace BiendeoCHLib.Wrappers {
 			MainMenu = mainMenu
 		};
 
+		public override bool Equals(object obj) => MainMenu.Equals(obj);
+
+		public override int GetHashCode() => MainMenu.GetHashCode();
+
+		public bool IsNull() => MainMenu == null;
+
 		#region Constructors
 
 		public static MainMenuWrapper Construct() => new MainMenuWrapper {

@@ -36,149 +36,150 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Fields
 
-		public static int CacheVersionConstant => (int)cacheVersionConstant.GetValue(null); // const 20191015
+		//TODO: Statics are a little iffy with FieldRef, migrate this when it works.
+		public static int CacheVersionConstant => (int)cacheVersionConstantField.GetValue(null); // const 20191015
 		[WrapperField("\u0314\u030D\u0311\u0314\u0317\u030F\u031A\u0317\u031B\u0317\u0316")]
-		private static readonly FieldInfo cacheVersionConstant;
+		private static readonly FieldInfo cacheVersionConstantField;
 
 		public List<SongEntryWrapper> SongEntryList1 {
-			get => ((ICollection)songEntryList1Field.GetValue(Cache))?.Cast<SongEntry>().Select(o => SongEntryWrapper.Wrap(o)).ToList();
-			set => songEntryList1Field.SetValue(Cache, value);
+			get => songEntryList1Field(Cache)?.Cast<SongEntry>().Select(o => SongEntryWrapper.Wrap(o)).ToList();
+			set => songEntryList1Field(Cache) = value.Select(o => o.SongEntry).ToList();
 		}
 		[WrapperField("\u030F\u030D\u031A\u031A\u0315\u0319\u0312\u0313\u030F\u0311\u0312")]
-		private static readonly FieldInfo songEntryList1Field;
+		private static readonly AccessTools.FieldRef<object, List<SongEntry>> songEntryList1Field;
 
 		public List<SongEntryWrapper> SongEntryList2 {
-			get => ((ICollection)songEntryList2Field.GetValue(Cache))?.Cast<SongEntry>().Select(o => SongEntryWrapper.Wrap(o)).ToList();
-			set => songEntryList2Field.SetValue(Cache, value);
+			get => songEntryList2Field(Cache)?.Cast<SongEntry>().Select(o => SongEntryWrapper.Wrap(o)).ToList();
+			set => songEntryList2Field(Cache) = value.Select(o => o.SongEntry).ToList();
 		}
 		[WrapperField("\u0314\u030F\u031C\u0314\u0317\u031C\u0311\u0313\u030E\u0314\u0311")]
-		private static readonly FieldInfo songEntryList2Field;
+		private static readonly AccessTools.FieldRef<object, List<SongEntry>> songEntryList2Field;
 
 		public List<Exception> Exceptions {
-			get => (List<Exception>)exceptionsField.GetValue(Cache);
-			set => exceptionsField.SetValue(Cache, value);
+			get => exceptionsField(Cache);
+			set => exceptionsField(Cache) = value;
 		}
 		[WrapperField("\u031B\u0319\u0318\u031B\u0311\u0311\u030F\u030D\u0317\u0317\u031A")]
-		private static readonly FieldInfo exceptionsField;
+		private static readonly AccessTools.FieldRef<object, List<Exception>> exceptionsField;
 
 		public List<string> StringList1 {
-			get => (List<string>)stringList1Field.GetValue(Cache);
-			set => stringList1Field.SetValue(Cache, value);
+			get => stringList1Field(Cache);
+			set => stringList1Field(Cache) = value;
 		}
 		[WrapperField("\u0316\u031A\u0317\u0317\u030D\u0311\u031A\u030D\u0311\u0310\u030F")]
-		private static readonly FieldInfo stringList1Field;
+		private static readonly AccessTools.FieldRef<object, List<string>> stringList1Field;
 
 		public List<string> StringList2 {
-			get => (List<string>)stringList2Field.GetValue(Cache);
-			set => stringList2Field.SetValue(Cache, value);
+			get => stringList2Field(Cache);
+			set => stringList2Field(Cache) = value;
 		}
 		[WrapperField("\u0316\u0315\u0313\u030E\u031C\u031B\u0316\u0313\u031B\u031C\u0316")]
-		private static readonly FieldInfo stringList2Field;
+		private static readonly AccessTools.FieldRef<object, List<string>> stringList2Field;
 
 		public List<string> StringList3 {
-			get => (List<string>)stringList3Field.GetValue(Cache);
-			set => stringList3Field.SetValue(Cache, value);
+			get => stringList3Field(Cache);
+			set => stringList3Field(Cache) = value;
 		}
 		[WrapperField("\u030E\u031B\u030F\u0313\u031B\u0319\u030D\u0316\u0315\u031C\u0311")]
-		private static readonly FieldInfo stringList3Field;
+		private static readonly AccessTools.FieldRef<object, List<string>> stringList3Field;
 
 		public List<string> StringList4 {
-			get => (List<string>)stringList4Field.GetValue(Cache);
-			set => stringList4Field.SetValue(Cache, value);
+			get => stringList4Field(Cache);
+			set => stringList4Field(Cache) = value;
 		}
 		[WrapperField("\u0317\u0317\u0313\u0314\u030E\u0310\u030F\u030F\u0310\u0311\u0316")]
-		private static readonly FieldInfo stringList4Field;
+		private static readonly AccessTools.FieldRef<object, List<string>> stringList4Field;
 
 		public List<string> StringList5 {
-			get => (List<string>)stringList5Field.GetValue(Cache);
-			set => stringList5Field.SetValue(Cache, value);
+			get => stringList5Field(Cache);
+			set => stringList5Field(Cache) = value;
 		}
 		[WrapperField("\u0313\u030E\u0314\u0312\u0315\u0316\u031A\u030D\u0312\u0319\u0311")]
-		private static readonly FieldInfo stringList5Field;
+		private static readonly AccessTools.FieldRef<object, List<string>> stringList5Field;
 
 		public List<string> StringList6 {
-			get => (List<string>)stringList6Field.GetValue(Cache);
-			set => stringList6Field.SetValue(Cache, value);
+			get => stringList6Field(Cache);
+			set => stringList6Field(Cache) = value;
 		}
 		[WrapperField("\u0314\u030F\u0317\u0313\u0312\u030F\u0316\u030F\u0310\u031A\u0319")]
-		private static readonly FieldInfo stringList6Field;
+		private static readonly AccessTools.FieldRef<object, List<string>> stringList6Field;
 
 		public List<string> StringList7 {
-			get => (List<string>)stringList7Field.GetValue(Cache);
-			set => stringList7Field.SetValue(Cache, value);
+			get => stringList7Field(Cache);
+			set => stringList7Field(Cache) = value;
 		}
 		[WrapperField("\u030D\u0317\u0319\u0312\u0314\u0312\u0310\u030F\u030F\u030F\u031C")]
-		private static readonly FieldInfo stringList7Field;
+		private static readonly AccessTools.FieldRef<object, List<string>> stringList7Field;
 
 		public List<string> StringList8 {
-			get => (List<string>)stringList8Field.GetValue(Cache);
-			set => stringList8Field.SetValue(Cache, value);
+			get => stringList8Field(Cache);
+			set => stringList8Field(Cache) = value;
 		}
 		[WrapperField("\u0315\u031A\u0312\u030F\u031B\u0310\u0312\u031C\u0315\u030E\u031B")]
-		private static readonly FieldInfo stringList8Field;
+		private static readonly AccessTools.FieldRef<object, List<string>> stringList8Field;
 
 		public List<string> StringList9 {
-			get => (List<string>)stringList9Field.GetValue(Cache);
-			set => stringList9Field.SetValue(Cache, value);
+			get => stringList9Field(Cache);
+			set => stringList9Field(Cache) = value;
 		}
 		[WrapperField("\u0319\u0310\u030E\u030E\u0310\u0312\u031A\u0312\u030E\u0310\u0310")]
-		private static readonly FieldInfo stringList9Field;
+		private static readonly AccessTools.FieldRef<object, List<string>> stringList9Field;
 
 		public Stopwatch Stopwatch {
-			get => (Stopwatch)stopwatchField.GetValue(Cache);
-			set => stopwatchField.SetValue(Cache, value);
+			get => stopwatchField(Cache);
+			set => stopwatchField(Cache) = value;
 		}
 		[WrapperField("\u0310\u0313\u030D\u031B\u0317\u031C\u0315\u0313\u0314\u030D\u0317")]
-		private static readonly FieldInfo stopwatchField;
+		private static readonly AccessTools.FieldRef<object, Stopwatch> stopwatchField;
 
 		public string CachePath {
-			get => (string)cachePathField.GetValue(Cache);
-			set => cachePathField.SetValue(Cache, value);
+			get => cachePathField(Cache);
+			set => cachePathField(Cache) = value;
 		}
 		[WrapperField("\u0319\u0315\u031C\u030E\u0318\u0318\u031C\u0316\u0318\u0312\u0312")]
-		private static readonly FieldInfo cachePathField;
+		private static readonly AccessTools.FieldRef<object, string> cachePathField;
 
 		public bool SomeBool {
-			get => (bool)someBoolField.GetValue(Cache);
-			set => someBoolField.SetValue(Cache, value);
+			get => someBoolField(Cache);
+			set => someBoolField(Cache) = value;
 		}
 		[WrapperField("\u031B\u0315\u0314\u031A\u0311\u0311\u0319\u0311\u0312\u031A\u0312")]
-		private static readonly FieldInfo someBoolField;
+		private static readonly AccessTools.FieldRef<object, bool> someBoolField;
 
 		public HashSet<string> StringHashSet {
-			get => (HashSet<string>)stringHashSetField.GetValue(Cache);
-			set => stringHashSetField.SetValue(Cache, value);
+			get => stringHashSetField(Cache);
+			set => stringHashSetField(Cache) = value;
 		}
 		[WrapperField("\u030D\u0314\u0316\u0312\u030F\u0317\u0317\u0317\u0312\u030F\u030E")]
-		private static readonly FieldInfo stringHashSetField;
+		private static readonly AccessTools.FieldRef<object, HashSet<string>> stringHashSetField;
 
 		public int Int1 {
-			get => (int)int1Field.GetValue(Cache);
-			set => int1Field.SetValue(Cache, value);
+			get => int1Field(Cache);
+			set => int1Field(Cache) = value;
 		}
 		[WrapperField("\u0313\u0315\u0314\u0317\u0310\u0319\u0310\u030E\u031B\u0317\u0314")]
-		private static readonly FieldInfo int1Field;
+		private static readonly AccessTools.FieldRef<object, int> int1Field;
 
 		public CacheState State {
-			get => (CacheState)stateField.GetValue(Cache);
-			set => stateField.SetValue(Cache, value);
+			get => (CacheState)stateField(Cache);
+			set => stateField(Cache) = value;
 		}
 		[WrapperField("\u0314\u0314\u0313\u0311\u0311\u0314\u0318\u0314\u0311\u031C\u0312")]
-		private static readonly FieldInfo stateField;
+		private static readonly AccessTools.FieldRef<object, object> stateField;
 
 		public string BadSongsPath {
-			get => (string)badSongsPathField.GetValue(Cache);
-			set => badSongsPathField.SetValue(Cache, value);
+			get => badSongsPathField(Cache);
+			set => badSongsPathField(Cache) = value;
 		}
 		[WrapperField("\u0314\u0319\u030F\u0316\u0310\u031A\u0312\u0319\u031A\u0315\u030E")]
-		private static readonly FieldInfo badSongsPathField;
+		private static readonly AccessTools.FieldRef<object, string> badSongsPathField;
 
 		public Exception SomeException {
-			get => (Exception)someExceptionField.GetValue(Cache);
-			set => someExceptionField.SetValue(Cache, value);
+			get => someExceptionField(Cache);
+			set => someExceptionField(Cache) = value;
 		}
 		[WrapperField("\u0314\u030E\u030E\u030F\u0317\u030F\u031A\u031C\u031A\u030E\u031A")]
-		private static readonly FieldInfo someExceptionField;
+		private static readonly AccessTools.FieldRef<object, Exception> someExceptionField;
 
 		#endregion
 

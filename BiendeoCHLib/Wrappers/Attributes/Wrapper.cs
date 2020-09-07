@@ -26,13 +26,24 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 			var methodsSeen = new HashSet<MethodInfo>();
 			var constructorsSeen = new HashSet<ConstructorInfo>();
 
+			var staticFieldRefAccessMethod = AccessTools.FirstMethod(typeof(AccessTools), f => f.Name == nameof(AccessTools.StaticFieldRefAccess) && f.GetParameters().Length == 1 && f.GetParameters().Single().ParameterType == typeof(FieldInfo) && f.ContainsGenericParameters && f.GetGenericArguments().Length == 1);
+			var fieldRefAccessMethod = AccessTools.Method(typeof(AccessTools), nameof(AccessTools.FieldRefAccess), new Type[] { typeof(FieldInfo) });
+
 			foreach (var field in wrapperType.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)) {
-				if (field.FieldType.IsGenericType && typeof(AccessTools.FieldRef<object, object>).GetGenericTypeDefinition() == field.FieldType.GetGenericTypeDefinition() && field.GetValue(null) == null) {
+				if (field.FieldType.IsGenericType && (typeof(AccessTools.FieldRef<object, object>).GetGenericTypeDefinition() == field.FieldType.GetGenericTypeDefinition() || typeof(AccessTools.FieldRef<object>).GetGenericTypeDefinition() == field.FieldType.GetGenericTypeDefinition()) && field.GetValue(null) == null) {
 					var wrapperMember = field.GetCustomAttribute<WrapperField>();
 					if (wrapperMember != null) {
 						var fieldInfo = WrappedType.GetField(wrapperMember.ObfuscatedName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 						if (fieldInfo != null) {
-							field.SetValue(null, AccessTools.Method(typeof(AccessTools), nameof(AccessTools.FieldRefAccess), new Type[] { typeof(FieldInfo) }).MakeGenericMethod(field.FieldType.GenericTypeArguments).Invoke(null, new object[] { fieldInfo }));
+							if (field.FieldType.GenericTypeArguments.Length == 1) {
+								//TODO: Figure out how to do statics.
+								field.SetValue(null, staticFieldRefAccessMethod.MakeGenericMethod(field.FieldType.GenericTypeArguments).Invoke(null, new object[] { fieldInfo }));
+							} else if (field.FieldType.GenericTypeArguments.Length == 2) {
+								field.SetValue(null, fieldRefAccessMethod.MakeGenericMethod(field.FieldType.GenericTypeArguments).Invoke(null, new object[] { fieldInfo }));
+							} else {
+								logger.LogError($"Field {wrapperType.Name}.{field.Name} has an incorrect number of generic arguments! Panic!");
+								Environment.Exit(1);
+							}
 							fieldsSeen.Add(fieldInfo);
 							logger.LogInfo($"Loaded field {wrapperType.Name}.{field.Name}");
 						}
@@ -46,7 +57,9 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 							fieldsSeen.Add(fieldInfo);
 							logger.LogInfo($"Loaded field {wrapperType.Name}.{field.Name}");
 #if DEBUG
-							logger.LogWarning($"This is a FieldInfo field, please replace it with a FieldRefAccess version!");
+							if (!fieldInfo.IsStatic) {
+								logger.LogWarning($"This is a FieldInfo field, please replace it with a FieldRefAccess version!");
+							}
 #endif
 						}
 					}

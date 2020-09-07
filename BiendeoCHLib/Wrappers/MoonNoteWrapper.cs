@@ -18,6 +18,8 @@ namespace BiendeoCHLib.Wrappers {
 
 		public override int GetHashCode() => MoonNote.GetHashCode();
 
+		public bool IsNull() => MoonNote == null;
+
 		#region Enumerations
 
 		// \u0317\u0312\u031C\u0314\u030E\u0311\u0319\u0313\u0317\u0317\u0317

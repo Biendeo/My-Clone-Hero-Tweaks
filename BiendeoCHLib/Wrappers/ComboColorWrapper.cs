@@ -25,6 +25,5 @@ namespace BiendeoCHLib.Wrappers {
 		public override int GetHashCode() => ComboColor.GetHashCode();
 
 		public bool IsNull() => ComboColor == null;
-
 	}
 }

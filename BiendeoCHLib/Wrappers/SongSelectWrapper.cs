@@ -17,6 +17,12 @@ namespace BiendeoCHLib.Wrappers {
 			SongSelect = songSelect
 		};
 
+		public override bool Equals(object obj) => SongSelect.Equals(obj);
+
+		public override int GetHashCode() => SongSelect.GetHashCode();
+
+		public bool IsNull() => SongSelect == null;
+
 		#region Constructors
 
 		public static SongSelectWrapper Construct() => new SongSelectWrapper {

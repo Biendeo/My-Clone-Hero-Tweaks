@@ -25,6 +25,5 @@ namespace BiendeoCHLib.Wrappers {
 		public override int GetHashCode() => Countdown.GetHashCode();
 
 		public bool IsNull() => Countdown == null;
-
 	}
 }

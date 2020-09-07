@@ -25,6 +25,5 @@ namespace BiendeoCHLib.Wrappers {
 		public override int GetHashCode() => BarrelRoll.GetHashCode();
 
 		public bool IsNull() => BarrelRoll == null;
-
 	}
 }

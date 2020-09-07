@@ -241,7 +241,7 @@ namespace ExtraSongUI {
 				if (sceneName == "Gameplay") {
 					// Song length
 					var gameManagerObject = GameObject.Find("Game Manager");
-					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
+					gameManager = GameManagerWrapper.Wrap(gameManagerObject.GetComponent<GameManager>());
 					starProgress = gameManager.StarProgress;
 					basePlayers = gameManager.BasePlayers;
 					notes = basePlayers[0].Notes;
@@ -254,7 +254,7 @@ namespace ExtraSongUI {
 					currentNoteIndex = 0;
 
 					DestroyAndNullGameplayLabels();
-					Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
+					Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
 
 					TimeNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Time Name Label", uiFont);
 					SongTimeLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Time Label", uiFont);
@@ -292,7 +292,7 @@ namespace ExtraSongUI {
 					DestroyAndNullGameplayLabels();
 				}
 			}
-			if (sceneName == "Gameplay" && !gameManager.IsNull() && gameManager.PracticeUI.practiceUI == null) {
+			if (sceneName == "Gameplay" && !gameManager.IsNull() && gameManager.PracticeUI.PracticeUI == null) {
 				// Song length
 				formattedSongTime = string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime));
 				formattedSongLength = string.Format(config.SongLength.Format, DoubleToTimeString(gameManager.SongLength));
@@ -323,7 +323,7 @@ namespace ExtraSongUI {
 
 				starPowersGotten = basePlayers[0].StarPowersHit;
 				starPowerPercentage = totalStarPowers == 0 ? 100.0 : starPowersGotten * 100.0 / totalStarPowers;
-				currentStarPower = basePlayers[0].SPBar.someFloat * 100.0;
+				currentStarPower = basePlayers[0].SPBar.SomeFloat * 100.0;
 
 				currentCombo = basePlayers[0].Combo;
 				highestCombo = basePlayers[0].HighestCombo;

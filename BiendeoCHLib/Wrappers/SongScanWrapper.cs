@@ -20,6 +20,12 @@ namespace BiendeoCHLib.Wrappers {
 			SongScan = songScan
 		};
 
+		public override bool Equals(object obj) => SongScan.Equals(obj);
+
+		public override int GetHashCode() => SongScan.GetHashCode();
+
+		public bool IsNull() => SongScan == null;
+
 		#region Constructors
 
 		// The constructor probably expects a prefab to instantiate some fields so don't expect this to work.
@@ -35,116 +41,116 @@ namespace BiendeoCHLib.Wrappers {
 
 		// Seems to match WaitForFinish
 		public bool IsScanning {
-			get => (bool)isScanningField.GetValue(SongScan);
-			set => isScanningField.SetValue(SongScan, value);
+			get => isScanningField(SongScan);
+			set => isScanningField(SongScan) = value;
 		}
 		[WrapperField("\u0318\u0316\u0315\u0313\u031B\u0310\u031A\u0311\u0314\u0317\u030F")]
-		private static readonly FieldInfo isScanningField;
+		private static readonly AccessTools.FieldRef<SongScan, bool> isScanningField;
 
 		public Coroutine Coroutine {
-			get => (Coroutine)coroutineField.GetValue(SongScan);
-			set => coroutineField.SetValue(SongScan, value);
+			get => coroutineField(SongScan);
+			set => coroutineField(SongScan) = value;
 		}
 		[WrapperField("\u0319\u031A\u031C\u0315\u0317\u0319\u0314\u0317\u031A\u0316\u0314")]
-		private static readonly FieldInfo coroutineField;
+		private static readonly AccessTools.FieldRef<SongScan, Coroutine> coroutineField;
 
 		public TextMeshProUGUI CountText {
-			get => (TextMeshProUGUI)countTextField.GetValue(SongScan);
-			set => countTextField.SetValue(SongScan, value);
+			get => countTextField(SongScan);
+			set => countTextField(SongScan) = value;
 		}
 		[WrapperField("countText")]
-		private static readonly FieldInfo countTextField;
+		private static readonly AccessTools.FieldRef<SongScan, TextMeshProUGUI> countTextField;
 
 		public TextMeshProUGUI MainText {
-			get => (TextMeshProUGUI)mainTextField.GetValue(SongScan);
-			set => mainTextField.SetValue(SongScan, value);
+			get => mainTextField(SongScan);
+			set => mainTextField(SongScan) = value;
 		}
 		[WrapperField("mainText")]
-		private static readonly FieldInfo mainTextField;
+		private static readonly AccessTools.FieldRef<SongScan, TextMeshProUGUI> mainTextField;
 
 		public TextMeshProUGUI FolderText {
-			get => (TextMeshProUGUI)folderTextField.GetValue(SongScan);
-			set => folderTextField.SetValue(SongScan, value);
+			get => folderTextField(SongScan);
+			set => folderTextField(SongScan) = value;
 		}
 		[WrapperField("folderText")]
-		private static readonly FieldInfo folderTextField;
+		private static readonly AccessTools.FieldRef<SongScan, TextMeshProUGUI> folderTextField;
 
 		public TextMeshProUGUI ErrorText {
-			get => (TextMeshProUGUI)errorTextField.GetValue(SongScan);
-			set => errorTextField.SetValue(SongScan, value);
+			get => errorTextField(SongScan);
+			set => errorTextField(SongScan) = value;
 		}
 		[WrapperField("errorText")]
-		private static readonly FieldInfo errorTextField;
+		private static readonly AccessTools.FieldRef<SongScan, TextMeshProUGUI> errorTextField;
 
 		public TextMeshProUGUI BadSongsText {
-			get => (TextMeshProUGUI)badSongsTextField.GetValue(SongScan);
-			set => badSongsTextField.SetValue(SongScan, value);
+			get => badSongsTextField(SongScan);
+			set => badSongsTextField(SongScan) = value;
 		}
 		[WrapperField("badSongsText")]
-		private static readonly FieldInfo badSongsTextField;
+		private static readonly AccessTools.FieldRef<SongScan, TextMeshProUGUI> badSongsTextField;
 
 		public SongSelectWrapper SongSelect {
-			get => SongSelectWrapper.Wrap((SongSelect)songSelectField.GetValue(SongScan));
-			set => songSelectField.SetValue(SongScan, value.SongSelect);
+			get => SongSelectWrapper.Wrap(songSelectField(SongScan));
+			set => songSelectField(SongScan) = value.SongSelect;
 		}
 		[WrapperField("songSelect")]
-		private static readonly FieldInfo songSelectField;
+		private static readonly AccessTools.FieldRef<SongScan, SongSelect> songSelectField;
 
 		public MainMenuWrapper MainMenu {
-			get => MainMenuWrapper.Wrap((MainMenu)mainMenuField.GetValue(SongScan));
-			set => mainMenuField.SetValue(SongScan, value.MainMenu);
+			get => MainMenuWrapper.Wrap(mainMenuField(SongScan));
+			set => mainMenuField(SongScan) = value.MainMenu;
 		}
 		[WrapperField("mainMenu")]
-		private static readonly FieldInfo mainMenuField;
+		private static readonly AccessTools.FieldRef<SongScan, MainMenu> mainMenuField;
 
 		public GameObject Container {
-			get => (GameObject)containerField.GetValue(SongScan);
-			set => containerField.SetValue(SongScan, value);
+			get => containerField(SongScan);
+			set => containerField(SongScan) = value;
 		}
 		[WrapperField("container")]
-		private static readonly FieldInfo containerField;
+		private static readonly AccessTools.FieldRef<SongScan, GameObject> containerField;
 
 		public bool WaitForFinish {
-			get => (bool)waitForFinishField.GetValue(SongScan);
-			set => waitForFinishField.SetValue(SongScan, value);
+			get => waitForFinishField(SongScan);
+			set => waitForFinishField(SongScan) = value;
 		}
 		[WrapperField("\u031A\u031C\u0310\u0316\u0313\u0315\u0313\u0318\u031A\u0312\u031C")]
-		private static readonly FieldInfo waitForFinishField;
+		private static readonly AccessTools.FieldRef<SongScan, bool> waitForFinishField;
 
 		public Thread ScanThread {
-			get => (Thread)scanThreadField.GetValue(SongScan);
-			set => scanThreadField.SetValue(SongScan, value);
+			get => scanThreadField(SongScan);
+			set => scanThreadField(SongScan) = value;
 		}
 		[WrapperField("\u030D\u0319\u030F\u0314\u030D\u0310\u030F\u0316\u0317\u030E\u0314")]
-		private static readonly FieldInfo scanThreadField;
+		private static readonly AccessTools.FieldRef<SongScan, Thread> scanThreadField;
 
 		public string FolderLocalized {
-			get => (string)folderLocalizedField.GetValue(SongScan);
-			set => folderLocalizedField.SetValue(SongScan, value);
+			get => folderLocalizedField(SongScan);
+			set => folderLocalizedField(SongScan) = value;
 		}
 		[WrapperField("\u0317\u0311\u031A\u0319\u0313\u031A\u0316\u0313\u030D\u0311\u0313")]
-		private static readonly FieldInfo folderLocalizedField;
+		private static readonly AccessTools.FieldRef<SongScan, string> folderLocalizedField;
 
 		public string SongsScannedLocalized {
-			get => (string)songsScannedLocalizedField.GetValue(SongScan);
-			set => songsScannedLocalizedField.SetValue(SongScan, value);
+			get => songsScannedLocalizedField(SongScan);
+			set => songsScannedLocalizedField(SongScan) = value;
 		}
 		[WrapperField("\u0311\u030E\u0319\u0316\u0312\u0318\u0311\u030F\u0310\u031C\u031C")]
-		private static readonly FieldInfo songsScannedLocalizedField;
+		private static readonly AccessTools.FieldRef<SongScan, string> songsScannedLocalizedField;
 
 		public string ErrorsLocalized {
-			get => (string)errorsLocalizedField.GetValue(SongScan);
-			set => errorsLocalizedField.SetValue(SongScan, value);
+			get => errorsLocalizedField(SongScan);
+			set => errorsLocalizedField(SongScan) = value;
 		}
 		[WrapperField("\u030E\u0310\u0313\u0314\u031C\u031C\u031A\u0315\u031C\u031B\u030E")]
-		private static readonly FieldInfo errorsLocalizedField;
+		private static readonly AccessTools.FieldRef<SongScan, string> errorsLocalizedField;
 
 		public string BadSongsLocalized {
-			get => (string)badSongsLocalizedField.GetValue(SongScan);
-			set => badSongsLocalizedField.SetValue(SongScan, value);
+			get => badSongsLocalizedField(SongScan);
+			set => badSongsLocalizedField(SongScan) = value;
 		}
 		[WrapperField("\u0311\u0319\u031A\u030F\u030D\u0316\u0318\u0317\u0318\u030E\u031A")]
-		private static readonly FieldInfo badSongsLocalizedField;
+		private static readonly AccessTools.FieldRef<SongScan, string> badSongsLocalizedField;
 
 		#endregion
 

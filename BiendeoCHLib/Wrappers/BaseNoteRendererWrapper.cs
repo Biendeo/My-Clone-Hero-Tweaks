@@ -25,6 +25,5 @@ namespace BiendeoCHLib.Wrappers {
 		public override int GetHashCode() => BaseNoteRenderer.GetHashCode();
 
 		public bool IsNull() => BaseNoteRenderer == null;
-
 	}
 }

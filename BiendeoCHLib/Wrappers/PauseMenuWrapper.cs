@@ -1,4 +1,5 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,33 +8,29 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BiendeoCHLib.Wrappers {
-	[Wrapper("\u0311\u0316\u0315\u031B\u0310\u0314\u0316\u030E\u0311\u0315\u031B")]
-	public struct PlayerProfileWrapper {
-		public readonly object playerProfile;
+	[Wrapper(typeof(PauseMenu))]
+	public struct PauseMenuWrapper {
+		public PauseMenu PauseMenu { get; private set; }
 
-		public PlayerProfileWrapper(object playerProfile) {
-			this.playerProfile = playerProfile;
-		}
+		public static PauseMenuWrapper Wrap(PauseMenu pauseMenu) => new PauseMenuWrapper {
+			PauseMenu = pauseMenu
+		};
 
-		public string PlayerName => (string)playerNameField.GetValue(playerProfile);
-		[WrapperField("\u031A\u0311\u0312\u030D\u0315\u0310\u0311\u0316\u030D\u0311\u0312")]
-		private static readonly FieldInfo playerNameField;
+		public override bool Equals(object obj) => PauseMenu.Equals(obj);
 
-		public ControllerType Instrument => (ControllerType)instrumentField.GetValue(playerProfile);
-		[WrapperField("\u030E\u031C\u0314\u031B\u030E\u031A\u0313\u030D\u0314\u0310\u031A")]
-		private static readonly FieldInfo instrumentField;
+		public override int GetHashCode() => PauseMenu.GetHashCode();
 
-		public sbyte Difficulty => (sbyte)difficultyField.GetValue(playerProfile);
-		[WrapperField("\u030E\u0310\u0312\u031C\u0314\u031A\u030E\u031A\u0312\u0318\u030E")]
-		private static readonly FieldInfo difficultyField;
+		public bool IsNull() => PauseMenu == null;
 
-		#region Enumerations
+		#region Methods
 
-		public enum ControllerType : byte {
-			Guitar,
-			GHLGuitar,
-			Drums
-		}
+		public void RestartInPracticeMode() => restartInPracticeModeMethod(PauseMenu);
+		[WrapperMethod("\u0318\u031A\u0317\u030D\u031B\u031B\u0318\u0313\u030D\u030F\u0314")]
+		private static readonly FastInvokeHandler restartInPracticeModeMethod;
+
+		public void RestartSong() => restartSongMethod(PauseMenu);
+		[WrapperMethod("\u030E\u0315\u0315\u0310\u0312\u030E\u0312\u031A\u0313\u0314\u0310")]
+		private static readonly FastInvokeHandler restartSongMethod;
 
 		#endregion
 	}

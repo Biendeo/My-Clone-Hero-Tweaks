@@ -25,6 +25,5 @@ namespace BiendeoCHLib.Wrappers {
 		public override int GetHashCode() => BaseNeckController.GetHashCode();
 
 		public bool IsNull() => BaseNeckController == null;
-
 	}
 }

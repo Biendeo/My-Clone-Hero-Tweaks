@@ -90,6 +90,7 @@
     <Compile Include="Wrappers\Attributes\WrapperProperty.cs" />
     <Compile Include="Wrappers\BaseGuitarPlayerWrapper.cs" />
     <Compile Include="Wrappers\BarrelRollWrapper.cs" />
+    <Compile Include="Wrappers\Difficulty.cs" />
     <Compile Include="Wrappers\SpNeckRendererWrapper.cs" />
     <Compile Include="Wrappers\CameraShakeWrapper.cs" />
     <Compile Include="Wrappers\CountdownWrapper.cs" />
@@ -112,8 +113,8 @@
     <Compile Include="Wrappers\MoonNoteWrapper.cs" />
     <Compile Include="Wrappers\EndOfSongWrapper.cs" />
     <Compile Include="Wrappers\NoteWrapper.cs" />
-    <Compile Include="Wrappers\PauseMenuWrapper.cs" />
     <Compile Include="Wrappers\PlayerProfileWrapper.cs" />
+    <Compile Include="Wrappers\PauseMenuWrapper.cs" />
     <Compile Include="Wrappers\PracticeUIWrapper.cs" />
     <Compile Include="Wrappers\ScoreManagerWrapper.cs" />
     <Compile Include="Wrappers\SoloCounterWrapper.cs" />

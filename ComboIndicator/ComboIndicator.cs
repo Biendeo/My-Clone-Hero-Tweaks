@@ -69,7 +69,7 @@ namespace ComboIndicator {
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
 				if (sceneName == "Gameplay") {
-					gameManager = new GameManagerWrapper(GameObject.Find("Game Manager")?.GetComponent<GameManager>());
+					gameManager = GameManagerWrapper.Wrap(GameObject.Find("Game Manager")?.GetComponent<GameManager>());
 					if (!gameManager.IsNull()) {
 						soloCounter = gameManager.BasePlayers[0].SoloCounter;
 						scoreManager = gameManager.ScoreManager;

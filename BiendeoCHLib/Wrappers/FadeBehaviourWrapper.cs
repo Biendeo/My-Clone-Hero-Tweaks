@@ -10,35 +10,53 @@ using UnityEngine.UI;
 namespace BiendeoCHLib.Wrappers {
 	[Wrapper(typeof(FadeBehaviour))]
 	public struct FadeBehaviourWrapper {
-		public FadeBehaviour fadeBehaviour;
+		public FadeBehaviour FadeBehaviour { get; private set; }
 
-		public FadeBehaviourWrapper(FadeBehaviour fadeBehaviour) {
-			this.fadeBehaviour = fadeBehaviour;
-		}
+		public static FadeBehaviourWrapper Wrap(FadeBehaviour fadeBehaviour) => new FadeBehaviourWrapper {
+			FadeBehaviour = fadeBehaviour
+		};
+
+		public override bool Equals(object obj) => FadeBehaviour.Equals(obj);
+
+		public override int GetHashCode() => FadeBehaviour.GetHashCode();
+
+		public bool IsNull() => FadeBehaviour == null;
 
 		#region Fields
 
-		public static FadeBehaviourWrapper instance => new FadeBehaviourWrapper((FadeBehaviour)instanceField.GetValue(null));
+		public static FadeBehaviourWrapper Instance {
+			get => Wrap((FadeBehaviour)instanceField.GetValue(null));
+			set => instanceField.SetValue(null, value.FadeBehaviour);
+		}
 		[WrapperField("\u0312\u0313\u0310\u0315\u030E\u0319\u030D\u0318\u0313\u030E\u031A")]
 		private static readonly FieldInfo instanceField;
 
-		public float timeToFade => (float)timeToFadeField.GetValue(fadeBehaviour);
+		public float TimeToFade {
+			get => timeToFadeField(FadeBehaviour);
+			set => timeToFadeField(FadeBehaviour) = value;
+		}
 		[WrapperField("\u030F\u031B\u0314\u0311\u0310\u0313\u0314\u0314\u0317\u0318\u0312")]
-		private static readonly FieldInfo timeToFadeField; //? Always 0.4?
+		private static readonly AccessTools.FieldRef<FadeBehaviour, float> timeToFadeField; //? Always 0.4?
 
-		public bool isFadingOut => (bool)isFadingOutField.GetValue(fadeBehaviour);
+		public bool IsFadingOut {
+			get => isFadingOutField(FadeBehaviour);
+			set => isFadingOutField(FadeBehaviour) = value;
+		}
 		[WrapperField("\u0311\u0310\u031B\u0312\u0315\u030D\u030D\u031B\u0315\u031C\u0314")]
-		private static readonly FieldInfo isFadingOutField;
+		private static readonly AccessTools.FieldRef<FadeBehaviour, bool> isFadingOutField;
 
-		public Image fadeGraphic => (Image)fadeGraphicField.GetValue(fadeBehaviour);
+		public Image FadeGraphic {
+			get => fadeGraphicField(FadeBehaviour);
+			set => fadeGraphicField(FadeBehaviour) = value;
+		}
 		[WrapperField("fadeGraphic")]
-		private static readonly FieldInfo fadeGraphicField;
+		private static readonly AccessTools.FieldRef<FadeBehaviour, Image> fadeGraphicField;
 
 		#endregion
 
 		#region Methods
 
-		public IEnumerator InvokeSceneChange(string sceneName) => (IEnumerator)invokeSceneChangeMethod(fadeBehaviour, sceneName);
+		public IEnumerator InvokeSceneChange(string sceneName) => (IEnumerator)invokeSceneChangeMethod(FadeBehaviour, sceneName);
 		[WrapperMethod("\u0318\u031C\u0315\u0318\u030E\u031B\u0315\u0310\u030D\u0314\u0314")]
 		private static readonly FastInvokeHandler invokeSceneChangeMethod;
 

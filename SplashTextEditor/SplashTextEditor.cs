@@ -143,7 +143,7 @@ namespace SplashTextEditor {
 				}
 			}
 			if (config.Enabled && splashTextComponent != null) {
-				if (config.DragonforceOverride && BassAudioManagerWrapper.instance.menuSong.SongEntry != null && BassAudioManagerWrapper.instance.menuSong.Artist.ValueLowerCase == "dragonforce") {
+				if (config.DragonforceOverride && BassAudioManagerWrapper.Instance.MenuSong.SongEntry != null && BassAudioManagerWrapper.Instance.MenuSong.Artist.ValueLowerCase == "dragonforce") {
 					splashTextComponent.text = dragonforceSplashMessage;
 				} else if (currentSplashIndex >= 0) {
 					if (currentSplashIndex < config.Messages.Count) {

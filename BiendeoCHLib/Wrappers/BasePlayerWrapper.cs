@@ -85,8 +85,8 @@ namespace BiendeoCHLib.Wrappers {
 		private static readonly AccessTools.FieldRef<BasePlayer, GameObject> fcIndicatorField;
 
 		public SoloCounterWrapper SoloCounter {
-			get => new SoloCounterWrapper(soloCounterField(BasePlayer));
-			set => soloCounterField(BasePlayer) = value.soloCounter;
+			get => SoloCounterWrapper.Wrap(soloCounterField(BasePlayer));
+			set => soloCounterField(BasePlayer) = value.SoloCounter;
 		}
 		[WrapperField("\u0315\u031B\u030E\u0319\u0310\u030E\u030F\u031B\u031A\u030E\u030F")]
 		private static readonly AccessTools.FieldRef<BasePlayer, SoloCounter> soloCounterField;
@@ -106,15 +106,15 @@ namespace BiendeoCHLib.Wrappers {
 		private static readonly AccessTools.FieldRef<BasePlayer, TextMeshProUGUI> unknownTextField;
 
 		public CHPlayerWrapper Player {
-			get => new CHPlayerWrapper(playerField(BasePlayer));
-			set => playerField(BasePlayer) = value.chPlayer;
+			get => CHPlayerWrapper.Wrap(playerField(BasePlayer));
+			set => playerField(BasePlayer) = value.CHPlayer;
 		}
 		[WrapperField("\u0317\u0319\u0316\u030E\u031A\u030E\u031A\u031A\u0319\u0311\u0318")]
 		private static readonly AccessTools.FieldRef<BasePlayer, object> playerField;
 
 		public SPBarWrapper SPBar {
-			get => new SPBarWrapper(spBarField(BasePlayer));
-			set => spBarField(BasePlayer) = value.spBar;
+			get => SPBarWrapper.Wrap(spBarField(BasePlayer));
+			set => spBarField(BasePlayer) = value.SPBar;
 		}
 		[WrapperField("spBar")]
 		private static readonly AccessTools.FieldRef<BasePlayer, SPBar> spBarField;
@@ -126,12 +126,13 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("highwayObjects")]
 		private static readonly AccessTools.FieldRef<BasePlayer, GameObject[]> highwayObjectsField;
 
+		//TODO: Statics are a little iffy with FieldRef, migrate this when it works.
 		public static int BasePointsPerNote {
-			get => basePointsPerNoteField();
-			set => basePointsPerNoteField() = value;
+			get => (int)basePointsPerNoteField.GetValue(null);
+			set => basePointsPerNoteField.SetValue(null, value);
 		}
 		[WrapperField("\u0315\u031C\u0317\u0311\u030E\u031A\u0319\u0313\u0315\u0311\u030F")]
-		private static readonly AccessTools.FieldRef<int> basePointsPerNoteField; // Always 50.
+		private static readonly FieldInfo basePointsPerNoteField; // Always 50.
 
 		public HighwayScrollWrapper HighwayScroll {
 			get => HighwayScrollWrapper.Wrap(highwayScrollField(BasePlayer));

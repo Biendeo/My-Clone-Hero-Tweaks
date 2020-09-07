@@ -10,7 +10,7 @@ using UnityEngine;
 namespace BiendeoCHLib.Wrappers {
 	[Wrapper(typeof(SongEntry))]
 	public struct SongEntryWrapper {
-		public object SongEntry { get; private set; }
+		public SongEntry SongEntry { get; private set; }
 
 		public static SongEntryWrapper Wrap(SongEntry songEntry) => new SongEntryWrapper {
 			SongEntry = songEntry
@@ -22,7 +22,7 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Properties
 
-		public SongEntryPropertyWrapper Artist => new SongEntryPropertyWrapper(artistProperty.GetValue(SongEntry));
+		public SongEntryPropertyWrapper Artist => SongEntryPropertyWrapper.Wrap(artistProperty.GetValue(SongEntry));
 		[WrapperProperty("Artist")]
 		private static readonly PropertyInfo artistProperty;
 
