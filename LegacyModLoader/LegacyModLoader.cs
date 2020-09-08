@@ -73,6 +73,7 @@ namespace LegacyModLoader {
 					});
 					Logger.LogInfo($"Found mod {assembly.FullName}");
 				} catch (Exception exc) when (
+					exc is NullReferenceException ||
 					exc is FileLoadException ||
 					exc is BadImageFormatException ||
 					exc is ArgumentException ||
