@@ -45,6 +45,14 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u030E\u0310\u0312\u031C\u0314\u031A\u030E\u031A\u0312\u0318\u030E")]
 		private static readonly AccessTools.FieldRef<object, object> difficultyField;
 
+		public bool Bot
+		{
+			get => (bool)botField(PlayerProfile);
+			set => botField(PlayerProfile) = value;
+		}
+		[WrapperField("\u030F\u031B\u0312\u031B\u0314\u0313\u031A\u0316\u031B\u0316\u0312")]
+		private static readonly AccessTools.FieldRef<object, bool> botField;
+
 		#endregion
 
 		#region Enumerations

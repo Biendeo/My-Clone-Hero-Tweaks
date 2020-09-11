@@ -59,6 +59,24 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperProperty("\u0314\u0312\u0318\u031C\u031A\u0313\u0314\u0317\u030E\u0315\u031C")]
 		private static readonly PropertyInfo starPowerProperty;
 
+		// This has a private setter in the class
+		public MoonNoteWrapper[] Notes => ((object[])notesProperty.GetValue(MoonChart)).Select(o => MoonNoteWrapper.Wrap(o)).ToArray();
+		[WrapperProperty("\u0314\u0315\u0319\u0318\u031C\u0314\u030F\u0312\u030F\u030E\u0310")]
+		private static readonly PropertyInfo notesProperty;
+
+		public ChartEventWrapper[] Events => ((object[])eventsProperty.GetValue(MoonChart)).Select(o => ChartEventWrapper.Wrap(o)).ToArray();
+		[WrapperProperty("\u0315\u0311\u030F\u0317\u0310\u0311\u0312\u0317\u0317\u0315\u030D")]
+		private static readonly PropertyInfo eventsProperty;
+
+		// This SHOULD work but it doesn't? dnSpy shows this as being the field for the song class...
+		/*public SongWrapper Song
+		{
+			get => SongWrapper.Wrap(songProperty.GetValue(MoonChart));
+			set => songProperty.SetValue(MoonChart, value.Song);
+		}
+		[WrapperProperty("\u030F\u0315\u031A\u0316\u0318\u031A\u030E\u0319\u0316\u0311\u031A")]
+		private static readonly PropertyInfo songProperty;*/
+
 		#endregion
 	}
 }

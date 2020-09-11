@@ -38,6 +38,7 @@ namespace BiendeoCHLib.Patches.Attributes {
 			// Now determine the prefix and postfix methods in the patch type.
 			MethodInfo prefixMethod = null;
 			MethodInfo postfixMethod = null;
+			MethodInfo reversePatchMethod = null;
 			foreach (var method in patchType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)) {
 				if (method.Name == "Prefix" || method.GetCustomAttribute<HarmonyCHPrefix>() != null) {
 					logger.LogInfo($"Found prefix method {method.Name}");
@@ -59,11 +60,26 @@ namespace BiendeoCHLib.Patches.Attributes {
 #endif
 					postfixMethod = method;
 				}
+				if (method.Name == "ReversePatch" || method.GetCustomAttribute<HarmonyCHReversePatch>() != null)
+				{
+					logger.LogInfo($"Found reverse patch method {method.Name}");
+
+					if (reversePatchMethod != null)
+					{
+						logger.LogError($"This replaces a previously defined reverse patch method, terminating...");
+						Environment.Exit(1);
+					}
+
+					reversePatchMethod = method;
+				}
 			}
 			if (prefixMethod != null || postfixMethod != null) {
 				harmony.Patch(targetMethod, prefix: prefixMethod == null ? null : new HarmonyMethod(prefixMethod), postfix: postfixMethod == null ? null : new HarmonyMethod(postfixMethod));
+			} else if (reversePatchMethod != null)
+			{
+				harmony.CreateReversePatcher(targetMethod, reversePatchMethod);
 			} else {
-				logger.LogWarning("Found no prefix/postfix methods for patch, so no action will be done.");
+				logger.LogWarning("Found no prefix/postfix/reverse patch methods for patch, so no action will be done.");
 			}
 		}
 	}

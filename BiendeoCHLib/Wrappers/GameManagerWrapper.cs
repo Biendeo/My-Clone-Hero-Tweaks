@@ -107,6 +107,10 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Methods
 
+		public void Start() => startMethod(GameManager, null);
+		[WrapperMethod("Start")]
+		private static readonly FastInvokeHandler startMethod;
+
 		/// <summary>
 		/// Seems to create a brand new list of notes based on the chart. It probably shouldn't be called mid-game
 		/// because performance is iffy and it has side effects.

@@ -54,19 +54,19 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u0316\u0316\u0317\u0310\u0315\u0312\u030F\u0313\u0316\u031A\u0319")]
 		private static readonly AccessTools.FieldRef<object, string> unknownString4Field;
 
-		public string UnknownString5 {
-			get => unknownString5Field(Song);
-			set => unknownString5Field(Song) = value;
-		} //! String empty?
+		public string Artist {
+			get => artistField(Song);
+			set => artistField(Song) = value;
+		}
 		[WrapperField("\u0317\u0310\u0312\u0315\u031A\u031C\u030E\u031B\u0318\u031A\u0310")]
-		private static readonly AccessTools.FieldRef<object, string> unknownString5Field;
+		private static readonly AccessTools.FieldRef<object, string> artistField;
 
-		public string UnknownString6 {
-			get => unknownString6Field(Song);
-			set => unknownString6Field(Song) = value;
-		} //! String empty?
+		public string Name {
+			get => nameField(Song);
+			set => nameField(Song) = value;
+		}
 		[WrapperField("\u0318\u030F\u0314\u0314\u030D\u0316\u0319\u0312\u0316\u0313\u031C")]
-		private static readonly AccessTools.FieldRef<object, string> unknownString6Field;
+		private static readonly AccessTools.FieldRef<object, string> nameField;
 
 		public string MediaType {
 			get => mediaTypeField(Song);
@@ -75,12 +75,12 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u031A\u0314\u030F\u0318\u0315\u0319\u0313\u0319\u0311\u0312\u030E")]
 		private static readonly AccessTools.FieldRef<object, string> mediaTypeField;
 
-		public string UnknownString8 {
-			get => unknownString8Field(Song);
-			set => unknownString8Field(Song) = value;
-		} //! String empty?
+		public string Charter {
+			get => charterField(Song);
+			set => charterField(Song) = value;
+		}
 		[WrapperField("\u031A\u031B\u0310\u0318\u031A\u031C\u030F\u0312\u0318\u031A\u031A")]
-		private static readonly AccessTools.FieldRef<object, string> unknownString8Field;
+		private static readonly AccessTools.FieldRef<object, string> charterField;
 
 		public string Player2 {
 			get => player2Field(Song);

@@ -180,12 +180,12 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u0310\u0310\u0312\u0315\u0310\u031B\u0310\u0315\u031A\u031B\u0318")]
 		private static readonly AccessTools.FieldRef<BasePlayer, float> backHitWindowField;
 
-		public float UnknownFloat3 {
-			get => unknownFloat3Field(BasePlayer);
-			set => unknownFloat3Field(BasePlayer) = value;
+		public float BotWindow {
+			get => botWindowField(BasePlayer);
+			set => botWindowField(BasePlayer) = value;
 		}
 		[WrapperField("\u0316\u0313\u0314\u0317\u031C\u030E\u030F\u0313\u0313\u0319\u030E")]
-		private static readonly AccessTools.FieldRef<BasePlayer, float> unknownFloat3Field;
+		private static readonly AccessTools.FieldRef<BasePlayer, float> botWindowField;
 
 		public float HitWindowLength {
 			get => hitWindowLengthField(BasePlayer);
@@ -400,6 +400,10 @@ namespace BiendeoCHLib.Wrappers {
 		#endregion
 
 		#region Methods
+
+		public void Update() => updateMethod.Invoke(BasePlayer, null);
+		[WrapperMethod("Update")]
+		private static readonly FastInvokeHandler updateMethod;
 
 		public void MissNote(NoteWrapper hitNote) => missNoteMethod(BasePlayer, hitNote.Note);
 		[WrapperMethod("\u0318\u030F\u0314\u031C\u0310\u0317\u0313\u031B\u030E\u031A\u031A")]
