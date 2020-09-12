@@ -84,10 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Settings\Config.cs" />
-    <Compile Include="Settings\OldConfig.cs" />
-    <Compile Include="Settings\EditableLabelSettings.cs" />
-    <Compile Include="Settings\FormattedLabelSettings.cs" />
-    <Compile Include="Settings\LabelSettings.cs" />
+    <Compile Include="Settings\SongUILabel.cs" />
     <Compile Include="SongUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

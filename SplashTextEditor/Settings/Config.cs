@@ -101,7 +101,7 @@ namespace SplashTextEditor.Settings {
 					VanillaSplashMessages = newConfig.VanillaSplashMessages;
 					DragonforceOverride = newConfig.DragonforceOverride;
 					AprilFoolsSplashes = newConfig.AprilFoolsSplashes;
-					CycleTime = 15.0f;
+					CycleTime = newConfig.CycleTime;
 					Messages = newConfig.Messages;
 					ResetSplashes();
 				}
