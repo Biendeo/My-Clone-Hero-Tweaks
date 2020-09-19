@@ -94,7 +94,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 						}
 					}
 				}
-				if ((field.FieldType == typeof(FieldInfo) || field.FieldType == typeof(PropertyInfo) || field.FieldType == typeof(MethodInfo) || field.FieldType == typeof(ConstructorInfo)) && field.GetValue(null) == null) {
+				if ((field.FieldType == typeof(FieldInfo) || (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(AccessTools.FieldRef<,>)) || field.FieldType == typeof(PropertyInfo) || field.FieldType == typeof(MethodInfo) || field.FieldType == typeof(FastInvokeHandler) || field.FieldType == typeof(ConstructorInfo)) && field.GetValue(null) == null) {
 					logger.LogError($"Uh oh! {wrapperType.Name}.{field.Name} was null!");
 #if DEBUG
 					logger.LogError($"Program terminating until this wrapper is fixed!");
