@@ -23,7 +23,7 @@ namespace ExtraSongUI.Settings {
 		public bool Enabled;
 		public KeyBind EnabledKeyBind;
 
-		public List<SongUILabel> Layout;
+		public List<List<SongUILabel>> Layout;
 
 		[XmlIgnore]
 		public bool DraggableLabelsEnabled;
@@ -33,9 +33,10 @@ namespace ExtraSongUI.Settings {
 		public bool SeenChangelog;
 		[XmlIgnore]
 		private bool wasMouseVisible;
+		[XmlIgnore]
+		public int LayoutIndexSelected;
 
 		public Config() {
-
 			Version = 3;
 			TweakVersion = "0.0.0";
 
@@ -56,10 +57,12 @@ namespace ExtraSongUI.Settings {
 				Shift = false
 			};
 
-			Layout = new List<SongUILabel>();
+			Layout = new List<List<SongUILabel>>();
+
+			LayoutIndexSelected = 0;
 		}
 
-		private static List<SongUILabel> DefaultLayout {
+		private static List<List<SongUILabel>> DefaultLayout {
 			get {
 				// These original numbers were designed with 1440p in mind so this'll sort it out.
 				float widthScale = Screen.width / 2560.0f;
@@ -68,319 +71,324 @@ namespace ExtraSongUI.Settings {
 				int largeFontSize = (int)(50 * widthScale);
 				int extraLargeFontSize = (int)(150 * widthScale);
 
-				return new List<SongUILabel>() {
-					new SongUILabel {
-						Name = "Time Name",
-						Format = "Time:",
-						X = (int)(60.0f * widthScale),
-						Y = (int)(750.0f * heightScale),
-						Size = smallFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
+				return new List<List<SongUILabel>>() {
+					new List<SongUILabel>() {
+						new SongUILabel {
+							Name = "Time Name",
+							Format = "Time:",
+							X = (int)(60.0f * widthScale),
+							Y = (int)(750.0f * heightScale),
+							Size = smallFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Song Time",
+							Format = @"{songtime:m\:ss\.fff} /",
+							X = (int)(350.0f * widthScale),
+							Y = (int)(750.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Song Length",
+							Format = @"{songlength:m\:ss\.fff}",
+							X = (int)(620.0f * widthScale),
+							Y = (int)(750.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Song Time Percentage",
+							Format = "({songtimepercentage:0.00}%)",
+							X = (int)(750.0f * widthScale),
+							Y = (int)(750.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerLeft,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Current Star Progress Name",
+							Format = "{currentstar} → {nextstar}:",
+							X = (int)(60.0f * widthScale),
+							Y = (int)(810.0f * heightScale),
+							Size = smallFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Current Star Progress Score",
+							Format = "{currentstarscore} /",
+							X = (int)(350.0f * widthScale),
+							Y = (int)(810.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Current Star Progress End Score",
+							Format = "{nextstarscore}",
+							X = (int)(620.0f * widthScale),
+							Y = (int)(810.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Current Star Progress Percentage",
+							Format = "({currentstarpercentage:0.00}%)",
+							X = (int)(750.0f * widthScale),
+							Y = (int)(810.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerLeft,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Seven Star Progress Name",
+							Format = "0 → 7:",
+							X = (int)(60.0f * widthScale),
+							Y = (int)(870.0f * heightScale),
+							Size = smallFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Seven Star Progress Score",
+							Format = "{currentscore} /",
+							X = (int)(350.0f * widthScale),
+							Y = (int)(870.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Seven Star Progress End Score",
+							Format = "{sevenstarscore}",
+							X = (int)(620.0f * widthScale),
+							Y = (int)(870.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Seven Star Progress Percentage",
+							Format = "({sevenstarpercentage:0.00}%)",
+							X = (int)(750.0f * widthScale),
+							Y = (int)(870.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerLeft,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Notes Name",
+							Format = "Notes:",
+							X = (int)(60.0f * widthScale),
+							Y = (int)(930.0f * heightScale),
+							Size = smallFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Notes Hit Counter",
+							Format = "{hitnotes} /",
+							X = (int)(280.0f * widthScale),
+							Y = (int)(930.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Notes Passed Counter",
+							Format = "{seennotes} /",
+							X = (int)(470.0f * widthScale),
+							Y = (int)(930.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Total Notes Counter",
+							Format = "{totalnotes}",
+							X = (int)(640.0f * widthScale),
+							Y = (int)(930.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Notes Hit Percentage",
+							Format = "({hitnotespercentage:0.00}%)",
+							X = (int)(750.0f * widthScale),
+							Y = (int)(930.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerLeft,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Notes Missed Counter",
+							Format = "{fcindicator}",
+							X = (int)(750.0f * widthScale),
+							Y = (int)(1100.0f * heightScale),
+							Size = extraLargeFontSize,
+							Alignment = TextAnchor.MiddleRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Star Power Name",
+							Format = "SP:",
+							X = (int)(60.0f * widthScale),
+							Y = (int)(990.0f * heightScale),
+							Size = smallFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Star Powers Gotten Counter",
+							Format = "{starpowersgotten} /",
+							X = (int)(280.0f * widthScale),
+							Y = (int)(990.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Total Star Powers Counter",
+							Format = "{totalstarpowers}",
+							X = (int)(430.0f * widthScale),
+							Y = (int)(990.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Star Power Percentage",
+							Format = "({starpowerpercentage:0.00}%)",
+							X = (int)(750.0f * widthScale),
+							Y = (int)(990.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerLeft,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Current Star Power",
+							Format = "({currentstarpower:0.00}%)",
+							X = (int)(1825.0f * widthScale),
+							Y = (int)(1125.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerLeft,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Combo Name",
+							Format = "Combo:",
+							X = (int)(60.0f * widthScale),
+							Y = (int)(1050.0f * heightScale),
+							Size = smallFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Current Combo Counter",
+							Format = "{currentcombo} /",
+							X = (int)(280.0f * widthScale),
+							Y = (int)(1050.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						},
+						new SongUILabel {
+							Name = "Highest Combo Counter",
+							Format = "{highestcombo}",
+							X = (int)(430.0f * widthScale),
+							Y = (int)(1050.0f * heightScale),
+							Size = largeFontSize,
+							Alignment = TextAnchor.LowerRight,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						}
 					},
-					new SongUILabel {
-						Name = "Song Time",
-						Format = @"{songtime:m\:ss\.fff} /",
-						X = (int)(350.0f * widthScale),
-						Y = (int)(750.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Song Length",
-						Format = @"{songlength:m\:ss\.fff}",
-						X = (int)(620.0f * widthScale),
-						Y = (int)(750.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Song Time Percentage",
-						Format = "({songtimepercentage:0.00}%)",
-						X = (int)(750.0f * widthScale),
-						Y = (int)(750.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerLeft,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Current Star Progress Name",
-						Format = "{currentstar} → {nextstar}:",
-						X = (int)(60.0f * widthScale),
-						Y = (int)(810.0f * heightScale),
-						Size = smallFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Current Star Progress Score",
-						Format = "{currentstarscore} /",
-						X = (int)(350.0f * widthScale),
-						Y = (int)(810.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Current Star Progress End Score",
-						Format = "{nextstarscore}",
-						X = (int)(620.0f * widthScale),
-						Y = (int)(810.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Current Star Progress Percentage",
-						Format = "({currentstarpercentage:0.00}%)",
-						X = (int)(750.0f * widthScale),
-						Y = (int)(810.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerLeft,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Seven Star Progress Name",
-						Format = "0 → 7:",
-						X = (int)(60.0f * widthScale),
-						Y = (int)(870.0f * heightScale),
-						Size = smallFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Seven Star Progress Score",
-						Format = "{currentscore} /",
-						X = (int)(350.0f * widthScale),
-						Y = (int)(870.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Seven Star Progress End Score",
-						Format = "{sevenstarscore}",
-						X = (int)(620.0f * widthScale),
-						Y = (int)(870.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Seven Star Progress Percentage",
-						Format = "({sevenstarpercentage:0.00}%)",
-						X = (int)(750.0f * widthScale),
-						Y = (int)(870.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerLeft,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Notes Name",
-						Format = "Notes:",
-						X = (int)(60.0f * widthScale),
-						Y = (int)(930.0f * heightScale),
-						Size = smallFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Notes Hit Counter",
-						Format = "{hitnotes} /",
-						X = (int)(280.0f * widthScale),
-						Y = (int)(930.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Notes Passed Counter",
-						Format = "{seennotes} /",
-						X = (int)(470.0f * widthScale),
-						Y = (int)(930.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Total Notes Counter",
-						Format = "{totalnotes}",
-						X = (int)(640.0f * widthScale),
-						Y = (int)(930.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Notes Hit Percentage",
-						Format = "({hitnotespercentage:0.00}%)",
-						X = (int)(750.0f * widthScale),
-						Y = (int)(930.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerLeft,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Notes Missed Counter",
-						Format = "{fcindicator}",
-						X = (int)(750.0f * widthScale),
-						Y = (int)(1100.0f * heightScale),
-						Size = extraLargeFontSize,
-						Alignment = TextAnchor.MiddleRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Star Power Name",
-						Format = "SP:",
-						X = (int)(60.0f * widthScale),
-						Y = (int)(990.0f * heightScale),
-						Size = smallFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Star Powers Gotten Counter",
-						Format = "{starpowersgotten} /",
-						X = (int)(280.0f * widthScale),
-						Y = (int)(990.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Total Star Powers Counter",
-						Format = "{totalstarpowers}",
-						X = (int)(430.0f * widthScale),
-						Y = (int)(990.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Star Power Percentage",
-						Format = "({starpowerpercentage:0.00}%)",
-						X = (int)(750.0f * widthScale),
-						Y = (int)(990.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerLeft,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Current Star Power",
-						Format = "({currentstarpower:0.00}%)",
-						X = (int)(1825.0f * widthScale),
-						Y = (int)(1125.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerLeft,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Combo Name",
-						Format = "Combo:",
-						X = (int)(60.0f * widthScale),
-						Y = (int)(1050.0f * heightScale),
-						Size = smallFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Current Combo Counter",
-						Format = "{currentcombo} /",
-						X = (int)(280.0f * widthScale),
-						Y = (int)(1050.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					},
-					new SongUILabel {
-						Name = "Highest Combo Counter",
-						Format = "{highestcombo}",
-						X = (int)(430.0f * widthScale),
-						Y = (int)(1050.0f * heightScale),
-						Size = largeFontSize,
-						Alignment = TextAnchor.LowerRight,
-						Bold = true,
-						Italic = false,
-						Visible = true,
-						Color = new ColorARGB(Color.white)
-					}
+					new List<SongUILabel>(),
+					new List<SongUILabel>(),
+					new List<SongUILabel>()
 				};
 			}
 		}
@@ -444,7 +452,7 @@ namespace ExtraSongUI.Settings {
 
 		public void DrawLabelWindows() {
 			if (DraggableLabelsEnabled) {
-				foreach (var label in Layout) {
+				foreach (var label in Layout[LayoutIndexSelected]) {
 					label.DrawLabelWindow(label.WindowId);
 				}
 			}

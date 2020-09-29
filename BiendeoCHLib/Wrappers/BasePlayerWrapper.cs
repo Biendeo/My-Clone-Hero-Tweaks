@@ -405,6 +405,10 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperMethod("\u0318\u030F\u0314\u031C\u0310\u0317\u0313\u031B\u030E\u031A\u031A")]
 		private static readonly FastInvokeHandler missNoteMethod;
 
+		public void OverStrum(bool strummed) => overStrumMethod(BasePlayer, strummed);
+		[WrapperMethod("\u0311\u0314\u0311\u031B\u030D\u0310\u031B\u0318\u0316\u030D\u0312")]
+		private static readonly FastInvokeHandler overStrumMethod;
+
 		#endregion
 	}
 }

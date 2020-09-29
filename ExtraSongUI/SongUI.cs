@@ -1,8 +1,11 @@
 ﻿using BepInEx;
 using BiendeoCHLib;
+using BiendeoCHLib.Patches;
+using BiendeoCHLib.Patches.Attributes;
 using BiendeoCHLib.Settings;
 using BiendeoCHLib.Wrappers;
 using ExtraSongUI.Settings;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using TMPro;
 using UnityEngine;
@@ -20,9 +24,40 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace ExtraSongUI {
+	[HarmonyCHPatch(typeof(BaseGuitarPlayerWrapper), nameof(BaseGuitarPlayerWrapper.HitNote))]
+	public class HitNoteHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(BaseGuitarPlayer __instance, object __0) {
+			var player = BasePlayerWrapper.Wrap(__instance);
+			var note = NoteWrapper.Wrap(__0);
+			SongUI.Instance.HitNote(player, note);
+		}
+	}
+
+	[HarmonyCHPatch(typeof(BasePlayerWrapper), nameof(BasePlayerWrapper.MissNote))]
+	public class MissNoteHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(BasePlayer __instance, object __0) {
+			var player = BasePlayerWrapper.Wrap(__instance);
+			var note = NoteWrapper.Wrap(__0);
+			SongUI.Instance.MissNote(player, note);
+		}
+	}
+
+	[HarmonyCHPatch(typeof(BasePlayerWrapper), nameof(BasePlayerWrapper.OverStrum))]
+	public class OverStrumHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(BasePlayer __instance, bool __0) {
+			var player = BasePlayerWrapper.Wrap(__instance);
+			SongUI.Instance.OverStrum(player, __0);
+		}
+	}
+
 	[BepInPlugin("com.biendeo.extrasongui", "Extra Song UI", "1.5.0.0")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class SongUI : BaseUnityPlugin {
+		public static SongUI Instance { get; private set; }
+
 		private bool sceneChanged;
 
 		// Song length
@@ -33,9 +68,8 @@ namespace ExtraSongUI {
 
 		// Note count
 		private BasePlayerWrapper[] basePlayers;
-		private List<NoteWrapper> notes;
-		private int totalNoteCount;
-		private int totalStarPowers;
+		private int[] totalNoteCount;
+		private int[] totalStarPowers;
 
 		private Font uiFont;
 
@@ -43,7 +77,6 @@ namespace ExtraSongUI {
 		private Config config;
 
 		private List<Tuple<SongUILabel, GameObject, Text>> labels;
-
 
 		private SongUILabel settingsCurrentlyEditing;
 
@@ -63,6 +96,8 @@ namespace ExtraSongUI {
 		private TimeSpan songLength;
 		private double songTimePercentage;
 
+		private int numPlayers;
+
 		private int currentStarCount;
 		private int currentScore;
 		private int previousStarScore;
@@ -71,32 +106,55 @@ namespace ExtraSongUI {
 		private int sevenStarScore;
 		private double sevenStarPercentage;
 
-		private int hitNotes;
-		private int missedNotes;
-		private int seenNotes;
-		private double hitNotesPercentage;
-		private double seenNotesPercentage;
-		private string fcIndicator;
+		private const int bandIndex = 4;
 
-		private int starPowersGotten;
-		private double starPowerPercentage;
-		private double currentStarPower;
+		private int[] hitNotes;
+		private int[] missedNotes;
+		private int[] seenNotes;
+		private double[] hitNotesPercentage;
+		private double[] seenNotesPercentage;
+		private string[] fcIndicator;
 
-		private int currentCombo;
-		private int highestCombo;
+		private int[] starPowersGotten;
+		private double[] starPowerPercentage;
+		private double[] currentStarPower;
 
-		private int currentNoteIndex;
+		private int[] currentCombo;
+		private int[] highestCombo;
 
 		private readonly VersionCheck versionCheck;
 		private Rect changelogRect;
 
-		private Dictionary<string, Func<string, string>> formatActions;
+		private readonly Dictionary<string, Func<string, string>> formatActions;
+
+		private Harmony Harmony;
 
 		public SongUI() {
+			Instance = this;
+			Harmony = new Harmony("com.biendeo.extrasongui");
+			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
+
 			versionCheck = gameObject.AddComponent<VersionCheck>();
 			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 			labels = new List<Tuple<SongUILabel, GameObject, Text>>();
+
+			totalNoteCount = new int[bandIndex + 1];
+			totalStarPowers = new int[bandIndex + 1];
+
+			hitNotes = new int[bandIndex + 1];
+			missedNotes = new int[bandIndex + 1];
+			seenNotes = new int[bandIndex + 1];
+			hitNotesPercentage = new double[bandIndex + 1];
+			seenNotesPercentage = new double[bandIndex + 1];
+			fcIndicator = new string[bandIndex + 1];
+
+			starPowersGotten = new int[bandIndex + 1];
+			starPowerPercentage = new double[bandIndex + 1];
+			currentStarPower = new double[bandIndex + 1];
+
+			currentCombo = new int[bandIndex + 1];
+			highestCombo = new int[bandIndex + 1];
 
 			formatActions = new Dictionary<string, Func<string, string>> {
 				{ "songtime", (format) => songTime.ToString(format) },
@@ -111,19 +169,71 @@ namespace ExtraSongUI {
 				{ "currentstarpercentage", (format) => nextStarPercentage.ToString(format) },
 				{ "sevenstarscore", (format) => sevenStarScore.ToString(format) },
 				{ "sevenstarpercentage", (format) => sevenStarPercentage.ToString(format) },
-				{ "hitnotes", (format) => hitNotes.ToString(format) },
-				{ "seennotes", (format) => seenNotes.ToString(format) },
-				{ "missednotes", (format) => missedNotes.ToString(format) },
-				{ "totalnotes", (format) => totalNoteCount.ToString(format) },
-				{ "hitnotespercentage", (format) => hitNotesPercentage.ToString(format) },
-				{ "seennotespercentage", (format) => seenNotesPercentage.ToString(format) },
-				{ "fcindicator", (format) => fcIndicator },
-				{ "starpowersgotten", (format) => starPowersGotten.ToString(format) },
-				{ "totalstarpowers", (format) => totalStarPowers.ToString(format) },
-				{ "starpowerpercentage", (format) => starPowerPercentage.ToString(format) },
-				{ "currentstarpower", (format) => currentStarPower.ToString(format) },
-				{ "currentcombo", (format) => currentCombo.ToString(format) },
-				{ "highestcombo", (format) => highestCombo.ToString(format) },
+				{ "hitnotes", (format) => hitNotes[bandIndex].ToString(format) },
+				{ "hitnotes1", (format) => hitNotes[0].ToString(format) },
+				{ "hitnotes2", (format) => hitNotes[1].ToString(format) },
+				{ "hitnotes3", (format) => hitNotes[2].ToString(format) },
+				{ "hitnotes4", (format) => hitNotes[3].ToString(format) },
+				{ "seennotes", (format) => seenNotes[bandIndex].ToString(format) },
+				{ "seennotes1", (format) => seenNotes[0].ToString(format) },
+				{ "seennotes2", (format) => seenNotes[1].ToString(format) },
+				{ "seennotes3", (format) => seenNotes[2].ToString(format) },
+				{ "seennotes4", (format) => seenNotes[3].ToString(format) },
+				{ "missednotes", (format) => missedNotes[bandIndex].ToString(format) },
+				{ "missednotes1", (format) => missedNotes[0].ToString(format) },
+				{ "missednotes2", (format) => missedNotes[1].ToString(format) },
+				{ "missednotes3", (format) => missedNotes[2].ToString(format) },
+				{ "missednotes4", (format) => missedNotes[3].ToString(format) },
+				{ "totalnotes", (format) => totalNoteCount[bandIndex].ToString(format) },
+				{ "totalnotes1", (format) => totalNoteCount[0].ToString(format) },
+				{ "totalnotes2", (format) => totalNoteCount[1].ToString(format) },
+				{ "totalnotes3", (format) => totalNoteCount[2].ToString(format) },
+				{ "totalnotes4", (format) => totalNoteCount[3].ToString(format) },
+				{ "hitnotespercentage", (format) => hitNotesPercentage[bandIndex].ToString(format) },
+				{ "hitnotespercentage1", (format) => hitNotesPercentage[0].ToString(format) },
+				{ "hitnotespercentage2", (format) => hitNotesPercentage[1].ToString(format) },
+				{ "hitnotespercentage3", (format) => hitNotesPercentage[2].ToString(format) },
+				{ "hitnotespercentage4", (format) => hitNotesPercentage[3].ToString(format) },
+				{ "seennotespercentage", (format) => seenNotesPercentage[bandIndex].ToString(format) },
+				{ "seennotespercentage1", (format) => seenNotesPercentage[0].ToString(format) },
+				{ "seennotespercentage2", (format) => seenNotesPercentage[1].ToString(format) },
+				{ "seennotespercentage3", (format) => seenNotesPercentage[2].ToString(format) },
+				{ "seennotespercentage4", (format) => seenNotesPercentage[3].ToString(format) },
+				{ "fcindicator", (format) => fcIndicator[bandIndex] },
+				{ "fcindicator1", (format) => fcIndicator[0] },
+				{ "fcindicator2", (format) => fcIndicator[1] },
+				{ "fcindicator3", (format) => fcIndicator[2] },
+				{ "fcindicator4", (format) => fcIndicator[3] },
+				{ "starpowersgotten", (format) => starPowersGotten[bandIndex].ToString(format) },
+				{ "starpowersgotten1", (format) => starPowersGotten[0].ToString(format) },
+				{ "starpowersgotten2", (format) => starPowersGotten[1].ToString(format) },
+				{ "starpowersgotten3", (format) => starPowersGotten[2].ToString(format) },
+				{ "starpowersgotten4", (format) => starPowersGotten[3].ToString(format) },
+				{ "totalstarpowers", (format) => totalStarPowers[bandIndex].ToString(format) },
+				{ "totalstarpowers1", (format) => totalStarPowers[0].ToString(format) },
+				{ "totalstarpowers2", (format) => totalStarPowers[1].ToString(format) },
+				{ "totalstarpowers3", (format) => totalStarPowers[2].ToString(format) },
+				{ "totalstarpowers4", (format) => totalStarPowers[3].ToString(format) },
+				{ "starpowerpercentage", (format) => starPowerPercentage[bandIndex].ToString(format) },
+				{ "starpowerpercentage1", (format) => starPowerPercentage[0].ToString(format) },
+				{ "starpowerpercentage2", (format) => starPowerPercentage[1].ToString(format) },
+				{ "starpowerpercentage3", (format) => starPowerPercentage[2].ToString(format) },
+				{ "starpowerpercentage4", (format) => starPowerPercentage[3].ToString(format) },
+				{ "currentstarpower", (format) => currentStarPower[bandIndex].ToString(format) },
+				{ "currentstarpower1", (format) => currentStarPower[0].ToString(format) },
+				{ "currentstarpower2", (format) => currentStarPower[1].ToString(format) },
+				{ "currentstarpower3", (format) => currentStarPower[2].ToString(format) },
+				{ "currentstarpower4", (format) => currentStarPower[3].ToString(format) },
+				{ "currentcombo", (format) => currentCombo[bandIndex].ToString(format) },
+				{ "currentcombo1", (format) => currentCombo[0].ToString(format) },
+				{ "currentcombo2", (format) => currentCombo[1].ToString(format) },
+				{ "currentcombo3", (format) => currentCombo[2].ToString(format) },
+				{ "currentcombo4", (format) => currentCombo[3].ToString(format) },
+				{ "highestcombo", (format) => highestCombo[bandIndex].ToString(format) },
+				{ "highestcombo1", (format) => highestCombo[0].ToString(format) },
+				{ "highestcombo2", (format) => highestCombo[1].ToString(format) },
+				{ "highestcombo3", (format) => highestCombo[2].ToString(format) },
+				{ "highestcombo4", (format) => highestCombo[3].ToString(format) }
 			};
 		}
 
@@ -203,19 +313,40 @@ namespace ExtraSongUI {
 					starProgress = gameManager.StarProgress;
 					basePlayers = gameManager.BasePlayers;
 					songLength = TimeSpan.FromSeconds(gameManager.SongLength);
-					notes = basePlayers[0].Notes;
-					totalNoteCount = notes?.Count ?? 0;
-					totalStarPowers = notes?.Count(n => n.IsStarPowerEnd) ?? 0;
-					hitNotes = 0;
-					missedNotes = 0;
-					currentCombo = 0;
-					highestCombo = 0;
-					currentNoteIndex = 0;
+					numPlayers = basePlayers.Count(bp => !bp.IsNull());
+					for (int i = bandIndex; i >= 0; --i) {
+						fcIndicator[i] = "FC";
+						if (i == bandIndex) {
+							totalNoteCount[i] = 0;
+							totalStarPowers[i] = 0;
+						} else {
+							var player = basePlayers[i];
+							if (!player.IsNull()) {
+								var notes = player.Notes;
+								totalNoteCount[bandIndex] += (totalNoteCount[i] = notes.Count);
+								totalStarPowers[bandIndex] += (totalStarPowers[i] = notes.Count(n => n.IsStarPowerEnd));
+							} else {
+								totalNoteCount[i] = 0;
+								hitNotesPercentage[i] = 100.0;
+								seenNotesPercentage[i] = 100.0;
+								totalStarPowers[i] = 0;
+								starPowerPercentage[i] = 0.00;
+							}
+						}
+						hitNotes[i] = 0;
+						hitNotesPercentage[i] = 0.00;
+						missedNotes[i] = 0;
+						seenNotesPercentage[i] = 0.00;
+						seenNotes[i] = 0;
+						starPowerPercentage[i] = 0.00;
+						currentCombo[i] = 0;
+						highestCombo[i] = 0;
+					}
 
 					DestroyLabels();
 					Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
 
-					foreach (var label in config.Layout) {
+					foreach (var label in config.Layout[numPlayers - 1]) {
 						CreateGameplayLabel(canvasTransform, label, uiFont);
 					}
 
@@ -237,26 +368,14 @@ namespace ExtraSongUI {
 				sevenStarScore = starProgress.StarScores[6];
 				sevenStarPercentage = Math.Min(currentScore * 100.0 / sevenStarScore, 100.0);
 
-				// Note count
-				while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
-					if (notes[currentNoteIndex].WasHit) {
-						++hitNotes;
-					} else if (notes[currentNoteIndex].WasMissed) {
-						++missedNotes;
+				currentStarPower[bandIndex] = 0.0;
+				for (int i = 0; i < bandIndex; ++i) {
+					var player = basePlayers[i];
+					if (!player.IsNull()) {
+						currentStarPower[i] = player.SPBar.SomeFloat * 100.0;
+						currentStarPower[bandIndex] += currentStarPower[i];
 					}
-					++currentNoteIndex;
 				}
-				seenNotes = hitNotes + missedNotes;
-				hitNotesPercentage = totalNoteCount == 0 ? 100.0 : hitNotes * 100.0 / totalNoteCount;
-				seenNotesPercentage = seenNotes == 0 ? 100.0 : hitNotes * 100.0 / seenNotes;
-				fcIndicator = seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes}";
-
-				starPowersGotten = basePlayers[0].StarPowersHit;
-				starPowerPercentage = totalStarPowers == 0 ? 100.0 : starPowersGotten * 100.0 / totalStarPowers;
-				currentStarPower = basePlayers[0].SPBar.SomeFloat * 100.0;
-
-				currentCombo = basePlayers[0].Combo;
-				highestCombo = basePlayers[0].HighestCombo;
 
 				foreach (var label in labels) {
 					UpdateGameplayLabel(label.Item1, label.Item2, label.Item3);
@@ -293,6 +412,61 @@ namespace ExtraSongUI {
 		}
 
 		#endregion
+
+		internal void HitNote(BasePlayerWrapper player, NoteWrapper note) {
+			int playerIndex = player.Player.PlayerIndex;
+			++hitNotes[playerIndex];
+			++hitNotes[bandIndex];
+			++seenNotes[playerIndex];
+			++seenNotes[bandIndex];
+			++currentCombo[playerIndex];
+			highestCombo[playerIndex] = Math.Max(currentCombo[playerIndex], highestCombo[playerIndex]);
+			++currentCombo[bandIndex];
+			highestCombo[bandIndex] = Math.Max(currentCombo[bandIndex], highestCombo[bandIndex]);
+			if (note.IsStarPowerEnd) {
+				++starPowersGotten[playerIndex];
+				++starPowersGotten[bandIndex];
+			}
+
+			UpdateNotePercentages(playerIndex);
+			UpdateNotePercentages(bandIndex);
+		}
+
+		internal void MissNote(BasePlayerWrapper player, NoteWrapper note) {
+			int playerIndex = player.Player.PlayerIndex;
+			++missedNotes[playerIndex];
+			++missedNotes[bandIndex];
+			++seenNotes[playerIndex];
+			++seenNotes[bandIndex];
+			//TODO: Handle star powers missed.
+			currentCombo[playerIndex] = 0;
+			currentCombo[bandIndex] = 0;
+			fcIndicator[playerIndex] = seenNotes[playerIndex] == hitNotes[playerIndex] ? (!player.FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes[playerIndex]}";
+			fcIndicator[bandIndex] = seenNotes[bandIndex] == hitNotes[bandIndex] ? (!basePlayers.Any(b => b.FirstNoteMissed) ? "FC" : "100%") : $"-{missedNotes[bandIndex]}";
+
+			UpdateNotePercentages(playerIndex);
+			UpdateNotePercentages(bandIndex);
+		}
+
+		internal void OverStrum(BasePlayerWrapper player, bool strummed) {
+			int playerIndex = player.Player.PlayerIndex;
+			//TODO: Handle star powers missed.
+			currentCombo[playerIndex] = 0;
+			currentCombo[bandIndex] = 0;
+			if (seenNotes[playerIndex] == hitNotes[playerIndex]) {
+				fcIndicator[playerIndex] = "100%";
+			}
+			if (seenNotes[bandIndex] == hitNotes[bandIndex]) {
+				fcIndicator[bandIndex] = "100%";
+			}
+			Logger.LogDebug($"Overstrum {strummed}, seenNotes: {seenNotes[playerIndex]}, hitNotes: {hitNotes[playerIndex]}");
+		}
+
+		internal void UpdateNotePercentages(int index) {
+			hitNotesPercentage[index] = totalNoteCount[index] == 0 ? 100.0 : hitNotes[index] * 100.0 / totalNoteCount[index];
+			seenNotesPercentage[index] = seenNotes[index] == 0 ? 100.0 : hitNotes[index] * 100.0 / seenNotes[index];
+			starPowerPercentage[index] = totalStarPowers[index] == 0 ? 100.0 : starPowersGotten[index] * 100.0 / totalStarPowers[index];
+		}
 
 		#region OnWindow Methods
 
@@ -346,33 +520,47 @@ namespace ExtraSongUI {
 					fontStyle = FontStyle.Italic
 				});
 
-				foreach (var label in config.Layout) {
-					label.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+				foreach (var layout in config.Layout) {
+					foreach (var label in layout) {
+						label.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+					}
 				}
 
 				GUILayout.Space(20.0f);
 				config.Enabled = !GUILayout.Toggle(!config.Enabled, "Hide all extra UI", settingsToggleStyle);
-				
+
 				GUILayout.Space(20.0f);
-				for (int i = 0; i < config.Layout.Count; ++i) {
+				GUILayout.Label("Layout for the following players:");
+				GUILayout.BeginHorizontal();
+				for (int i = 0; i < bandIndex; ++i) {
+					if (GUILayout.Toggle(config.LayoutIndexSelected == i, $"{i + 1}", settingsToggleStyle)) {
+						config.LayoutIndexSelected = i;
+					}
+				}
+				GUILayout.EndHorizontal();
+				config.Enabled = !GUILayout.Toggle(!config.Enabled, "Hide all extra UI", settingsToggleStyle);
+
+				GUILayout.Space(20.0f);
+				for (int i = 0; i < config.Layout[config.LayoutIndexSelected].Count; ++i) {
 					GUILayout.Label($"#{i + 1}", styles.SmallLabel);
-					var label = config.Layout[i];
+					var layout = config.Layout[config.LayoutIndexSelected];
+					var label = layout[i];
 					if (GUILayout.Button($"Edit: {label.Name}", styles.Button)) {
 						settingsCurrentlyEditing = label;
 					}
 					GUILayout.BeginHorizontal();
 					if (i > 0 && GUILayout.Button("Shift up")) {
-						config.Layout[i] = config.Layout[i - 1];
-						config.Layout[i - 1] = label;
+						layout[i] = layout[i - 1];
+						layout[i - 1] = label;
 					}
-					if (i < config.Layout.Count - 1 && GUILayout.Button("Shift down")) {
-						config.Layout[i] = config.Layout[i + 1];
-						config.Layout[i + 1] = label;
+					if (i < layout.Count - 1 && GUILayout.Button("Shift down")) {
+						layout[i] = layout[i + 1];
+						layout[i + 1] = label;
 					}
 					GUILayout.EndHorizontal();
 					GUILayout.BeginHorizontal();
 					if (GUILayout.Button("Delete")) {
-						config.Layout.RemoveAt(i);
+						layout.RemoveAt(i);
 						var existingLabel = labels.FirstOrDefault(l => l.Item1 == label);
 						if (existingLabel != default) {
 							Destroy(existingLabel.Item2);
@@ -380,7 +568,7 @@ namespace ExtraSongUI {
 						}
 					}
 					if (GUILayout.Button("Insert new")) {
-						config.Layout.Insert(i + 1, new SongUILabel {
+						layout.Insert(i + 1, new SongUILabel {
 							Name = "New Label",
 							Format = "EDIT ME",
 							X = Screen.width / 2,
@@ -394,15 +582,15 @@ namespace ExtraSongUI {
 						});
 						if (SceneManager.GetActiveScene().name == "Gameplay") {
 							Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
-							CreateGameplayLabel(canvasTransform, config.Layout[i + 1], uiFont);
+							CreateGameplayLabel(canvasTransform, layout[i + 1], uiFont);
 						}
 					}
 					GUILayout.EndHorizontal();
 					GUILayout.Space(15.0f);
 				}
-				if (config.Layout.Count == 0) {
+				if (config.Layout[config.LayoutIndexSelected].Count == 0) {
 					if (GUILayout.Button("Insert")) {
-						config.Layout.Add(new SongUILabel {
+						config.Layout[config.LayoutIndexSelected].Add(new SongUILabel {
 							Name = "New Label",
 							Format = "EDIT ME",
 							X = Screen.width / 2,
@@ -416,7 +604,7 @@ namespace ExtraSongUI {
 						});
 						if (SceneManager.GetActiveScene().name == "Gameplay") {
 							Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
-							CreateGameplayLabel(canvasTransform, config.Layout[0], uiFont);
+							CreateGameplayLabel(canvasTransform, config.Layout[config.LayoutIndexSelected][0], uiFont);
 						}
 					}
 				}
