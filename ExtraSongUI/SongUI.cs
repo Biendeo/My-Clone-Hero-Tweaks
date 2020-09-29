@@ -59,8 +59,8 @@ namespace ExtraSongUI {
 
 		private Vector2 settingsScrollPosition;
 
-		private string formattedSongTime;
-		private string formattedSongLength;
+		private TimeSpan songTime;
+		private TimeSpan songLength;
 		private double songTimePercentage;
 
 		private int currentStarCount;
@@ -90,11 +90,41 @@ namespace ExtraSongUI {
 		private readonly VersionCheck versionCheck;
 		private Rect changelogRect;
 
+		private Dictionary<string, Func<string, string>> formatActions;
+
 		public SongUI() {
 			versionCheck = gameObject.AddComponent<VersionCheck>();
 			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 			labels = new List<Tuple<SongUILabel, GameObject, Text>>();
+
+			formatActions = new Dictionary<string, Func<string, string>> {
+				{ "songtime", (format) => songTime.ToString(format) },
+				{ "songlength", (format) => songLength.ToString(format) },
+				{ "songtimepercentage", (format) => songTimePercentage.ToString(format) },
+				{ "currentstar", (format) => currentStarCount.ToString(format) },
+				{ "nextstar", (format) => (currentStarCount + 1).ToString(format) },
+				{ "currentscore", (format) => currentScore.ToString(format) },
+				{ "currentstarscore", (format) => (currentScore - previousStarScore).ToString(format) },
+				{ "previousstarscore", (format) => previousStarScore.ToString(format) },
+				{ "nextstarscore", (format) => nextStarScore.ToString(format) },
+				{ "currentstarpercentage", (format) => nextStarPercentage.ToString(format) },
+				{ "sevenstarscore", (format) => sevenStarScore.ToString(format) },
+				{ "sevenstarpercentage", (format) => sevenStarPercentage.ToString(format) },
+				{ "hitnotes", (format) => hitNotes.ToString(format) },
+				{ "seennotes", (format) => seenNotes.ToString(format) },
+				{ "missednotes", (format) => missedNotes.ToString(format) },
+				{ "totalnotes", (format) => totalNoteCount.ToString(format) },
+				{ "hitnotespercentage", (format) => hitNotesPercentage.ToString(format) },
+				{ "seennotespercentage", (format) => seenNotesPercentage.ToString(format) },
+				{ "fcindicator", (format) => fcIndicator },
+				{ "starpowersgotten", (format) => starPowersGotten.ToString(format) },
+				{ "totalstarpowers", (format) => totalStarPowers.ToString(format) },
+				{ "starpowerpercentage", (format) => starPowerPercentage.ToString(format) },
+				{ "currentstarpower", (format) => currentStarPower.ToString(format) },
+				{ "currentcombo", (format) => currentCombo.ToString(format) },
+				{ "highestcombo", (format) => highestCombo.ToString(format) },
+			};
 		}
 
 		#region Unity Methods
@@ -151,82 +181,12 @@ namespace ExtraSongUI {
 				string format = splitTerm.Length > 1 ? matchTerm.Substring(substitute.Length + 1) : string.Empty;
 				string matchedString = $"{{{matchTerm}}}";
 				string substitutedString = $"{{{matchTerm}}}";
-				switch (substitute) {
-					case "songtime":
-						substitutedString = formattedSongTime;
-						break;
-					case "songlength":
-						substitutedString = formattedSongLength;
-						break;
-					case "songtimepercentage":
-						substitutedString = songTimePercentage.ToString(format);
-						break;
-					case "currentstar":
-						substitutedString = currentStarCount.ToString(format);
-						break;
-					case "nextstar":
-						substitutedString = (currentStarCount + 1).ToString(format);
-						break;
-					case "currentscore":
-						substitutedString = currentScore.ToString(format);
-						break;
-					case "currentstarscore":
-						substitutedString = (currentScore - previousStarScore).ToString(format);
-						break;
-					case "previousstarscore":
-						substitutedString = previousStarScore.ToString(format);
-						break;
-					case "nextstarscore":
-						substitutedString = nextStarScore.ToString(format);
-						break;
-					case "currentstarpercentage":
-						substitutedString = nextStarPercentage.ToString(format);
-						break;
-					case "sevenstarscore":
-						substitutedString = sevenStarScore.ToString(format);
-						break;
-					case "sevenstarpercentage":
-						substitutedString = sevenStarPercentage.ToString(format);
-						break;
-					case "hitnotes":
-						substitutedString = hitNotes.ToString(format);
-						break;
-					case "seennotes":
-						substitutedString = seenNotes.ToString(format);
-						break;
-					case "missednotes":
-						substitutedString = missedNotes.ToString(format);
-						break;
-					case "totalnotes":
-						substitutedString = totalNoteCount.ToString(format);
-						break;
-					case "hitnotespercentage":
-						substitutedString = hitNotesPercentage.ToString(format);
-						break;
-					case "seennotespercentage":
-						substitutedString = seenNotesPercentage.ToString(format);
-						break;
-					case "fcindicator":
-						substitutedString = fcIndicator;
-						break;
-					case "starpowersgotten":
-						substitutedString = starPowersGotten.ToString(format);
-						break;
-					case "totalstarpowers":
-						substitutedString = totalStarPowers.ToString(format);
-						break;
-					case "starpowerpercentage":
-						substitutedString = starPowerPercentage.ToString(format);
-						break;
-					case "currentstarpower":
-						substitutedString = currentStarPower.ToString(format);
-						break;
-					case "currentcombo":
-						substitutedString = currentCombo.ToString(format);
-						break;
-					case "highestcombo":
-						substitutedString = highestCombo.ToString(format);
-						break;
+				try {
+					substitutedString = formatActions[substitute](format);
+				} catch (FormatException) {
+					Logger.LogError($"Format string {format} is invalid for type {matchTerm}");
+				} catch (KeyNotFoundException) {
+					Logger.LogError($"Match term {matchTerm} does not have an associated format");
 				}
 				formatString = formatString.Replace(matchedString, substitutedString);
 			}
@@ -242,6 +202,7 @@ namespace ExtraSongUI {
 					gameManager = GameManagerWrapper.Wrap(gameManagerObject.GetComponent<GameManager>());
 					starProgress = gameManager.StarProgress;
 					basePlayers = gameManager.BasePlayers;
+					songLength = TimeSpan.FromSeconds(gameManager.SongLength);
 					notes = basePlayers[0].Notes;
 					totalNoteCount = notes?.Count ?? 0;
 					totalStarPowers = notes?.Count(n => n.IsStarPowerEnd) ?? 0;
@@ -264,8 +225,7 @@ namespace ExtraSongUI {
 			}
 			if (sceneName == "Gameplay" && !gameManager.IsNull() && gameManager.PracticeUI.PracticeUI == null) {
 				// Song length
-				formattedSongTime = DoubleToTimeString(gameManager.SongTime);
-				formattedSongLength = DoubleToTimeString(gameManager.SongLength);
+				songTime = TimeSpan.FromSeconds(gameManager.SongTime);
 				songTimePercentage = Math.Max(Math.Min(gameManager.SongTime * 100.0 / gameManager.SongLength, 100.0), 0.0);
 
 				// Star progress

@@ -83,7 +83,7 @@ namespace ExtraSongUI.Settings {
 					},
 					new SongUILabel {
 						Name = "Song Time",
-						Format = "{songtime} /",
+						Format = @"{songtime:m\:ss\.fff} /",
 						X = (int)(350.0f * widthScale),
 						Y = (int)(750.0f * heightScale),
 						Size = largeFontSize,
@@ -95,7 +95,7 @@ namespace ExtraSongUI.Settings {
 					},
 					new SongUILabel {
 						Name = "Song Length",
-						Format = "{songlength}",
+						Format = @"{songlength:m\:ss\.fff}",
 						X = (int)(620.0f * widthScale),
 						Y = (int)(750.0f * heightScale),
 						Size = largeFontSize,
