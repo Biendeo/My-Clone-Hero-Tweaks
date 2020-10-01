@@ -90,7 +90,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AccuracyIndicator.cs" />
     <Compile Include="Settings\Config.cs" />
-    <Compile Include="Settings\OldConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BiendeoCHLib\BiendeoCHLib.csproj">

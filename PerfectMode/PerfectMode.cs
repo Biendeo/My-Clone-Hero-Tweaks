@@ -43,6 +43,7 @@ namespace PerfectMode {
 		private Font uiFont;
 		private bool invokedSceneChange;
 
+		private string ConfigPath => Path.Combine(Paths.ConfigPath, Info.Metadata.GUID + ".config.xml");
 		private Config config;
 
 		private GUIStyle settingsWindowStyle;
@@ -83,7 +84,7 @@ namespace PerfectMode {
 		#region Unity Methods
 
 		public void Start() {
-			config = Settings.Config.LoadConfig();
+			config = Settings.Config.LoadConfig(ConfigPath);
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 				failedObjective = false;
@@ -282,6 +283,15 @@ namespace PerfectMode {
 				HorizontalSlider = settingsHorizontalSliderStyle,
 				HorizontalSliderThumb = settingsHorizontalSliderThumbStyle
 			});
+
+			GUILayout.Space(25.0f);
+			if (GUILayout.Button("Reload Config", settingsButtonStyle)) {
+				config.ReloadConfig(ConfigPath);
+			}
+			if (GUILayout.Button("Save Config", settingsButtonStyle)) {
+				config.SaveConfig(ConfigPath);
+			}
+
 			GUILayout.Space(25.0f);
 
 			GUILayout.Label($"Perfect Mode v{versionCheck.AssemblyVersion}");
@@ -325,7 +335,7 @@ namespace PerfectMode {
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
 				config.TweakVersion = versionCheck.AssemblyVersion;
-				config.SaveConfig();
+				config.SaveConfig(ConfigPath);
 			}
 			GUI.DragWindow();
 		}

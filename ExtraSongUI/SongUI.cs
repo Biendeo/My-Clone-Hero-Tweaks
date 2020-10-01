@@ -73,7 +73,7 @@ namespace ExtraSongUI {
 
 		private Font uiFont;
 
-		private string ConfigPath => Path.Combine(Paths.ConfigPath, Info.Metadata.GUID + "layout.xml");
+		private string ConfigPath => Path.Combine(Paths.ConfigPath, Info.Metadata.GUID + ".layout.xml");
 		private Config config;
 
 		private List<Tuple<SongUILabel, GameObject, Text>> labels;

@@ -25,6 +25,7 @@ namespace SplashTextEditor {
 	public class SplashTextEditor : BaseUnityPlugin {
 		private bool sceneChanged;
 
+		private string ConfigPath => Path.Combine(Paths.ConfigPath, Info.Metadata.GUID + ".config.xml");
 		private Config config;
 
 		private TextMeshProUGUI splashTextComponent;
@@ -65,7 +66,7 @@ namespace SplashTextEditor {
 		#region Unity Methods
 
 		public void Start() {
-			config = Settings.Config.LoadConfig();
+			config = Settings.Config.LoadConfig(ConfigPath);
 			config.ResetSplashes = () => {
 				currentSplashIndex = GetNewSplashIndex();
 			};
@@ -215,6 +216,15 @@ namespace SplashTextEditor {
 				HorizontalSlider = settingsHorizontalSliderStyle,
 				HorizontalSliderThumb = settingsHorizontalSliderThumbStyle
 			});
+
+			GUILayout.Space(25.0f);
+			if (GUILayout.Button("Reload Config", settingsButtonStyle)) {
+				config.ReloadConfig(ConfigPath);
+			}
+			if (GUILayout.Button("Save Config", settingsButtonStyle)) {
+				config.SaveConfig(ConfigPath);
+			}
+
 			GUILayout.Space(25.0f);
 
 			GUILayout.Label($"Splash Text Editor v{versionCheck.AssemblyVersion}");
@@ -256,7 +266,7 @@ namespace SplashTextEditor {
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
 				config.TweakVersion = versionCheck.AssemblyVersion;
-				config.SaveConfig();
+				config.SaveConfig(ConfigPath);
 			}
 			GUI.DragWindow();
 		}

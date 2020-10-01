@@ -74,8 +74,8 @@ namespace SplashTextEditor.Settings {
 			SeenChangelog = false;
 		}
 
-		public static Config LoadConfig() {
-			var configFilePath = new FileInfo(Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, "SplashTextEditorConfig.xml"));
+		public static Config LoadConfig(string configPath) {
+			var configFilePath = new FileInfo(configPath);
 			if (configFilePath.Exists) {
 				var configString = File.ReadAllText(configFilePath.FullName);
 				var serializer = new XmlSerializer(typeof(Config));
@@ -84,13 +84,13 @@ namespace SplashTextEditor.Settings {
 				}
 			} else {
 				var c = new Config();
-				c.SaveConfig();
+				c.SaveConfig(configPath);
 				return c;
 			}
 		}
 
-		public void ReloadConfig() {
-			var configFilePath = new FileInfo(Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, "SplashTextEditorConfig.xml"));
+		public void ReloadConfig(string configPath) {
+			var configFilePath = new FileInfo(configPath);
 			if (configFilePath.Exists) {
 				var configString = File.ReadAllText(configFilePath.FullName);
 				var serializer = new XmlSerializer(typeof(Config));
@@ -108,11 +108,10 @@ namespace SplashTextEditor.Settings {
 			}
 		}
 
-		public void SaveConfig() {
-			var configFilePath = new FileInfo(Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, "SplashTextEditorConfig.xml"));
-			if (configFilePath.Exists) configFilePath.Delete();
+		public void SaveConfig(string configPath) {
+			var configFilePath = new FileInfo(configPath);
 			var serializer = new XmlSerializer(typeof(Config));
-			using (var configOut = configFilePath.OpenWrite()) {
+			using (var configOut = configFilePath.Open(FileMode.Create)) {
 				serializer.Serialize(configOut, this);
 			}
 		}
@@ -195,14 +194,6 @@ namespace SplashTextEditor.Settings {
 					Messages.Add("Type your splash message here!");
 					InsertMessage(-1);
 				}
-			}
-
-			GUILayout.Space(25.0f);
-			if (GUILayout.Button("Reload Config", styles.Button)) {
-				ReloadConfig();
-			}
-			if (GUILayout.Button("Save Config", styles.Button)) {
-				SaveConfig();
 			}
 		}
 	}
