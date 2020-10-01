@@ -102,7 +102,7 @@ namespace SplashTextEditor {
 				sceneChanged = true;
 			};
 			StartCoroutine(UpdateSplashIndex());
-			UnityEngine.Debug.LogError($"{GlobalVariablesWrapper.Instance.SplashMessages.Length} messages: [{string.Join(", ", GlobalVariablesWrapper.Instance.SplashMessages)}]");
+			Logger.LogInfo($"{GlobalVariablesWrapper.Instance.SplashMessages.Length} vanilla splash messages: [{string.Join(", ", GlobalVariablesWrapper.Instance.SplashMessages)}]");
 		}
 
 		private int GetNewSplashIndex() {
