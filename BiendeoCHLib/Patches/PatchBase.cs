@@ -15,7 +15,7 @@ namespace BiendeoCHLib.Patches {
 			foreach (var type in assembly.GetTypes()) {
 				var patch = type.GetCustomAttribute<HarmonyCHPatch>();
 				if (patch != null) {
-					logger.LogInfo($"Initialising patches with class {type.Name}");
+					logger.LogDebug($"Initialising patches with class {type.Name}");
 					patch.InitializePatch(harmony, type, logger);
 				}
 			}

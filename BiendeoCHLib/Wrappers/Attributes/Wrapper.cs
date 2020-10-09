@@ -45,7 +45,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 								Environment.Exit(1);
 							}
 							fieldsSeen.Add(fieldInfo);
-							logger.LogInfo($"Loaded field {wrapperType.Name}.{field.Name}");
+							logger.LogDebug($"Loaded field {wrapperType.Name}.{field.Name}");
 						}
 					}
 				} else if (field.FieldType == typeof(FieldInfo) && field.GetValue(null) == null) {
@@ -55,7 +55,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 						if (fieldInfo != null) {
 							field.SetValue(null, fieldInfo);
 							fieldsSeen.Add(fieldInfo);
-							logger.LogInfo($"Loaded field {wrapperType.Name}.{field.Name}");
+							logger.LogDebug($"Loaded field {wrapperType.Name}.{field.Name}");
 #if DEBUG
 							if (!fieldInfo.IsStatic) {
 								logger.LogWarning($"This is a FieldInfo field, please replace it with a FieldRefAccess version!");
@@ -70,7 +70,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 						if (propertyInfo != null) {
 							field.SetValue(null, propertyInfo);
 							propertiesSeen.Add(propertyInfo);
-							logger.LogInfo($"Loaded property {wrapperType.Name}.{field.Name}");
+							logger.LogDebug($"Loaded property {wrapperType.Name}.{field.Name}");
 						}
 					}
 				} else if (field.FieldType == typeof(FastInvokeHandler) && field.GetValue(null) == null) {
@@ -80,7 +80,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 						if (methodInfo != null) {
 							field.SetValue(null, MethodInvoker.GetHandler(methodInfo));
 							methodsSeen.Add(methodInfo);
-							logger.LogInfo($"Loaded method {wrapperType.Name}.{field.Name}");
+							logger.LogDebug($"Loaded method {wrapperType.Name}.{field.Name}");
 						}
 					}
 				} else if (field.FieldType == typeof(ConstructorInfo) && field.GetValue(null) == null) {
@@ -90,7 +90,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 						if (constructorInfo != null) {
 							field.SetValue(null, constructorInfo);
 							constructorsSeen.Add(constructorInfo);
-							logger.LogInfo($"Loaded constructor {wrapperType.Name}.{field.Name}");
+							logger.LogDebug($"Loaded constructor {wrapperType.Name}.{field.Name}");
 						}
 					}
 				}
@@ -121,7 +121,7 @@ namespace BiendeoCHLib.Wrappers.Attributes {
 				logger.LogWarning($"Wrapper {wrapperType.Name} is missing {remainingConstructors.Count} constructors, first is {remainingConstructors.First().Name.DecodeUnicode()}.");
 			}
 			if (remainingFields.Count == 0 && remainingProperties.Count == 0 && remainingMethods.Count == 0 && remainingConstructors.Count == 0) {
-				logger.LogInfo($"Wrapper {wrapperType.Name} is fully defined.");
+				logger.LogDebug($"Wrapper {wrapperType.Name} is fully defined.");
 			}
 #endif
 		}

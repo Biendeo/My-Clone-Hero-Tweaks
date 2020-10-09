@@ -103,6 +103,22 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u0316\u031C\u0312\u0312\u031C\u0315\u0314\u0310\u031A\u0314\u0317")]
 		private static readonly AccessTools.FieldRef<GameManager, BasePlayer> unknownBasePlayerField;
 
+		public TimeSyncWrapper TimeSync
+		{
+			get => TimeSyncWrapper.Wrap(timeSyncField(GameManager));
+			set => timeSyncField(GameManager) = value.TimeSync;
+		}
+		[WrapperField("\u0319\u031B\u0317\u030F\u0310\u030F\u0310\u0313\u031C\u0317\u030F")]
+		private static readonly AccessTools.FieldRef<GameManager, object> timeSyncField;
+
+		public uint CurrentTick
+		{
+			get => currentTickField(GameManager);
+			set => currentTickField(GameManager) = value;
+		}
+		[WrapperField("\u030D\u030E\u0313\u0319\u0315\u0314\u0315\u030E\u0315\u0315\u0316")]
+		private static readonly AccessTools.FieldRef<GameManager, uint> currentTickField;
+
 		#endregion
 
 		#region Methods

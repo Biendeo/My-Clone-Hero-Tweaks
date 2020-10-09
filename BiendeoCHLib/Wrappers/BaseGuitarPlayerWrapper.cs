@@ -84,12 +84,16 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperMethod("\u0314\u0313\u031C\u0315\u0316\u0318\u0318\u031C\u030D\u0319\u0315")]
 		private static readonly FastInvokeHandler hitNoteMethod;
 
+		public bool WasNoteHit(NoteWrapper note) => (bool)wasNoteHitMethod.Invoke(BaseGuitarPlayer, new object[] { note.Note });
+		[WrapperMethod("\u031B\u0319\u031B\u0318\u0319\u0315\u031A\u0314\u0315\u030D\u0311")]
+		private static readonly FastInvokeHandler wasNoteHitMethod;
+
 		public void OverStrum(bool strummed) => overstrumMethod.Invoke(BaseGuitarPlayer, new object[] { strummed });
 		[WrapperMethod("\u0311\u0314\u0311\u031B\u030D\u0310\u031B\u0318\u0316\u030D\u0312")]
 		private static readonly FastInvokeHandler overstrumMethod;
 
 		public void CheckForHitNotes() => checkForHitNotesMethod.Invoke(BaseGuitarPlayer, null);
-		[WrapperMethod("\u0314\u0313\u031C\u0315\u0316\u0318\u0318\u031C\u030D\u0319\u0315")]
+		[WrapperMethod("\u0316\u0314\u030E\u0318\u0314\u0312\u030D\u0315\u030D\u0311\u030F")]
 		private static readonly FastInvokeHandler checkForHitNotesMethod;
 
 		public void UpdateSustains() => updateSustainsMethod.Invoke(BaseGuitarPlayer, null);

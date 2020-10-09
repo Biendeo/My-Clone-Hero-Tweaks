@@ -41,6 +41,6 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u030F\u030F\u031B\u030D\u0316\u0319\u030F\u0314\u0316\u031A\u0316")]
 		private static readonly AccessTools.FieldRef<BassAudioManager, SongEntry> menuSongField;
 
-		#endregion
-	}
+        #endregion
+    }
 }

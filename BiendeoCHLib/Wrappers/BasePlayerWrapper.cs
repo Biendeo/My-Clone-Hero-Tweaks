@@ -187,6 +187,14 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u0316\u0313\u0314\u0317\u031C\u030E\u030F\u0313\u0313\u0319\u030E")]
 		private static readonly AccessTools.FieldRef<BasePlayer, float> botWindowField;
 
+		public float SoloAct
+		{
+			get => soloActField(BasePlayer);
+			set => soloActField(BasePlayer) = value;
+		}
+		[WrapperField("\u0310\u0312\u031C\u0319\u0313\u031B\u0311\u0315\u030F\u031A\u0318")]
+		private static readonly AccessTools.FieldRef<BasePlayer, float> soloActField;
+
 		public float HitWindowLength {
 			get => hitWindowLengthField(BasePlayer);
 			set => hitWindowLengthField(BasePlayer) = value;
@@ -405,9 +413,29 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperMethod("Update")]
 		private static readonly FastInvokeHandler updateMethod;
 
+		public void UpdateAI() => updateAiMethod(BasePlayer, null);
+		[WrapperMethod("\u0318\u030F\u030D\u030D\u0317\u0318\u0318\u0310\u031A\u0311\u0313")]
+		private static readonly FastInvokeHandler updateAiMethod;
+
+		public void UpdateInput() => updateInputMethod(BasePlayer, null);
+		[WrapperMethod("\u030F\u0313\u031B\u0317\u0319\u0314\u0318\u030D\u0317\u030F\u030D")]
+		private static readonly FastInvokeHandler updateInputMethod;
+
 		public void MissNote(NoteWrapper hitNote) => missNoteMethod(BasePlayer, hitNote.Note);
 		[WrapperMethod("\u0318\u030F\u0314\u031C\u0310\u0317\u0313\u031B\u030E\u031A\u031A")]
 		private static readonly FastInvokeHandler missNoteMethod;
+
+		public void OverStrum(bool strummed) => overStrumMethod(BasePlayer, strummed);
+		[WrapperMethod("\u0311\u0314\u0311\u031B\u030D\u0310\u031B\u0318\u0316\u030D\u0312")]
+		private static readonly FastInvokeHandler overStrumMethod;
+
+		public void DeployStarPower() => deployStarPowerMethod(BasePlayer, null);
+		[WrapperMethod("\u0315\u0310\u0315\u0315\u0310\u030D\u031C\u0311\u030F\u031A\u0316")]
+		private static readonly FastInvokeHandler deployStarPowerMethod;
+
+		public void StarPower_Gain(float amount) => starPowerGainMethod(BasePlayer, amount);
+		[WrapperMethod("\u031B\u031A\u0314\u0314\u0317\u031B\u0313\u0316\u031B\u031A\u0319")]
+		private static readonly FastInvokeHandler starPowerGainMethod;
 
 		#endregion
 	}

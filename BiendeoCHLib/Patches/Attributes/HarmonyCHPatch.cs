@@ -25,7 +25,7 @@ namespace BiendeoCHLib.Patches.Attributes {
 			if (wrapperField != default) {
 				//TODO: Is there a better way than re-invoking the wrapper stuff?
 				targetMethod = wrapperField.GetCustomAttribute<WrapperMethod>().GetMethodInfo(wrapperType.GetCustomAttribute<Wrapper>().WrappedType);
-				logger.LogInfo($"Found matching method for patch {wrapperType.Name}.{wrapperMethodName}");
+				logger.LogDebug($"Found matching method for patch {wrapperType.Name}.{wrapperMethodName}");
 			} else {
 				logger.LogError($"Could not find matching method for patch {wrapperType.Name}.{wrapperMethodName}");
 #if DEBUG
@@ -41,7 +41,7 @@ namespace BiendeoCHLib.Patches.Attributes {
 			MethodInfo reversePatchMethod = null;
 			foreach (var method in patchType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)) {
 				if (method.Name == "Prefix" || method.GetCustomAttribute<HarmonyCHPrefix>() != null) {
-					logger.LogInfo($"Found prefix method {method.Name}");
+					logger.LogDebug($"Found prefix method {method.Name}");
 #if DEBUG
 					if (prefixMethod != null) {
 						logger.LogError($"This replaces a previously defined prefix method, terminating...");
@@ -51,7 +51,7 @@ namespace BiendeoCHLib.Patches.Attributes {
 					prefixMethod = method;
 				}
 				if (method.Name == "Postfix" || method.GetCustomAttribute<HarmonyCHPostfix>() != null) {
-					logger.LogInfo($"Found postfix method {method.Name}");
+					logger.LogDebug($"Found postfix method {method.Name}");
 #if DEBUG
 					if (postfixMethod != null) {
 						logger.LogError($"This replaces a previously defined postfix method, terminating...");
@@ -62,7 +62,7 @@ namespace BiendeoCHLib.Patches.Attributes {
 				}
 				if (method.Name == "ReversePatch" || method.GetCustomAttribute<HarmonyCHReversePatch>() != null)
 				{
-					logger.LogInfo($"Found reverse patch method {method.Name}");
+					logger.LogDebug($"Found reverse patch method {method.Name}");
 
 					if (reversePatchMethod != null)
 					{
@@ -77,7 +77,9 @@ namespace BiendeoCHLib.Patches.Attributes {
 				harmony.Patch(targetMethod, prefix: prefixMethod == null ? null : new HarmonyMethod(prefixMethod), postfix: postfixMethod == null ? null : new HarmonyMethod(postfixMethod));
 			} else if (reversePatchMethod != null)
 			{
-				harmony.CreateReversePatcher(targetMethod, reversePatchMethod);
+				var reversePatch = harmony.CreateReversePatcher(targetMethod, reversePatchMethod);
+				reversePatch.Patch();
+				logger.LogDebug($"Created Reverse Patcher. Copied method {targetMethod.Name} from class {targetMethod.DeclaringType.Name} to {reversePatchMethod.Name}");
 			} else {
 				logger.LogWarning("Found no prefix/postfix/reverse patch methods for patch, so no action will be done.");
 			}
