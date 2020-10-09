@@ -18,7 +18,7 @@ namespace BiendeoCHLib.Wrappers {
 				foreach (var type in Assembly.GetExecutingAssembly().GetTypes()) {
 					var wrapper = type.GetCustomAttribute<Wrapper>();
 					if (wrapper != null) {
-						logger.LogInfo($"Initialising wrapper {type.Name}");
+						logger.LogDebug($"Initialising wrapper {type.Name}");
 						wrapper.InitializeSingletons(type, logger);
 					}
 				}

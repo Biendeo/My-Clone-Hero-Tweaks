@@ -103,7 +103,7 @@ namespace SplashTextEditor {
 				sceneChanged = true;
 			};
 			StartCoroutine(UpdateSplashIndex());
-			Logger.LogInfo($"{GlobalVariablesWrapper.Instance.SplashMessages.Length} vanilla splash messages: [{string.Join(", ", GlobalVariablesWrapper.Instance.SplashMessages)}]");
+			Logger.LogDebug($"{GlobalVariablesWrapper.Instance.SplashMessages.Length} vanilla splash messages: [{string.Join(", ", GlobalVariablesWrapper.Instance.SplashMessages)}]");
 		}
 
 		private int GetNewSplashIndex() {

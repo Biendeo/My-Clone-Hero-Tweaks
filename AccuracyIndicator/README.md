@@ -6,16 +6,21 @@ By pressing `Ctrl + Shift + F7`, you can bring up a window that allows you to cu
 ![Accuracy Indicator Preview 1 (gfycat)](https://giant.gfycat.com/CarefreeHonorableGourami.gif)
 
 ## How to install
-- You will need Clone Hero **v0.23.2.2**.
-- Make sure you install [BepInEx](https://github.com/BepInEx/BepInEx) first! If you don't have a `BepInEx` folder in your CH directory, you probably haven't done this yet!
-- Download the latest version of `AccuracyIndicator.zip` from [the releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and unzip it into `~YourCHFolder\BepInEx\plugins`.
+- You will need Clone Hero **v0.23.2.2**. You can use any version from the website (i.e. Win64, Win32, Mac, or Linux), but your mileage with the launcher version may vary.
+- Install [BepInEx v5.3](https://github.com/BepInEx/BepInEx/releases/tag/v5.3) into your Clone Hero directory.
+  - Download the appropriate version and extract **all** of its files into your Clone Hero directory.
+  - Please verify that BepInEx has initialised by running the game after extracting, and then checking that there are five folders and a `LogOutput.log` file inside the `BepInEx` folder. One of those folders will be named `plugins`, and you'll need that to run the mods.
+- Go to the [Releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and download the latest version of Accuracy Indicator you want for your version of Clone Hero.
+    - All the downloads are `.zip` files and will need to be extracted to your Clone Hero directory. They should merge with the existing `BepInEx` folder. You can verify it's in the correct place if `BepInEx\plugins\Accuracy Indicator` exists.
+    - You will also need `Biendeo CH Lib` installed before this mod works!
+    - To ensure that the mods have been extracted properly, check that `LogOutput.log` (or `LogOutput.log.1`, whichever is newer) has this line: `[Info   :   BepInEx] Loading [Accuracy Indicator 1.5.0.0]`
 
 ## How to uninstall
-- Delete the folder `~YourCHFolder\BepInEx\plugins\Accuracy Indicator`.
+- Delete the folder `BepInEx\plugins\Accuracy Indicator`.
 
 ## How to use
 ### Default usage
-With the tweak loaded for the first time, you'll have a `AccuracyIndicatorConfig.xml` appear in your `Tweaks` folder. This file defines the layout used for the UI elements of this tweak, as well as enabling or disabling the accuracy indicator.
+With the tweak loaded for the first time, you'll have a `com.biendeo.accuracyindicator.config.xml` appear in your `BepInEx\config` folder. This file defines the layout used for the UI elements of this tweak, as well as enabling or disabling the accuracy indicator.
 
 The accuracy indicator should appear to the bottom right of the highway. You can customise where it is by pressing `Ctrl + Shift + F7` to open the configuration menu. Up the top is `Enabled`, which determines whether the mode is on or off. It should be enabled by default. As you play notes, you'll see the indicator pop up, telling you how early/late you were to the note. Negative times mean you were early, positive times mean you were late.
 
@@ -24,7 +29,7 @@ Also, if the tweak is enabled in the configuration menu, you will get a count of
 ### Configuring
 You can press `Ctrl + Shift + F7` to open the configuration menu at any time in Clone Hero. This lets you access the details of every element used by the tweak, from the position, colour, size, alignment, and formatting. It also lets you change some of the settings of the tweak's functionality. Simply navigate the menus and change the details of settings as you please. The elements on-screen will change in real time to help you create the layout you desire.
 
-**The config is saved only when you press the `Save Config` button**,, so if you decide to close your game before closing the window, your settings will not be saved. If you wish to reset the config, just simply delete `AccuracyIndicatorConfig.xml` (or rename or changing anything such that the file doesn't exist with its original name), and run Clone Hero again. Several defaults of the tweak are based on your screen resolution at the time, so if elements are a bit oddly positioned, try resetting your config.
+**The config is saved only when you press the `Save Config` button**,, so if you decide to close your game before closing the window, your settings will not be saved. If you wish to reset the config, just simply delete `com.biendeo.accuracyindicator.config.xml` (or rename or changing anything such that the file doesn't exist with its original name), and run Clone Hero again. Several defaults of the tweak are based on your screen resolution at the time, so if elements are a bit oddly positioned, try resetting your config.
 
 Enabling `Test Layout` at the top of the configuration window will make the indicator visible at all times. This is useful for helping you arrange the indicator where you want without it disappearing. This mode is not really intended for regular usage, so it is recommended to disable it when you are finished (or not, it's your indicator 🤷‍♂️).
 

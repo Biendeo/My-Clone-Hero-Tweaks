@@ -26,11 +26,18 @@ using static UnityEngine.GUI;
 namespace ExtraSongUI {
 	[HarmonyCHPatch(typeof(BaseGuitarPlayerWrapper), nameof(BaseGuitarPlayerWrapper.HitNote))]
 	public class HitNoteHandler {
+		[HarmonyCHPrefix]
+		static void Prefix(BaseGuitarPlayer __instance, object __0) {
+			var player = BasePlayerWrapper.Wrap(__instance);
+			var note = NoteWrapper.Wrap(__0);
+			SongUI.Instance.HitNotePrefix(player, note);
+		}
+
 		[HarmonyCHPostfix]
 		static void Postfix(BaseGuitarPlayer __instance, object __0) {
 			var player = BasePlayerWrapper.Wrap(__instance);
 			var note = NoteWrapper.Wrap(__0);
-			SongUI.Instance.HitNote(player, note);
+			SongUI.Instance.HitNotePostfix(player, note);
 		}
 	}
 
@@ -161,7 +168,7 @@ namespace ExtraSongUI {
 				{ "songlength", (format) => songLength.ToString(format) },
 				{ "songtimepercentage", (format) => songTimePercentage.ToString(format) },
 				{ "currentstar", (format) => currentStarCount.ToString(format) },
-				{ "nextstar", (format) => (currentStarCount + 1).ToString(format) },
+				{ "nextstar", (format) => Math.Min(currentStarCount + 1, 7).ToString(format) },
 				{ "currentscore", (format) => currentScore.ToString(format) },
 				{ "currentstarscore", (format) => (currentScore - previousStarScore).ToString(format) },
 				{ "previousstarscore", (format) => previousStarScore.ToString(format) },
@@ -330,15 +337,17 @@ namespace ExtraSongUI {
 								hitNotesPercentage[i] = 100.0;
 								seenNotesPercentage[i] = 100.0;
 								totalStarPowers[i] = 0;
-								starPowerPercentage[i] = 0.00;
 							}
 						}
 						hitNotes[i] = 0;
-						hitNotesPercentage[i] = 0.00;
 						missedNotes[i] = 0;
-						seenNotesPercentage[i] = 0.00;
 						seenNotes[i] = 0;
+						hitNotesPercentage[i] = 0.00;
+						seenNotesPercentage[i] = 0.00;
+						fcIndicator[i] = string.Empty;
+						starPowersGotten[i] = 0;
 						starPowerPercentage[i] = 0.00;
+						currentStarPower[i] = 0.00;
 						currentCombo[i] = 0;
 						highestCombo[i] = 0;
 					}
@@ -356,7 +365,7 @@ namespace ExtraSongUI {
 			}
 			if (sceneName == "Gameplay" && !gameManager.IsNull() && gameManager.PracticeUI.PracticeUI == null) {
 				// Song length
-				songTime = TimeSpan.FromSeconds(gameManager.SongTime);
+				songTime = TimeSpan.FromSeconds(Math.Max(Math.Min(gameManager.SongTime, gameManager.SongLength), 0.0));
 				songTimePercentage = Math.Max(Math.Min(gameManager.SongTime * 100.0 / gameManager.SongLength, 100.0), 0.0);
 
 				// Star progress
@@ -413,7 +422,16 @@ namespace ExtraSongUI {
 
 		#endregion
 
-		internal void HitNote(BasePlayerWrapper player, NoteWrapper note) {
+		internal void HitNotePrefix(BasePlayerWrapper player, NoteWrapper note) {
+			int playerIndex = player.Player.PlayerIndex;
+			// The note flags are modified as the note is hit, so this must be detected as a prefix rather than postfix with the rest.
+			if (note.IsStarPowerEnd) {
+				++starPowersGotten[playerIndex];
+				++starPowersGotten[bandIndex];
+			}
+		}
+
+		internal void HitNotePostfix(BasePlayerWrapper player, NoteWrapper note) {
 			int playerIndex = player.Player.PlayerIndex;
 			++hitNotes[playerIndex];
 			++hitNotes[bandIndex];
@@ -423,10 +441,6 @@ namespace ExtraSongUI {
 			highestCombo[playerIndex] = Math.Max(currentCombo[playerIndex], highestCombo[playerIndex]);
 			++currentCombo[bandIndex];
 			highestCombo[bandIndex] = Math.Max(currentCombo[bandIndex], highestCombo[bandIndex]);
-			if (note.IsStarPowerEnd) {
-				++starPowersGotten[playerIndex];
-				++starPowersGotten[bandIndex];
-			}
 
 			UpdateNotePercentages(playerIndex);
 			UpdateNotePercentages(bandIndex);
