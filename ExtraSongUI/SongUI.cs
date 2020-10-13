@@ -473,7 +473,6 @@ namespace ExtraSongUI {
 			if (seenNotes[bandIndex] == hitNotes[bandIndex]) {
 				fcIndicator[bandIndex] = "100%";
 			}
-			Logger.LogDebug($"Overstrum {strummed}, seenNotes: {seenNotes[playerIndex]}, hitNotes: {hitNotes[playerIndex]}");
 		}
 
 		internal void UpdateNotePercentages(int index) {
@@ -687,26 +686,5 @@ namespace ExtraSongUI {
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Converts a time into a displayable string (m:ss.ms)
-		/// </summary>
-		/// <param name="t">The input time (as seconds)</param>
-		/// <returns></returns>
-		private static string DoubleToTimeString(double t) {
-			var sb = new StringBuilder();
-
-			if (t < 0.0) {
-				sb.Append("-");
-				t = Math.Abs(t);
-			}
-			sb.Append((int)(t / 60.0));
-			sb.Append(":");
-			sb.Append(((int)(t % 60.0)).ToString().PadLeft(2, '0'));
-			sb.Append(".");
-			sb.Append(((int)((t * 1000.0) % 1000.0)).ToString().PadLeft(3, '0'));
-
-			return sb.ToString();
-		}
 	}
 }
