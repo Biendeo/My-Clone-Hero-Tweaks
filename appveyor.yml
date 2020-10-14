@@ -68,8 +68,8 @@ artifacts:
 
 deploy:
   - provider: GitHub
-    release: $(version)
-    description: 'Placeholder description: maybe I should add install instructions here?'
+    release: v$(APPVEYOR_BUILD_VERSION)-pre
+    description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
     auth_token:
       secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
     artifact: AccuracyIndicator,BiendeoCHLib,ComboIndicator,ExtraSongUI,LegacyModLoader,PerfectMode,SplashTextEditor
