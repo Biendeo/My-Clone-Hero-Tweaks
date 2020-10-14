@@ -1,23 +1,29 @@
-version: 1.4.0.{build}
-
-skip_non_tags: true
+version: 1.5.0.{build}
 
 image: Visual Studio 2019
 clone_depth: 1
 
-# cache:
-#   - clonehero-win64.7z
-#   - clonehero-win64
-#   - CH-Libraries
+cache:
+  - BepInEx-Libraries
+  - CH-Libraries
 
 install:
   - echo Downloading Clone Hero
-  - ps: Start-FileDownload 'http://dl.clonehero.net/clonehero-v.23.2.2/clonehero-win64.7z'
-  - echo Unzipping Clone Hero
-  - ps: 7z x clonehero-win64.7z
-  - echo Moving common folder
-  - ps: New-Item -ItemType Directory -Path 'CH-Libraries'
-  - ps: Copy-Item -Path '.\clonehero-win64\Clone Hero_Data\Managed\*' -Destination 'CH-Libraries' -Recurse 
+  - ps: |
+        if (-not Test-Path .\clonehero-win64) {
+            Start-FileDownload 'http://dl.clonehero.net/clonehero-v.23.2.2/clonehero-win64.7z'
+            7z x clonehero-win64.7z
+            New-Item -ItemType Directory -Path 'CH-Libraries'
+            Copy-Item -Path '.\clonehero-win64\Clone Hero_Data\Managed\*' -Destination 'CH-Libraries' -Recurse
+        }
+  - echo Downloading BepInEx
+  - ps: |
+        if (-not Test-Path .\BepInEx_x64_5.3.0.0) {
+            Start-FileDownload 'https://github.com/BepInEx/BepInEx/releases/download/v5.3/BepInEx_x64_5.3.0.0.zip'
+            7z x BepInEx_x64_5.3.0.0.zip
+            New-Item -ItemType Directory -Path 'BepInEx-Libraries'
+            Copy-Item -Path '.\BepInEx_x64_5.3.0.0\BepInEx\core\*' -Destination 'BepInEx-Libraries' -Recurse
+        }
 
 assembly_info:
   patch: true
@@ -26,28 +32,56 @@ assembly_info:
   assembly_file_version: "{version}"
 
 platform: Any CPU
-configuration: Release
+for:
+  - branches:
+      only:
+        master
+    configuration: Debug
+  - configuration: Release
+
+
+before_package:
+  - ps: |
+        @("AccuracyIndicator", "BiendeoCHLib", "ComboIndicator", "ExtraSongUI", "LegacyModLoader", "PerfectMode", "SplashTextEditor") | % {
+            New-Item -Type Directory -Path ".\Artifacts\$_\BepInEx\plugins\$_"
+            Copy-Item -Path ".\$_\bin\$env:CONFIGURATION\$_.dll" -Destination ".\Artifacts\$_\BepInEx\plugins\$_"
+            7z a $_.zip $_
+        }
 
 artifacts:
-  - path: AccuracyIndicator\bin\Release\AccuracyIndicator.dll
+  - path: Artifacts\AccuracyIndicator.zip
     name: AccuracyIndicator
-  - path: ComboIndicator\bin\Release\ComboIndicator.dll
+  - path: Artifacts\BiendeoCHLib.zip
+    name: BiendeoCHLib
+  - path: Artifacts\ComboIndicator.zip
     name: ComboIndicator
-  - path: ExtraSongUI\bin\Release\ExtraSongUI.dll
+  - path: Artifacts\ExtraSongUI.zip
     name: ExtraSongUI
-  - path: PerfectMode\bin\Release\PerfectMode.dll
+  - path: Artifacts\LegacyModLoader.zip
+    name: LegacyModLoader
+  - path: Artifacts\PerfectMode.zip
     name: PerfectMode
-  - path: SplashTextEditor\bin\Release\SplashTextEditor.dll
+  - path: Artifacts\SplashTextEditor.zip
     name: SplashTextEditor
 
 deploy:
+  - provider: GitHub
+    release: $(version)
+    description: 'Placeholder description: maybe I should add install instructions here?'
+    auth_token:
+      secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
+    artifact: AccuracyIndicator,BiendeoCHLib,ComboIndicator,ExtraSongUI,LegacyModLoader,PerfectMode,SplashTextEditor
+    prerelease: true
+    on:
+      branch: master
+
   - provider: GitHub
     tag: $(APPVEYOR_REPO_TAG_NAME)
     release: $(APPVEYOR_REPO_TAG_NAME)
     description: 'Placeholder description: maybe I should add install instructions here?'
     auth_token:
       secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
-    artifact: AccuracyIndicator,ComboIndicator,ExtraSongUI,PerfectMode,SplashTextEditor
+    artifact: AccuracyIndicator,BiendeoCHLib,ComboIndicator,ExtraSongUI,LegacyModLoader,PerfectMode,SplashTextEditor
+    prerelease: false
     on:
-      branch: master
       APPVEYOR_REPO_TAG: true
