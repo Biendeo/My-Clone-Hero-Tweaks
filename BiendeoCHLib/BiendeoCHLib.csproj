@@ -32,13 +32,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\CH-Libraries\0Harmony.dll</HintPath>
+      <HintPath>..\BepInEx-Libraries\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\CH-Libraries\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\CH-Libraries\BepInEx.dll</HintPath>
+      <HintPath>..\BepInEx-Libraries\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,13 +53,13 @@
     </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.dll</HintPath>
+      <HintPath>..\CH-Libraries\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\CH-Libraries\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\CH-Libraries\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>..\CH-Libraries\UnityEngine.TextRenderingModule.dll</HintPath>

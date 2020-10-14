@@ -49,7 +49,7 @@
       <HintPath>..\CH-Libraries\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\CHLauncher-BiendeoFork\CHAPI\lib\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\CH-Libraries\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
