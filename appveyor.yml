@@ -47,7 +47,7 @@ before_package:
         @("AccuracyIndicator", "BiendeoCHLib", "ComboIndicator", "ExtraSongUI", "LegacyModLoader", "PerfectMode", "SplashTextEditor") | % {
             New-Item -Type Directory -Path ".\Artifacts\$_\BepInEx\plugins\$_"
             Copy-Item -Path ".\$_\bin\$env:CONFIGURATION\$_.dll" -Destination ".\Artifacts\$_\BepInEx\plugins\$_"
-            7z a $_.zip $_
+            7z a .\Artifacts\$_.zip .\Artifacts\$_
         }
 
 artifacts:
