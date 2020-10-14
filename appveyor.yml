@@ -7,11 +7,6 @@ cache:
   - BepInEx-Libraries
   - CH-Libraries
 
-branches:
-  only:
-    - master
-    - /^v\d*\.\d*\.\d*$/
-
 install:
   - echo Downloading Clone Hero
   - ps: |
@@ -44,6 +39,9 @@ for:
       - master
   configuration: Debug
 -
+  branches:
+    only:
+      - /^v\d*\.\d*\.\d*$/
   configuration: Release
 
 
