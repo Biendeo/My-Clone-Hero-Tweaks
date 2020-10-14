@@ -1,8 +1,9 @@
-﻿using Common.Settings;
+﻿using BiendeoCHLib.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -126,110 +127,57 @@ namespace AccuracyIndicator.Settings {
 			};
 		}
 
-		public Config(OldConfig oldConfig) {
-			Version = 2;
-			TweakVersion = "0.0.0";
-			SilenceUpdates = false;
-
-			ConfigX = oldConfig.ConfigX;
-			ConfigY = oldConfig.ConfigY;
-			ConfigKeyBind = new KeyBind {
-				Key = KeyCode.F7,
-				Ctrl = true,
-				Alt = false,
-				Shift = true
-			};
-
-			Enabled = oldConfig.Enabled;
-			EnabledKeyBind = new KeyBind {
-				Key = KeyCode.F7,
-				Ctrl = false,
-				Alt = false,
-				Shift = false
-			};
-
-			TimeOnScreen = oldConfig.TimeOnScreen;
-
-			CutoffSlightlyEarly = oldConfig.CutoffSlightlyEarly;
-			CutoffEarly = oldConfig.CutoffEarly;
-			CutoffVeryEarly = oldConfig.CutoffVeryEarly;
-			CutoffSlightlyLate = oldConfig.CutoffSlightlyLate;
-			CutoffLate = oldConfig.CutoffLate;
-			CutoffVeryLate = oldConfig.CutoffVeryLate;
-
-			ColorPerfect = new ColorARGB(oldConfig.ColorPerfectARGB);
-			ColorSlightlyEarly = new ColorARGB(oldConfig.ColorSlightlyEarlyARGB);
-			ColorEarly = new ColorARGB(oldConfig.ColorEarlyARGB);
-			ColorVeryEarly = new ColorARGB(oldConfig.ColorVeryEarlyARGB);
-			ColorSlightlyLate = new ColorARGB(oldConfig.ColorSlightlyLateARGB);
-			ColorLate = new ColorARGB(oldConfig.ColorLateARGB);
-			ColorVeryLate = new ColorARGB(oldConfig.ColorVeryLateARGB);
-			ColorMissed = new ColorARGB(oldConfig.ColorMissedARGB);
-
-			AccuracyTime = new PositionableLabel {
-				Visible = oldConfig.AccuracyTime,
-				X = (int)oldConfig.AccuracyTimeX,
-				Y = (int)oldConfig.AccuracyTimeY,
-				Size = oldConfig.AccuracyTimeScale,
-				Bold = oldConfig.AccuracyTimeBold,
-				Italic = oldConfig.AccuracyTimeItalic,
-				Alignment = TextAnchor.MiddleCenter
-			};
-
-			AccuracyMessage = new PositionableLabel {
-				Visible = oldConfig.AccuracyMessage,
-				X = (int)oldConfig.AccuracyMessageX,
-				Y = (int)oldConfig.AccuracyMessageY,
-				Size = oldConfig.AccuracyMessageScale,
-				Bold = oldConfig.AccuracyMessageBold,
-				Italic = oldConfig.AccuracyMessageItalic,
-				Alignment = TextAnchor.MiddleCenter
-			};
-
-			AverageAccuracy = new PositionableLabel {
-				Visible = oldConfig.AverageAccuracy,
-				X = (int)oldConfig.AverageAccuracyX,
-				Y = (int)oldConfig.AverageAccuracyY,
-				Size = oldConfig.AverageAccuracyScale,
-				Bold = oldConfig.AverageAccuracyBold,
-				Italic = oldConfig.AverageAccuracyItalic,
-				Alignment = TextAnchor.MiddleCenter
-			};
-		}
-
-		public static Config LoadConfig() {
-			var configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "AccuracyIndicatorConfig.xml"));
+		public static Config LoadConfig(string configPath) {
+			var configFilePath = new FileInfo(configPath);
 			if (configFilePath.Exists) {
-				// Determine if it's the old version. Without a version field, this is slightly tricky.
 				var configString = File.ReadAllText(configFilePath.FullName);
-				if (configString.Contains("<ColorPerfectARGB>")) {
-					configString = configString.Replace("<Config xmlns:", "<OldConfig xmlns:");
-					configString = configString.Replace("</Config>", "</OldConfig>");
-					var oldSerializer = new XmlSerializer(typeof(OldConfig));
-					using (var oldConfigIn = new MemoryStream(Encoding.Unicode.GetBytes(configString))) {
-						var oldConfig = oldSerializer.Deserialize(oldConfigIn) as OldConfig;
-						var newConfig = new Config(oldConfig);
-						newConfig.SaveConfig();
-						return newConfig;
-					}
-				} else {
-					var serializer = new XmlSerializer(typeof(Config));
-					using (var configIn = new MemoryStream(Encoding.Unicode.GetBytes(configString))) {
-						return serializer.Deserialize(configIn) as Config;
-					}
+				var serializer = new XmlSerializer(typeof(Config));
+				using (var configIn = new MemoryStream(Encoding.Unicode.GetBytes(configString))) {
+					return serializer.Deserialize(configIn) as Config;
 				}
 			} else {
 				var c = new Config();
-				c.SaveConfig();
+				c.SaveConfig(configPath);
 				return c;
 			}
 		}
 
-		public void SaveConfig() {
-			var configFilePath = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Tweaks", "AccuracyIndicatorConfig.xml"));
-			if (configFilePath.Exists) configFilePath.Delete();
+		public void ReloadConfig(string configPath) {
+			var configFilePath = new FileInfo(configPath);
+			if (configFilePath.Exists) {
+				var configString = File.ReadAllText(configFilePath.FullName);
+				var serializer = new XmlSerializer(typeof(Config));
+				using (var configIn = new MemoryStream(Encoding.Unicode.GetBytes(configString))) {
+					var newConfig = serializer.Deserialize(configIn) as Config;
+					ConfigKeyBind = newConfig.ConfigKeyBind;
+					Enabled = newConfig.Enabled;
+					EnabledKeyBind = newConfig.EnabledKeyBind;
+					TimeOnScreen = newConfig.TimeOnScreen;
+					CutoffSlightlyEarly = newConfig.CutoffSlightlyEarly;
+					CutoffEarly = newConfig.CutoffEarly;
+					CutoffVeryEarly = newConfig.CutoffVeryEarly;
+					CutoffSlightlyLate = newConfig.CutoffSlightlyLate;
+					CutoffLate = newConfig.CutoffLate;
+					CutoffVeryLate = newConfig.CutoffVeryLate;
+					ColorPerfect = newConfig.ColorPerfect;
+					ColorSlightlyEarly = newConfig.ColorSlightlyEarly;
+					ColorEarly = newConfig.ColorEarly;
+					ColorVeryEarly = newConfig.ColorVeryEarly;
+					ColorSlightlyLate = newConfig.ColorSlightlyLate;
+					ColorLate = newConfig.ColorLate;
+					ColorVeryLate = newConfig.ColorVeryLate;
+					ColorMissed = newConfig.ColorMissed;
+					AccuracyTime = newConfig.AccuracyTime;
+					AccuracyMessage = newConfig.AccuracyMessage;
+					AverageAccuracy = newConfig.AverageAccuracy;
+				}
+			}
+		}
+
+		public void SaveConfig(string configPath) {
+			var configFilePath = new FileInfo(configPath);
 			var serializer = new XmlSerializer(typeof(Config));
-			using (var configOut = configFilePath.OpenWrite()) {
+			using (var configOut = configFilePath.Open(FileMode.Create)) {
 				serializer.Serialize(configOut, this);
 			}
 		}
@@ -355,11 +303,6 @@ namespace AccuracyIndicator.Settings {
 			CutoffVeryLate = GUILayout.HorizontalSlider(CutoffVeryLate, 0.0f, 0.07f, styles.HorizontalSlider, styles.HorizontalSliderThumb);
 			if (float.TryParse(GUILayout.TextField(CutoffVeryLate.ToString(), styles.TextField), out float cutoffVeryLate)) CutoffVeryLate = cutoffVeryLate;
 			ColorVeryLate.ConfigureGUI(styles);
-
-			GUILayout.Space(25.0f);
-			if (GUILayout.Button("Save Config", styles.Button)) {
-				SaveConfig();
-			}
 		}
 	}
 }

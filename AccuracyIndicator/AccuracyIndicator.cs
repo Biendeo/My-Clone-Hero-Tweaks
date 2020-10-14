@@ -1,7 +1,11 @@
 ﻿using AccuracyIndicator.Components;
 using AccuracyIndicator.Settings;
-using Common;
-using Common.Wrappers;
+using BepInEx;
+using BiendeoCHLib;
+using BiendeoCHLib.Patches;
+using BiendeoCHLib.Patches.Attributes;
+using BiendeoCHLib.Wrappers;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,15 +22,36 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace AccuracyIndicator {
-	public class AccuracyIndicator : MonoBehaviour {
+	[HarmonyCHPatch(typeof(BaseGuitarPlayerWrapper), nameof(BaseGuitarPlayerWrapper.HitNote))]
+	public class HitNoteHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(object __0) {
+			var note = NoteWrapper.Wrap(__0);
+			AccuracyIndicator.Instance.HitNote(note);
+		}
+	}
+
+	[HarmonyCHPatch(typeof(BasePlayerWrapper), nameof(BasePlayerWrapper.MissNote))]
+	public class MissNoteHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(object __0) {
+			var note = NoteWrapper.Wrap(__0);
+			AccuracyIndicator.Instance.MissNote(note);
+		}
+	}
+
+	[BepInPlugin("com.biendeo.accuracyindicator", "Accuracy Indicator", "1.5.0.0")]
+	[BepInDependency("com.biendeo.biendeochlib")]
+	public class AccuracyIndicator : BaseUnityPlugin {
+		public static AccuracyIndicator Instance { get; private set; }
+
 		private bool sceneChanged;
 
 		private GameManagerWrapper gameManager;
-		private BasePlayerWrapper[] basePlayers;
-		private List<NoteWrapper> notes;
 
 		private Font uiFont;
 
+		private string ConfigPath => Path.Combine(Paths.ConfigPath, Info.Metadata.GUID + ".config.xml");
 		private Config config;
 
 		private GUIStyle settingsWindowStyle;
@@ -42,7 +67,6 @@ namespace AccuracyIndicator {
 		private Vector2 settingsScrollPosition;
 
 		private int totalNoteCount;
-		private int currentNoteIndex;
 
 		private double lastNoteHitTime;
 		private float lastNoteHitDifference;
@@ -66,16 +90,27 @@ namespace AccuracyIndicator {
 		private readonly VersionCheck versionCheck;
 		private Rect changelogRect;
 
+		private Harmony Harmony;
+
 		public AccuracyIndicator() {
+			Instance = this;
+			Harmony = new Harmony("com.biendeo.accuracyindicator");
+			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
+
 			lastSongTime = -5.0;
-			versionCheck = new VersionCheck(187002999);
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
+		}
+
+		~AccuracyIndicator() {
+			Harmony.UnpatchAll();
 		}
 
 		#region Unity Methods
 
 		public void Start() {
-			config = Config.LoadConfig();
+			config = Settings.Config.LoadConfig(ConfigPath);
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 			};
@@ -91,8 +126,7 @@ namespace AccuracyIndicator {
 		}
 
 		private void ResetGameplaySceneValues() {
-			notes = basePlayers[0].Notes;
-			currentNoteIndex = 0;
+			var notes = gameManager.BasePlayers[0].Notes;
 			totalNoteCount = notes?.Count ?? 0;
 			lastNoteHitTime = -5.0;
 			lastNoteHitDifference = 0.0f;
@@ -109,7 +143,7 @@ namespace AccuracyIndicator {
 		}
 
 		private void InstantiateEndOfSongLabels() {
-			Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
+			Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
 
 			foreach (var x in Enumerable.Range(0, 9)) {
 				var gameObjects = new GameObject[3];
@@ -205,34 +239,6 @@ namespace AccuracyIndicator {
 			highestVeryEarly = Math.Min(highestVeryEarly, -config.CutoffVeryEarly);
 		}
 
-		private void UpdateNotes() {
-			while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
-				lastNoteActualTime = notes[currentNoteIndex].Time;
-				lastNoteHitTime = gameManager.SongTime;
-				if (notes[currentNoteIndex].WasHit) {
-					if (lastNoteHitTime > lastNoteActualTime && (lastNoteHitTime - Time.deltaTime) < lastNoteActualTime) {
-						lastNoteHitDifference = 0.0f;
-					} else if (lastNoteHitTime > lastNoteActualTime) {
-						lastNoteHitDifference = (float)(lastNoteHitTime - Time.deltaTime - lastNoteActualTime);
-					} else if (lastNoteHitTime < lastNoteActualTime) {
-						lastNoteHitDifference = (float)(lastNoteHitTime - lastNoteActualTime);
-					} else {
-						UnityEngine.Debug.LogError($"Panic?");
-					}
-					noteHits.Add(lastNoteHitDifference);
-					if (hitNotes == 0) {
-						hitAccuracy = lastNoteHitDifference;
-					} else {
-						hitAccuracy = (hitAccuracy * hitNotes + lastNoteHitDifference) / (hitNotes + 1);
-					}
-					++hitNotes;
-				} else if (notes[currentNoteIndex].WasMissed) {
-					lastNoteHitDifference = 0.07f;
-				}
-				++currentNoteIndex;
-			}
-		}
-
 		private void UpdateLabels() {
 			if (config.Enabled) {
 				double timeFromLastNote = gameManager.SongTime - lastNoteHitTime;
@@ -315,12 +321,11 @@ namespace AccuracyIndicator {
 				if (sceneName == "Gameplay") {
 					int uiLayerMask = LayerMask.NameToLayer("UI");
 					var gameManagerObject = GameObject.Find("Game Manager");
-					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
-					basePlayers = gameManager.BasePlayers;
+					gameManager = GameManagerWrapper.Wrap(gameManagerObject.GetComponent<GameManager>());
 					ResetGameplaySceneValues();
 
 					DestroyAndNullGameplayLabels();
-					Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
+					Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
 
 					accuracyIndicatorLabel = new GameObject($"Accuracy Indicator", new Type[] {
 						typeof(Text),
@@ -370,26 +375,15 @@ namespace AccuracyIndicator {
 			if (sceneName == "Gameplay") {
 				//! In practice mode, the song time is set to 1.5s before the section or A/B. If it is looping, it is
 				//! initially set to 0, then to the appropriate time. As long as the user isn't on less than 10FPS, this should work.
-				if (Math.Abs(gameManager.SongTime - lastSongTime) > 1.5 && gameManager.PracticeUI.practiceUI != null) {
+				if (Math.Abs(gameManager.SongTime - lastSongTime) > 1.5 && gameManager.PracticeUI.PracticeUI != null) {
 					ResetGameplaySceneValues();
 				}
 				UpdateGreatestThresholds();
-				if (notes != null) {
-					UpdateNotes();
-				}
 				UpdateLabels();
 			} else if (sceneName == "Main Menu") {
 				if (uiFont is null) {
 					//TODO: Get the font directly from the bundle?
 					uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
-				}
-				if (!versionCheck.HasVersionBeenChecked) {
-					if (config.SilenceUpdates) {
-						versionCheck.HasVersionBeenChecked = true;
-					} else {
-						string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-						versionCheck.CheckVersion(detectedVersion);
-					}
 				}
 			}
 			config.HandleInput();
@@ -416,15 +410,38 @@ namespace AccuracyIndicator {
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
-			if (versionCheck.IsShowingUpdateWindow) {
-				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
-			}
 			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
 				changelogRect = GUILayout.Window(187002998, changelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
 			}
 		}
 
 		#endregion
+
+		internal void HitNote(NoteWrapper note) {
+			lastNoteActualTime = note.Time;
+			lastNoteHitTime = gameManager.SongTime;
+			if (lastNoteHitTime > lastNoteActualTime && (lastNoteHitTime - Time.deltaTime) < lastNoteActualTime) {
+				lastNoteHitDifference = 0.0f;
+			} else if (lastNoteHitTime > lastNoteActualTime) {
+				lastNoteHitDifference = (float)(lastNoteHitTime - Time.deltaTime - lastNoteActualTime);
+			} else if (lastNoteHitTime < lastNoteActualTime) {
+				lastNoteHitDifference = (float)(lastNoteHitTime - lastNoteActualTime);
+			} else {
+				Logger.LogError("Panic?");
+			}
+			noteHits.Add(lastNoteHitDifference);
+			if (hitNotes == 0) {
+				hitAccuracy = lastNoteHitDifference;
+			} else {
+				hitAccuracy = (hitAccuracy * hitNotes + lastNoteHitDifference) / (hitNotes + 1);
+			}
+		}
+
+		internal void MissNote(NoteWrapper note) {
+			lastNoteActualTime = note.Time;
+			lastNoteHitTime = gameManager.SongTime;
+			lastNoteHitDifference = 0.07f;
+		}
 
 		private void OnWindow(int id) {
 			var largeLabelStyle = new GUIStyle {
@@ -443,7 +460,7 @@ namespace AccuracyIndicator {
 				}
 			};
 			settingsScrollPosition = GUILayout.BeginScrollView(settingsScrollPosition);
-			config.ConfigureGUI(new Common.Settings.GUIConfigurationStyles {
+			config.ConfigureGUI(new BiendeoCHLib.Settings.GUIConfigurationStyles {
 				LargeLabel = largeLabelStyle,
 				SmallLabel = smallLabelStyle,
 				Window = settingsWindowStyle,
@@ -456,6 +473,15 @@ namespace AccuracyIndicator {
 				HorizontalSlider = settingsHorizontalSliderStyle,
 				HorizontalSliderThumb = settingsHorizontalSliderThumbStyle
 			});
+
+			GUILayout.Space(25.0f);
+			if (GUILayout.Button("Reload Config", settingsButtonStyle)) {
+				config.ReloadConfig(ConfigPath);
+			}
+			if (GUILayout.Button("Save Config", settingsButtonStyle)) {
+				config.SaveConfig(ConfigPath);
+			}
+
 			GUILayout.Space(25.0f);
 
 			GUILayout.Label($"Accuracy Indicator v{versionCheck.AssemblyVersion}");
@@ -499,7 +525,7 @@ namespace AccuracyIndicator {
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
 				config.TweakVersion = versionCheck.AssemblyVersion;
-				config.SaveConfig();
+				config.SaveConfig(ConfigPath);
 			}
 			GUI.DragWindow();
 		}

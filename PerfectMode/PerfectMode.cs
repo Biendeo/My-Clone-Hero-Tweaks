@@ -1,5 +1,10 @@
-﻿using Common;
-using Common.Wrappers;
+﻿using BepInEx;
+using BiendeoCHLib;
+using BiendeoCHLib.Patches;
+using BiendeoCHLib.Patches.Attributes;
+using BiendeoCHLib.Settings;
+using BiendeoCHLib.Wrappers;
+using HarmonyLib;
 using PerfectMode.Settings;
 using System;
 using System.Collections.Generic;
@@ -13,11 +18,24 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace PerfectMode {
-	public class PerfectMode : MonoBehaviour {
+
+	[HarmonyCHPatch(typeof(BasePlayerWrapper), nameof(BasePlayerWrapper.MissNote))]
+	public class MissNoteHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(object __0) {
+			var note = NoteWrapper.Wrap(__0);
+			PerfectMode.Instance.MissNote(note);
+		}
+	}
+
+	[BepInPlugin("com.biendeo.perfectmode", "Perfect Mode", "1.5.0.0")]
+	[BepInDependency("com.biendeo.biendeochlib")]
+	public class PerfectMode : BaseUnityPlugin {
+		public static PerfectMode Instance { get; private set; }
+
 		private bool sceneChanged;
 
 		private GameManagerWrapper gameManager;
-		private List<NoteWrapper> notes;
 
 		private bool failedObjective;
 		private float remainingTimeBeforeRestart;
@@ -25,6 +43,7 @@ namespace PerfectMode {
 		private Font uiFont;
 		private bool invokedSceneChange;
 
+		private string ConfigPath => Path.Combine(Paths.ConfigPath, Info.Metadata.GUID + ".config.xml");
 		private Config config;
 
 		private GUIStyle settingsWindowStyle;
@@ -41,8 +60,6 @@ namespace PerfectMode {
 		private string target;
 		private bool isStillFC;
 		private int missedNotes;
-		private int totalNoteCount;
-		private int currentNoteIndex;
 
 		private GameObject displayImageLabel;
 		private GameObject remainingNotesLeftLabel;
@@ -51,16 +68,23 @@ namespace PerfectMode {
 		private readonly VersionCheck versionCheck;
 		private Rect changelogRect;
 
+		private Harmony Harmony;
+
 		public PerfectMode() {
+			Instance = this;
+			Harmony = new Harmony("com.biendeo.perfectmode");
+			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
+
 			settingsScrollPosition = new Vector2();
-			versionCheck = new VersionCheck(187001999);
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
 
 		public void Start() {
-			config = Config.LoadConfig();
+			config = Settings.Config.LoadConfig(ConfigPath);
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 				failedObjective = false;
@@ -77,9 +101,6 @@ namespace PerfectMode {
 		}
 
 		private void ResetGameplaySceneValues() {
-			notes = gameManager.BasePlayers[0].Notes;
-			totalNoteCount = notes?.Count ?? 0;
-			currentNoteIndex = 0;
 			missedNotes = 0;
 			invokedSceneChange = false;
 		}
@@ -91,11 +112,11 @@ namespace PerfectMode {
 				if (sceneName == "Gameplay") {
 					int uiLayerMask = LayerMask.NameToLayer("UI");
 					var gameManagerObject = GameObject.Find("Game Manager");
-					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
+					gameManager = GameManagerWrapper.Wrap(gameManagerObject.GetComponent<GameManager>());
 					ResetGameplaySceneValues();
 
 					DestroyAndNullGameplayLabels();
-					Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
+					Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
 
 					displayImageLabel = new GameObject($"Perfect Mode Indicator", new Type[] {
 						typeof(Text)
@@ -136,23 +157,9 @@ namespace PerfectMode {
 					DestroyAndNullGameplayLabels();
 				}
 			}
-			if (sceneName == "Main Menu" && !versionCheck.HasVersionBeenChecked) {
-				if (config.SilenceUpdates) {
-					versionCheck.HasVersionBeenChecked = true;
-				} else {
-					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					versionCheck.CheckVersion(detectedVersion);
-				}
-			}
 			if (config.Enabled && sceneName == "Gameplay" && !gameManager.IsNull()) {
 				target = config.FC ? "FC" : (config.NotesMissed == 0 ? "100%" : $"-{config.NotesMissed}");
 				isStillFC = !gameManager.BasePlayers[0].FirstNoteMissed;
-				while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
-					if (!notes[currentNoteIndex].WasHit && notes[currentNoteIndex].WasMissed) {
-						++missedNotes;
-					}
-					++currentNoteIndex;
-				}
 				if (!failedObjective && (config.FC && !isStillFC || config.NotesMissed < missedNotes)) {
 					failedObjective = true;
 					remainingTimeBeforeRestart = Math.Min(config.FailDelay, (float)(gameManager.SongLength - gameManager.SongTime));
@@ -161,7 +168,7 @@ namespace PerfectMode {
 					remainingTimeBeforeRestart -= Time.deltaTime;
 					if (remainingTimeBeforeRestart < 0.0f && !invokedSceneChange) {
 						//TODO: Double-check that multiplayer works fine with this.
-						StartCoroutine(FadeBehaviourWrapper.instance.InvokeSceneChange("Gameplay"));
+						StartCoroutine(FadeBehaviourWrapper.Instance.InvokeSceneChange("Gameplay"));
 						invokedSceneChange = true;
 					}
 				}
@@ -235,15 +242,16 @@ namespace PerfectMode {
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
 			}
-			if (versionCheck.IsShowingUpdateWindow) {
-				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
-			}
 			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
 				changelogRect = GUILayout.Window(187001998, changelogRect, OnChangelogWindow, new GUIContent($"Perfect Mode Changelog"), settingsWindowStyle);
 			}
 		}
 
 		#endregion
+
+		internal void MissNote(NoteWrapper note) {
+			++missedNotes;
+		}
 
 		private void OnWindow(int id) {
 			var largeLabelStyle = new GUIStyle {
@@ -262,7 +270,7 @@ namespace PerfectMode {
 				}
 			};
 			settingsScrollPosition = GUILayout.BeginScrollView(settingsScrollPosition);
-			config.ConfigureGUI(new Common.Settings.GUIConfigurationStyles {
+			config.ConfigureGUI(new GUIConfigurationStyles {
 				LargeLabel = largeLabelStyle,
 				SmallLabel = smallLabelStyle,
 				Window = settingsWindowStyle,
@@ -275,6 +283,15 @@ namespace PerfectMode {
 				HorizontalSlider = settingsHorizontalSliderStyle,
 				HorizontalSliderThumb = settingsHorizontalSliderThumbStyle
 			});
+
+			GUILayout.Space(25.0f);
+			if (GUILayout.Button("Reload Config", settingsButtonStyle)) {
+				config.ReloadConfig(ConfigPath);
+			}
+			if (GUILayout.Button("Save Config", settingsButtonStyle)) {
+				config.SaveConfig(ConfigPath);
+			}
+
 			GUILayout.Space(25.0f);
 
 			GUILayout.Label($"Perfect Mode v{versionCheck.AssemblyVersion}");
@@ -318,7 +335,7 @@ namespace PerfectMode {
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
 				config.TweakVersion = versionCheck.AssemblyVersion;
-				config.SaveConfig();
+				config.SaveConfig(ConfigPath);
 			}
 			GUI.DragWindow();
 		}

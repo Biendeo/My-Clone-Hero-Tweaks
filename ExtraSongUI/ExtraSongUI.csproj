@@ -31,9 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\BepInEx-Libraries\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\CH-Libraries\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>..\BepInEx-Libraries\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -78,15 +84,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Settings\Config.cs" />
-    <Compile Include="Settings\OldConfig.cs" />
-    <Compile Include="Settings\EditableLabelSettings.cs" />
-    <Compile Include="Settings\FormattedLabelSettings.cs" />
-    <Compile Include="Settings\LabelSettings.cs" />
+    <Compile Include="Settings\SongUILabel.cs" />
     <Compile Include="SongUI.cs" />
-    <Compile Include="Loader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Import Project="..\Common\Common.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\BiendeoCHLib\BiendeoCHLib.csproj">
+      <Project>{9b89d9f0-9d7f-4ab0-863a-c9bdeeec91bc}</Project>
+      <Name>BiendeoCHLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

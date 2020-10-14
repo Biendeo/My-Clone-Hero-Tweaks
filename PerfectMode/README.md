@@ -8,15 +8,21 @@ By pressing `Ctrl + Shift + F6`, you can bring up a window that allows you to cu
 ![Perfect Mode Preview 2 (gfycat)](https://giant.gfycat.com/ThriftySereneJumpingbean.gif)
 
 ## How to install
-- You will need Clone Hero **v0.23.2.2**.
-- Make sure you install CHLauncher first!
-  - Navigate to the `#ch-launcher` channel, and download the latest version of CHLauncher.exe.
-  - Run it, and patch your version of Clone Hero with it. You should now have a `Tweaks` folder in your Clone Hero folder.
-- Download the latest version of `PerfectMode.dll` from [the releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and place it in your tweaks folder.
+- You will need Clone Hero **v0.23.2.2**. You can use any version from the website (i.e. Win64, Win32, Mac, or Linux), but your mileage with the launcher version may vary.
+- Install [BepInEx v5.3](https://github.com/BepInEx/BepInEx/releases/tag/v5.3) into your Clone Hero directory.
+  - Download the appropriate version and extract **all** of its files into your Clone Hero directory.
+  - Please verify that BepInEx has initialised by running the game after extracting, and then checking that there are five folders and a `LogOutput.log` file inside the `BepInEx` folder. One of those folders will be named `plugins`, and you'll need that to run the mods.
+- Go to the [Releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and download the latest version of Perfect Mode you want for your version of Clone Hero.
+    - All the downloads are `.zip` files and will need to be extracted to your Clone Hero directory. They should merge with the existing `BepInEx` folder. You can verify it's in the correct place if `BepInEx\plugins\Perfect Mode` exists.
+    - You will also need `Biendeo CH Lib` installed before this mod works!
+    - To ensure that the mods have been extracted properly, check that `LogOutput.log` (or `LogOutput.log.1`, whichever is newer) has this line: `[Info   :   BepInEx] Loading [Perfect Mode 1.5.0.0]`
+
+## How to uninstall
+- Delete the folder `BepInEx\plugins\Perfect Mode`.
 
 ## How to use
 ### Default usage
-With the tweak loaded for the first time, you'll have a `PerfectModeConfig.xml` appear in your `Tweaks` folder. This file defines the layout used for the UI elements of this tweak, as well as enabling or disabling the perfect mode.
+With the tweak loaded for the first time, you'll have a `com.biendeo.perfectmode.config.xml` appear in your `BepInEx\config` folder. This file defines the layout used for the UI elements of this tweak, as well as enabling or disabling the perfect mode.
 
 **By default perfect mode is off!** You need to enable it by pressing `Ctrl + Shift + F6` to open the configuration menu. Up the top is `Enabled`, which determines whether the mode is on or off. To assist with knowing whether this mode is on or off, you can check `On-screen Indicator`, which will show a message on-screen when your have perfect mode on.
 
@@ -25,4 +31,4 @@ You can also control whether the perfect mode restart kicks in when you break an
 ### Configuring
 You can press `Ctrl + Shift + F6` to open the configuration menu at any time in Clone Hero. This lets you access the details of every element used by the tweak, from the position, colour, size, alignment, and formatting. It also lets you change some of the settings of the tweak's functioanlity. Simply navigate the menus and change the details of settings as you please. The elements on-screen will change in real time to help you create the layout you desire.
 
-**The config is saved only when you press the `Save Config` button**, so if you decide to close your game before closing the window, your settings will not be saved. If you wish to reset the config, just simply delete `PerfectModeConfig.xml` (or rename or changing anything such that the file doesn't exist with its original name), and run Clone Hero again. Several defaults of the tweak are based on your screen resolution at the time, so if elements are a bit oddly positioned, try resetting your config.
+**The config is saved only when you press the `Save Config` button**, so if you decide to close your game before closing the window, your settings will not be saved. If you wish to reset the config, just simply delete `com.biendeo.perfectmode.config.xml` (or rename or changing anything such that the file doesn't exist with its original name), and run Clone Hero again. Several defaults of the tweak are based on your screen resolution at the time, so if elements are a bit oddly positioned, try resetting your config.

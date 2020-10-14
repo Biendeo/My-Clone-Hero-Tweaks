@@ -1,6 +1,8 @@
-﻿using ComboIndicator.Settings;
-using Common;
-using Common.Wrappers;
+﻿using BepInEx;
+using BiendeoCHLib;
+using BiendeoCHLib.Patches;
+using BiendeoCHLib.Wrappers;
+using ComboIndicator.Settings;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +19,11 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace ComboIndicator {
-	public class ComboIndicator : MonoBehaviour {
+	[BepInPlugin("com.biendeo.comboindicator", "Combo Indicator", "1.5.0.0")]
+	[BepInDependency("com.biendeo.biendeochlib")]
+	public class ComboIndicator : BaseUnityPlugin {
+		public static ComboIndicator Instance { get; private set; }
+
 		private bool sceneChanged;
 
 		private GameManagerWrapper gameManager;
@@ -44,14 +50,15 @@ namespace ComboIndicator {
 		private Rect changelogRect;
 
 		public ComboIndicator() {
-			versionCheck = new VersionCheck(187003999);
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
 
 		public void Start() {
-			config = Config.LoadConfig();
+			config = Settings.Config.LoadConfig();
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 			};
@@ -62,7 +69,7 @@ namespace ComboIndicator {
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
 				if (sceneName == "Gameplay") {
-					gameManager = new GameManagerWrapper(GameObject.Find("Game Manager")?.GetComponent<GameManager>());
+					gameManager = GameManagerWrapper.Wrap(GameObject.Find("Game Manager")?.GetComponent<GameManager>());
 					if (!gameManager.IsNull()) {
 						soloCounter = gameManager.BasePlayers[0].SoloCounter;
 						scoreManager = gameManager.ScoreManager;
@@ -87,14 +94,6 @@ namespace ComboIndicator {
 					//TODO: Get the font directly from the bundle?
 					uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 				}
-				if (!versionCheck.HasVersionBeenChecked) {
-					if (config.SilenceUpdates) {
-						versionCheck.HasVersionBeenChecked = true;
-					} else {
-						string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-						versionCheck.CheckVersion(detectedVersion);
-					}
-				}
 			}
 		}
 
@@ -109,9 +108,6 @@ namespace ComboIndicator {
 				settingsBoxStyle = new GUIStyle(GUI.skin.box);
 				settingsHorizontalSliderStyle = new GUIStyle(GUI.skin.horizontalSlider);
 				settingsHorizontalSliderThumbStyle = new GUIStyle(GUI.skin.horizontalSliderThumb);
-			}
-			if (versionCheck.IsShowingUpdateWindow) {
-				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
 			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
 				changelogRect = GUILayout.Window(187003998, changelogRect, OnChangelogWindow, new GUIContent($"Combo Indicator Changelog"), settingsWindowStyle);

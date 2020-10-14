@@ -1,7 +1,11 @@
-﻿using Common;
-using Common.Settings;
-using Common.Wrappers;
+﻿using BepInEx;
+using BiendeoCHLib;
+using BiendeoCHLib.Patches;
+using BiendeoCHLib.Patches.Attributes;
+using BiendeoCHLib.Settings;
+using BiendeoCHLib.Wrappers;
 using ExtraSongUI.Settings;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +13,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using TMPro;
 using UnityEngine;
@@ -18,7 +24,47 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace ExtraSongUI {
-	public class SongUI : MonoBehaviour {
+	[HarmonyCHPatch(typeof(BaseGuitarPlayerWrapper), nameof(BaseGuitarPlayerWrapper.HitNote))]
+	public class HitNoteHandler {
+		[HarmonyCHPrefix]
+		static void Prefix(BaseGuitarPlayer __instance, object __0) {
+			var player = BasePlayerWrapper.Wrap(__instance);
+			var note = NoteWrapper.Wrap(__0);
+			SongUI.Instance.HitNotePrefix(player, note);
+		}
+
+		[HarmonyCHPostfix]
+		static void Postfix(BaseGuitarPlayer __instance, object __0) {
+			var player = BasePlayerWrapper.Wrap(__instance);
+			var note = NoteWrapper.Wrap(__0);
+			SongUI.Instance.HitNotePostfix(player, note);
+		}
+	}
+
+	[HarmonyCHPatch(typeof(BasePlayerWrapper), nameof(BasePlayerWrapper.MissNote))]
+	public class MissNoteHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(BasePlayer __instance, object __0) {
+			var player = BasePlayerWrapper.Wrap(__instance);
+			var note = NoteWrapper.Wrap(__0);
+			SongUI.Instance.MissNote(player, note);
+		}
+	}
+
+	[HarmonyCHPatch(typeof(BasePlayerWrapper), nameof(BasePlayerWrapper.OverStrum))]
+	public class OverStrumHandler {
+		[HarmonyCHPostfix]
+		static void Postfix(BasePlayer __instance, bool __0) {
+			var player = BasePlayerWrapper.Wrap(__instance);
+			SongUI.Instance.OverStrum(player, __0);
+		}
+	}
+
+	[BepInPlugin("com.biendeo.extrasongui", "Extra Song UI", "1.5.0.0")]
+	[BepInDependency("com.biendeo.biendeochlib")]
+	public class SongUI : BaseUnityPlugin {
+		public static SongUI Instance { get; private set; }
+
 		private bool sceneChanged;
 
 		// Song length
@@ -29,18 +75,17 @@ namespace ExtraSongUI {
 
 		// Note count
 		private BasePlayerWrapper[] basePlayers;
-		private List<NoteWrapper> notes;
-		private int totalNoteCount;
-		private int totalStarPowers;
+		private int[] totalNoteCount;
+		private int[] totalStarPowers;
 
 		private Font uiFont;
 
+		private string ConfigPath => Path.Combine(Paths.ConfigPath, Info.Metadata.GUID + ".layout.xml");
 		private Config config;
 
-		private WindowFunction settingsOnWindow;
-		private FormattableColorablePositionableLabel settingsCurrentlyEditing;
-		private string settingsCurrentlyEditingName;
-		private WindowFunction settingsCurrentBack;
+		private List<Tuple<SongUILabel, GameObject, Text>> labels;
+
+		private SongUILabel settingsCurrentlyEditing;
 
 		private GUIStyle settingsWindowStyle;
 		private GUIStyle settingsToggleStyle;
@@ -52,9 +97,13 @@ namespace ExtraSongUI {
 		private GUIStyle settingsHorizontalSliderStyle;
 		private GUIStyle settingsHorizontalSliderThumbStyle;
 
-		private string formattedSongTime;
-		private string formattedSongLength;
+		private Vector2 settingsScrollPosition;
+
+		private TimeSpan songTime;
+		private TimeSpan songLength;
 		private double songTimePercentage;
+
+		private int numPlayers;
 
 		private int currentStarCount;
 		private int currentScore;
@@ -64,170 +113,201 @@ namespace ExtraSongUI {
 		private int sevenStarScore;
 		private double sevenStarPercentage;
 
-		private int hitNotes;
-		private int missedNotes;
-		private int seenNotes;
-		private double hitNotesPercentage;
-		private double seenNotesPercentage;
-		private string fcIndicator;
+		private const int bandIndex = 4;
 
-		private int starPowersGotten;
-		private double starPowerPercentage;
-		private double currentStarPower;
+		private int[] hitNotes;
+		private int[] missedNotes;
+		private int[] seenNotes;
+		private double[] hitNotesPercentage;
+		private double[] seenNotesPercentage;
+		private string[] fcIndicator;
 
-		private int currentCombo;
-		private int highestCombo;
+		private int[] starPowersGotten;
+		private double[] starPowerPercentage;
+		private double[] currentStarPower;
 
-		private int currentNoteIndex;
-
-		private GameObject TimeNameLabel;
-		private GameObject SongTimeLabel;
-		private GameObject SongLengthLabel;
-		private GameObject SongTimePercentageLabel;
-
-		private GameObject CurrentStarProgressNameLabel;
-		private GameObject CurrentStarProgressScoreLabel;
-		private GameObject CurrentStarProgressEndScoreLabel;
-		private GameObject CurrentStarProgressPercentageLabel;
-
-		private GameObject SevenStarProgressNameLabel;
-		private GameObject SevenStarProgressScoreLabel;
-		private GameObject SevenStarProgressEndScoreLabel;
-		private GameObject SevenStarProgressPercentageLabel;
-
-		private GameObject NotesNameLabel;
-		private GameObject NotesHitCounterLabel;
-		private GameObject NotesPassedCounterLabel;
-		private GameObject TotalNotesCounterLabel;
-		private GameObject SeenNotesHitPercentageLabel;
-		private GameObject NotesHitPercentageLabel;
-		private GameObject NotesMissedCounterLabel;
-
-		private GameObject StarPowerNameLabel;
-		private GameObject StarPowersGottenCounterLabel;
-		private GameObject TotalStarPowersCounterLabel;
-		private GameObject StarPowerPercentageLabel;
-		private GameObject CurrentStarPowerLabel;
-
-		private GameObject ComboNameLabel;
-		private GameObject CurrentComboCounterLabel;
-		private GameObject HighestComboCounterLabel;
+		private int[] currentCombo;
+		private int[] highestCombo;
 
 		private readonly VersionCheck versionCheck;
 		private Rect changelogRect;
 
+		private readonly Dictionary<string, Func<string, string>> formatActions;
+
+		private Harmony Harmony;
+
 		public SongUI() {
-			settingsOnWindow = OnWindowHead;
-			versionCheck = new VersionCheck(187000999);
+			Instance = this;
+			Harmony = new Harmony("com.biendeo.extrasongui");
+			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
+
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
+			labels = new List<Tuple<SongUILabel, GameObject, Text>>();
+
+			totalNoteCount = new int[bandIndex + 1];
+			totalStarPowers = new int[bandIndex + 1];
+
+			hitNotes = new int[bandIndex + 1];
+			missedNotes = new int[bandIndex + 1];
+			seenNotes = new int[bandIndex + 1];
+			hitNotesPercentage = new double[bandIndex + 1];
+			seenNotesPercentage = new double[bandIndex + 1];
+			fcIndicator = new string[bandIndex + 1];
+
+			starPowersGotten = new int[bandIndex + 1];
+			starPowerPercentage = new double[bandIndex + 1];
+			currentStarPower = new double[bandIndex + 1];
+
+			currentCombo = new int[bandIndex + 1];
+			highestCombo = new int[bandIndex + 1];
+
+			formatActions = new Dictionary<string, Func<string, string>> {
+				{ "songtime", (format) => songTime.ToString(format) },
+				{ "songlength", (format) => songLength.ToString(format) },
+				{ "songtimepercentage", (format) => songTimePercentage.ToString(format) },
+				{ "currentstar", (format) => currentStarCount.ToString(format) },
+				{ "nextstar", (format) => Math.Min(currentStarCount + 1, 7).ToString(format) },
+				{ "currentscore", (format) => currentScore.ToString(format) },
+				{ "currentstarscore", (format) => (currentScore - previousStarScore).ToString(format) },
+				{ "previousstarscore", (format) => previousStarScore.ToString(format) },
+				{ "nextstarscore", (format) => nextStarScore.ToString(format) },
+				{ "currentstarpercentage", (format) => nextStarPercentage.ToString(format) },
+				{ "sevenstarscore", (format) => sevenStarScore.ToString(format) },
+				{ "sevenstarpercentage", (format) => sevenStarPercentage.ToString(format) },
+				{ "hitnotes", (format) => hitNotes[bandIndex].ToString(format) },
+				{ "hitnotes1", (format) => hitNotes[0].ToString(format) },
+				{ "hitnotes2", (format) => hitNotes[1].ToString(format) },
+				{ "hitnotes3", (format) => hitNotes[2].ToString(format) },
+				{ "hitnotes4", (format) => hitNotes[3].ToString(format) },
+				{ "seennotes", (format) => seenNotes[bandIndex].ToString(format) },
+				{ "seennotes1", (format) => seenNotes[0].ToString(format) },
+				{ "seennotes2", (format) => seenNotes[1].ToString(format) },
+				{ "seennotes3", (format) => seenNotes[2].ToString(format) },
+				{ "seennotes4", (format) => seenNotes[3].ToString(format) },
+				{ "missednotes", (format) => missedNotes[bandIndex].ToString(format) },
+				{ "missednotes1", (format) => missedNotes[0].ToString(format) },
+				{ "missednotes2", (format) => missedNotes[1].ToString(format) },
+				{ "missednotes3", (format) => missedNotes[2].ToString(format) },
+				{ "missednotes4", (format) => missedNotes[3].ToString(format) },
+				{ "totalnotes", (format) => totalNoteCount[bandIndex].ToString(format) },
+				{ "totalnotes1", (format) => totalNoteCount[0].ToString(format) },
+				{ "totalnotes2", (format) => totalNoteCount[1].ToString(format) },
+				{ "totalnotes3", (format) => totalNoteCount[2].ToString(format) },
+				{ "totalnotes4", (format) => totalNoteCount[3].ToString(format) },
+				{ "hitnotespercentage", (format) => hitNotesPercentage[bandIndex].ToString(format) },
+				{ "hitnotespercentage1", (format) => hitNotesPercentage[0].ToString(format) },
+				{ "hitnotespercentage2", (format) => hitNotesPercentage[1].ToString(format) },
+				{ "hitnotespercentage3", (format) => hitNotesPercentage[2].ToString(format) },
+				{ "hitnotespercentage4", (format) => hitNotesPercentage[3].ToString(format) },
+				{ "seennotespercentage", (format) => seenNotesPercentage[bandIndex].ToString(format) },
+				{ "seennotespercentage1", (format) => seenNotesPercentage[0].ToString(format) },
+				{ "seennotespercentage2", (format) => seenNotesPercentage[1].ToString(format) },
+				{ "seennotespercentage3", (format) => seenNotesPercentage[2].ToString(format) },
+				{ "seennotespercentage4", (format) => seenNotesPercentage[3].ToString(format) },
+				{ "fcindicator", (format) => fcIndicator[bandIndex] },
+				{ "fcindicator1", (format) => fcIndicator[0] },
+				{ "fcindicator2", (format) => fcIndicator[1] },
+				{ "fcindicator3", (format) => fcIndicator[2] },
+				{ "fcindicator4", (format) => fcIndicator[3] },
+				{ "starpowersgotten", (format) => starPowersGotten[bandIndex].ToString(format) },
+				{ "starpowersgotten1", (format) => starPowersGotten[0].ToString(format) },
+				{ "starpowersgotten2", (format) => starPowersGotten[1].ToString(format) },
+				{ "starpowersgotten3", (format) => starPowersGotten[2].ToString(format) },
+				{ "starpowersgotten4", (format) => starPowersGotten[3].ToString(format) },
+				{ "totalstarpowers", (format) => totalStarPowers[bandIndex].ToString(format) },
+				{ "totalstarpowers1", (format) => totalStarPowers[0].ToString(format) },
+				{ "totalstarpowers2", (format) => totalStarPowers[1].ToString(format) },
+				{ "totalstarpowers3", (format) => totalStarPowers[2].ToString(format) },
+				{ "totalstarpowers4", (format) => totalStarPowers[3].ToString(format) },
+				{ "starpowerpercentage", (format) => starPowerPercentage[bandIndex].ToString(format) },
+				{ "starpowerpercentage1", (format) => starPowerPercentage[0].ToString(format) },
+				{ "starpowerpercentage2", (format) => starPowerPercentage[1].ToString(format) },
+				{ "starpowerpercentage3", (format) => starPowerPercentage[2].ToString(format) },
+				{ "starpowerpercentage4", (format) => starPowerPercentage[3].ToString(format) },
+				{ "currentstarpower", (format) => currentStarPower[bandIndex].ToString(format) },
+				{ "currentstarpower1", (format) => currentStarPower[0].ToString(format) },
+				{ "currentstarpower2", (format) => currentStarPower[1].ToString(format) },
+				{ "currentstarpower3", (format) => currentStarPower[2].ToString(format) },
+				{ "currentstarpower4", (format) => currentStarPower[3].ToString(format) },
+				{ "currentcombo", (format) => currentCombo[bandIndex].ToString(format) },
+				{ "currentcombo1", (format) => currentCombo[0].ToString(format) },
+				{ "currentcombo2", (format) => currentCombo[1].ToString(format) },
+				{ "currentcombo3", (format) => currentCombo[2].ToString(format) },
+				{ "currentcombo4", (format) => currentCombo[3].ToString(format) },
+				{ "highestcombo", (format) => highestCombo[bandIndex].ToString(format) },
+				{ "highestcombo1", (format) => highestCombo[0].ToString(format) },
+				{ "highestcombo2", (format) => highestCombo[1].ToString(format) },
+				{ "highestcombo3", (format) => highestCombo[2].ToString(format) },
+				{ "highestcombo4", (format) => highestCombo[3].ToString(format) }
+			};
 		}
 
 		#region Unity Methods
 
 		public void Start() {
-			config = Config.LoadConfig();
+			config = Settings.Config.LoadConfig(ConfigPath);
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
 				sceneChanged = true;
 			};
 		}
 
-		private void DestroyAndNullGameplayLabels() {
-			if (TimeNameLabel != null) Destroy(TimeNameLabel);
-			if (SongTimeLabel != null) Destroy(SongTimeLabel);
-			if (SongLengthLabel != null) Destroy(SongLengthLabel);
-			if (SongTimePercentageLabel != null) Destroy(SongTimePercentageLabel);
-
-			if (CurrentStarProgressNameLabel != null) Destroy(CurrentStarProgressNameLabel);
-			if (CurrentStarProgressScoreLabel != null) Destroy(CurrentStarProgressScoreLabel);
-			if (CurrentStarProgressEndScoreLabel != null) Destroy(CurrentStarProgressEndScoreLabel);
-			if (CurrentStarProgressPercentageLabel != null) Destroy(CurrentStarProgressPercentageLabel);
-
-			if (SevenStarProgressNameLabel != null) Destroy(SevenStarProgressNameLabel);
-			if (SevenStarProgressScoreLabel != null) Destroy(SevenStarProgressScoreLabel);
-			if (SevenStarProgressEndScoreLabel != null) Destroy(SevenStarProgressEndScoreLabel);
-			if (SevenStarProgressPercentageLabel != null) Destroy(SevenStarProgressPercentageLabel);
-
-			if (NotesNameLabel != null) Destroy(NotesNameLabel);
-			if (NotesHitCounterLabel != null) Destroy(NotesHitCounterLabel);
-			if (NotesPassedCounterLabel != null) Destroy(NotesPassedCounterLabel);
-			if (TotalNotesCounterLabel != null) Destroy(TotalNotesCounterLabel);
-			if (SeenNotesHitPercentageLabel != null) Destroy(SeenNotesHitPercentageLabel);
-			if (NotesHitPercentageLabel != null) Destroy(NotesHitPercentageLabel);
-			if (NotesMissedCounterLabel != null) Destroy(NotesMissedCounterLabel);
-
-			if (StarPowerNameLabel != null) Destroy(StarPowerNameLabel);
-			if (StarPowersGottenCounterLabel != null) Destroy(StarPowersGottenCounterLabel);
-			if (TotalStarPowersCounterLabel != null) Destroy(TotalStarPowersCounterLabel);
-			if (StarPowerPercentageLabel != null) Destroy(StarPowerPercentageLabel);
-			if (CurrentStarPowerLabel != null) Destroy(CurrentStarPowerLabel);
-
-			if (ComboNameLabel != null) Destroy(ComboNameLabel);
-			if (CurrentComboCounterLabel != null) Destroy(CurrentComboCounterLabel);
-			if (HighestComboCounterLabel != null) Destroy(HighestComboCounterLabel);
-
-			TimeNameLabel = null;
-			SongTimeLabel = null;
-			SongLengthLabel = null;
-			SongTimePercentageLabel = null;
-
-			CurrentStarProgressNameLabel = null;
-			CurrentStarProgressScoreLabel = null;
-			CurrentStarProgressEndScoreLabel = null;
-			CurrentStarProgressPercentageLabel = null;
-
-			SevenStarProgressNameLabel = null;
-			SevenStarProgressScoreLabel = null;
-			SevenStarProgressEndScoreLabel = null;
-			SevenStarProgressPercentageLabel = null;
-
-			NotesNameLabel = null;
-			NotesHitCounterLabel = null;
-			NotesPassedCounterLabel = null;
-			TotalNotesCounterLabel = null;
-			SeenNotesHitPercentageLabel = null;
-			NotesHitPercentageLabel = null;
-			NotesMissedCounterLabel = null;
-
-			StarPowerNameLabel = null;
-			StarPowersGottenCounterLabel = null;
-			TotalStarPowersCounterLabel = null;
-			StarPowerPercentageLabel = null;
-			CurrentStarPowerLabel = null;
-
-			ComboNameLabel = null;
-			CurrentComboCounterLabel = null;
-			HighestComboCounterLabel = null;
-
+		private void DestroyLabels() {
+			foreach (var label in labels) {
+				Destroy(label.Item2);
+			}
+			labels.Clear();
 		}
 
-		private GameObject CreateGameplayLabel(Transform canvasTransform, string labelName, Font uiFont) {
-			var o = new GameObject(labelName, new Type[] {
-						typeof(Text)
-					});
+		private void CreateGameplayLabel(Transform canvasTransform, SongUILabel labelDetails, Font uiFont) {
+			var o = new GameObject($"Extra Song UI - {labelDetails.Name}");
+			var text = o.AddComponent<Text>();
 			o.layer = LayerMask.NameToLayer("UI");
 			o.transform.SetParent(canvasTransform);
 			o.transform.SetSiblingIndex(0);
 			o.transform.localEulerAngles = new Vector3();
 			o.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-			o.GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
-			o.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
-			o.GetComponent<Text>().font = uiFont;
-			return o;
+			text.horizontalOverflow = HorizontalWrapMode.Overflow;
+			text.verticalOverflow = VerticalWrapMode.Overflow;
+			text.font = uiFont;
+			labels.Add(new Tuple<SongUILabel, GameObject, Text>(labelDetails, o, text));
 		}
 
-		private void UpdateGameplayLabel(GameObject o, FormattableColorablePositionableLabel labelSettings, string content) {
+		private void UpdateGameplayLabel(SongUILabel labelSettings, GameObject textObject, Text textLabel) {
 			if (labelSettings.Visible && config.Enabled) {
-				o.transform.localPosition = new Vector3(labelSettings.X - Screen.width / 2, Screen.height / 2 - labelSettings.Y);
-				var text = o.GetComponent<Text>();
-				text.enabled = true;
-				text.fontSize = labelSettings.Size;
-				text.alignment = labelSettings.Alignment;
-				text.fontStyle = (labelSettings.Bold ? FontStyle.Bold : FontStyle.Normal) | (labelSettings.Italic ? FontStyle.Italic : FontStyle.Normal);
-				text.text = content;
-				text.color = labelSettings.Color.Color;
+				textObject.transform.localPosition = new Vector3(labelSettings.X - Screen.width / 2, Screen.height / 2 - labelSettings.Y);
+				textLabel.enabled = true;
+				textLabel.fontSize = labelSettings.Size;
+				textLabel.alignment = labelSettings.Alignment;
+				textLabel.fontStyle = (labelSettings.Bold ? FontStyle.Bold : FontStyle.Normal) | (labelSettings.Italic ? FontStyle.Italic : FontStyle.Normal);
+				textLabel.color = labelSettings.Color.Color;
+				textLabel.text = FormatSongLabel(labelSettings.Format);
 			} else {
-				o.GetComponent<Text>().enabled = false;
+				textLabel.enabled = false;
 			}
+		}
+
+		private string FormatSongLabel(string formatString) {
+			var matches = Regex.Matches(formatString, @"{.+?}");
+			for (int i = 0; i < matches.Count; ++i) {
+				var match = matches[i];
+				var matchTerm = match.Groups[0].Value.Substring(1, match.Groups[0].Value.Length - 2);
+				string[] splitTerm = matchTerm.Split(':');
+				string substitute = splitTerm[0].ToLower();
+				string format = splitTerm.Length > 1 ? matchTerm.Substring(substitute.Length + 1) : string.Empty;
+				string matchedString = $"{{{matchTerm}}}";
+				string substitutedString = $"{{{matchTerm}}}";
+				try {
+					substitutedString = formatActions[substitute](format);
+				} catch (FormatException) {
+					Logger.LogError($"Format string {format} is invalid for type {matchTerm}");
+				} catch (KeyNotFoundException) {
+					Logger.LogError($"Match term {matchTerm} does not have an associated format");
+				}
+				formatString = formatString.Replace(matchedString, substitutedString);
+			}
+			return formatString;
 		}
 
 		public void LateUpdate() {
@@ -235,71 +315,57 @@ namespace ExtraSongUI {
 			if (this.sceneChanged) {
 				this.sceneChanged = false;
 				if (sceneName == "Gameplay") {
-					// Song length
 					var gameManagerObject = GameObject.Find("Game Manager");
-					gameManager = new GameManagerWrapper(gameManagerObject.GetComponent<GameManager>());
+					gameManager = GameManagerWrapper.Wrap(gameManagerObject.GetComponent<GameManager>());
 					starProgress = gameManager.StarProgress;
 					basePlayers = gameManager.BasePlayers;
-					notes = basePlayers[0].Notes;
-					totalNoteCount = notes?.Count ?? 0;
-					totalStarPowers = notes?.Count(n => n.IsStarPowerEnd) ?? 0;
-					hitNotes = 0;
-					missedNotes = 0;
-					currentCombo = 0;
-					highestCombo = 0;
-					currentNoteIndex = 0;
+					songLength = TimeSpan.FromSeconds(gameManager.SongLength);
+					numPlayers = basePlayers.Count(bp => !bp.IsNull());
+					for (int i = bandIndex; i >= 0; --i) {
+						fcIndicator[i] = "FC";
+						if (i == bandIndex) {
+							totalNoteCount[i] = 0;
+							totalStarPowers[i] = 0;
+						} else {
+							var player = basePlayers[i];
+							if (!player.IsNull()) {
+								var notes = player.Notes;
+								totalNoteCount[bandIndex] += (totalNoteCount[i] = notes.Count);
+								totalStarPowers[bandIndex] += (totalStarPowers[i] = notes.Count(n => n.IsStarPowerEnd));
+							} else {
+								totalNoteCount[i] = 0;
+								hitNotesPercentage[i] = 100.0;
+								seenNotesPercentage[i] = 100.0;
+								totalStarPowers[i] = 0;
+							}
+						}
+						hitNotes[i] = 0;
+						missedNotes[i] = 0;
+						seenNotes[i] = 0;
+						hitNotesPercentage[i] = 0.00;
+						seenNotesPercentage[i] = 0.00;
+						fcIndicator[i] = string.Empty;
+						starPowersGotten[i] = 0;
+						starPowerPercentage[i] = 0.00;
+						currentStarPower[i] = 0.00;
+						currentCombo[i] = 0;
+						highestCombo[i] = 0;
+					}
 
-					DestroyAndNullGameplayLabels();
-					Transform canvasTransform = FadeBehaviourWrapper.instance.fadeGraphic.canvas.transform;
+					DestroyLabels();
+					Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
 
-					TimeNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Time Name Label", uiFont);
-					SongTimeLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Time Label", uiFont);
-					SongLengthLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Length Label", uiFont);
-					SongTimePercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Song Time Percentage Label", uiFont);
+					foreach (var label in config.Layout[numPlayers - 1]) {
+						CreateGameplayLabel(canvasTransform, label, uiFont);
+					}
 
-					CurrentStarProgressNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Star Progress Name Label", uiFont);
-					CurrentStarProgressScoreLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Star Progress Score Label", uiFont);
-					CurrentStarProgressEndScoreLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Star Progress End Score Label", uiFont);
-					CurrentStarProgressPercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Star Progress Percentage Label", uiFont);
-
-					SevenStarProgressNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Seven Star Progress Name Label", uiFont);
-					SevenStarProgressScoreLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Seven Star Progress Score Label", uiFont);
-					SevenStarProgressEndScoreLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Seven Star Progress End Score Label", uiFont);
-					SevenStarProgressPercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Seven Star Progress Percentage Label", uiFont);
-
-					NotesNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Notes Name Label", uiFont);
-					NotesHitCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Notes Hit Counter Label", uiFont);
-					NotesPassedCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Notes Passed Counter Label", uiFont);
-					TotalNotesCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Total Notes Counter Label", uiFont);
-					SeenNotesHitPercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Seen Notes Hit Percentage Label", uiFont);
-					NotesHitPercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Notes Hit Percentage Label", uiFont);
-					NotesMissedCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Notes Missed Counter Label", uiFont);
-
-					StarPowerNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Star Power Name Label", uiFont);
-					StarPowersGottenCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Star Powers Gotten Counter Label", uiFont);
-					TotalStarPowersCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Total Star Powers Counter Label", uiFont);
-					StarPowerPercentageLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Star Power Percentage Label", uiFont);
-					CurrentStarPowerLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Star Power Label", uiFont);
-
-					ComboNameLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Combo Name Label", uiFont);
-					CurrentComboCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Current Combo Counter Label", uiFont);
-					HighestComboCounterLabel = CreateGameplayLabel(canvasTransform, "Extra Song UI Highest Combo Counter Label", uiFont);
 				} else {
-					DestroyAndNullGameplayLabels();
+					DestroyLabels();
 				}
 			}
-			if (sceneName == "Main Menu" && !versionCheck.HasVersionBeenChecked) {
-				if (config.SilenceUpdates) {
-					versionCheck.HasVersionBeenChecked = true;
-				} else {
-					string detectedVersion = GlobalVariablesWrapper.instance.buildVersion;
-					versionCheck.CheckVersion(detectedVersion);
-				}
-			}
-			if (sceneName == "Gameplay" && !gameManager.IsNull() && gameManager.PracticeUI.practiceUI == null) {
+			if (sceneName == "Gameplay" && !gameManager.IsNull() && gameManager.PracticeUI.PracticeUI == null) {
 				// Song length
-				formattedSongTime = string.Format(config.SongTime.Format, DoubleToTimeString(gameManager.SongTime));
-				formattedSongLength = string.Format(config.SongLength.Format, DoubleToTimeString(gameManager.SongLength));
+				songTime = TimeSpan.FromSeconds(Math.Max(Math.Min(gameManager.SongTime, gameManager.SongLength), 0.0));
 				songTimePercentage = Math.Max(Math.Min(gameManager.SongTime * 100.0 / gameManager.SongLength, 100.0), 0.0);
 
 				// Star progress
@@ -311,59 +377,18 @@ namespace ExtraSongUI {
 				sevenStarScore = starProgress.StarScores[6];
 				sevenStarPercentage = Math.Min(currentScore * 100.0 / sevenStarScore, 100.0);
 
-				// Note count
-				while (currentNoteIndex < totalNoteCount && (notes[currentNoteIndex].WasHit || notes[currentNoteIndex].WasMissed)) {
-					if (notes[currentNoteIndex].WasHit) {
-						++hitNotes;
-					} else if (notes[currentNoteIndex].WasMissed) {
-						++missedNotes;
+				currentStarPower[bandIndex] = 0.0;
+				for (int i = 0; i < bandIndex; ++i) {
+					var player = basePlayers[i];
+					if (!player.IsNull()) {
+						currentStarPower[i] = player.SPBar.SomeFloat * 100.0;
+						currentStarPower[bandIndex] += currentStarPower[i];
 					}
-					++currentNoteIndex;
 				}
-				seenNotes = hitNotes + missedNotes;
-				hitNotesPercentage = totalNoteCount == 0 ? 100.0 : hitNotes * 100.0 / totalNoteCount;
-				seenNotesPercentage = seenNotes == 0 ? 100.0 : hitNotes * 100.0 / seenNotes;
-				fcIndicator = seenNotes == hitNotes ? (!gameManager.BasePlayers[0].FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes}";
 
-				starPowersGotten = basePlayers[0].StarPowersHit;
-				starPowerPercentage = totalStarPowers == 0 ? 100.0 : starPowersGotten * 100.0 / totalStarPowers;
-				currentStarPower = basePlayers[0].spBar.someFloat * 100.0;
-
-				currentCombo = basePlayers[0].Combo;
-				highestCombo = basePlayers[0].HighestCombo;
-
-				UpdateGameplayLabel(TimeNameLabel, config.TimeName, config.TimeName.Format);
-				UpdateGameplayLabel(SongTimeLabel, config.SongTime, formattedSongTime);
-				UpdateGameplayLabel(SongLengthLabel, config.SongLength, formattedSongLength);
-				UpdateGameplayLabel(SongTimePercentageLabel, config.SongTimePercentage, string.Format(config.SongTimePercentage.Format, songTimePercentage.ToString("0.00")));
-
-				UpdateGameplayLabel(CurrentStarProgressNameLabel, config.CurrentStarProgressName, string.Format(config.CurrentStarProgressName.Format, currentStarCount, Math.Min(7, currentStarCount + 1)));
-				UpdateGameplayLabel(CurrentStarProgressScoreLabel, config.CurrentStarProgressScore, string.Format(config.CurrentStarProgressScore.Format, currentScore - previousStarScore));
-				UpdateGameplayLabel(CurrentStarProgressEndScoreLabel, config.CurrentStarProgressEndScore, string.Format(config.CurrentStarProgressEndScore.Format, nextStarScore - previousStarScore));
-				UpdateGameplayLabel(CurrentStarProgressPercentageLabel, config.CurrentStarProgressPercentage, string.Format(config.CurrentStarProgressPercentage.Format, nextStarPercentage.ToString("0.00")));
-
-				UpdateGameplayLabel(SevenStarProgressNameLabel, config.SevenStarProgressName, string.Format(config.SevenStarProgressName.Format, 0, 7));
-				UpdateGameplayLabel(SevenStarProgressScoreLabel, config.SevenStarProgressScore, string.Format(config.SevenStarProgressScore.Format, currentScore));
-				UpdateGameplayLabel(SevenStarProgressEndScoreLabel, config.SevenStarProgressEndScore, string.Format(config.SevenStarProgressEndScore.Format, sevenStarScore));
-				UpdateGameplayLabel(SevenStarProgressPercentageLabel, config.SevenStarProgressPercentage, string.Format(config.SevenStarProgressPercentage.Format, sevenStarPercentage.ToString("0.00")));
-
-				UpdateGameplayLabel(NotesNameLabel, config.NotesName, config.NotesName.Format);
-				UpdateGameplayLabel(NotesHitCounterLabel, config.NotesHitCounter, string.Format(config.NotesHitCounter.Format, hitNotes));
-				UpdateGameplayLabel(NotesPassedCounterLabel, config.NotesPassedCounter, string.Format(config.NotesPassedCounter.Format, seenNotes));
-				UpdateGameplayLabel(TotalNotesCounterLabel, config.TotalNotesCounter, string.Format(config.TotalNotesCounter.Format, totalNoteCount));
-				UpdateGameplayLabel(SeenNotesHitPercentageLabel, config.SeenNotesHitPercentage, string.Format(config.SeenNotesHitPercentage.Format, seenNotesPercentage.ToString("0.00")));
-				UpdateGameplayLabel(NotesHitPercentageLabel, config.NotesHitPercentage, string.Format(config.NotesHitPercentage.Format, hitNotesPercentage.ToString("0.00")));
-				UpdateGameplayLabel(NotesMissedCounterLabel, config.NotesMissedCounter, string.Format(config.NotesMissedCounter.Format, fcIndicator));
-
-				UpdateGameplayLabel(StarPowerNameLabel, config.StarPowerName, config.StarPowerName.Format);
-				UpdateGameplayLabel(StarPowersGottenCounterLabel, config.StarPowersGottenCounter, string.Format(config.StarPowersGottenCounter.Format, starPowersGotten));
-				UpdateGameplayLabel(TotalStarPowersCounterLabel, config.TotalStarPowersCounter, string.Format(config.TotalStarPowersCounter.Format, totalStarPowers));
-				UpdateGameplayLabel(StarPowerPercentageLabel, config.StarPowerPercentage, string.Format(config.StarPowerPercentage.Format, starPowerPercentage.ToString("0.00")));
-				UpdateGameplayLabel(CurrentStarPowerLabel, config.CurrentStarPower, string.Format(config.CurrentStarPower.Format, currentStarPower.ToString("0.00")));
-
-				UpdateGameplayLabel(ComboNameLabel, config.ComboName, config.ComboName.Format);
-				UpdateGameplayLabel(CurrentComboCounterLabel, config.CurrentComboCounter, string.Format(config.CurrentComboCounter.Format, currentCombo));
-				UpdateGameplayLabel(HighestComboCounterLabel, config.HighestComboCounter, string.Format(config.HighestComboCounter.Format, highestCombo));
+				foreach (var label in labels) {
+					UpdateGameplayLabel(label.Item1, label.Item2, label.Item3);
+				}
 			}
 			if (uiFont is null && sceneName == "Main Menu") {
 				//TODO: Get the font directly from the bundle?
@@ -386,12 +411,9 @@ namespace ExtraSongUI {
 			}
 			if (config.ConfigWindowEnabled) {
 				config.DrawLabelWindows();
-				var outputRect = GUILayout.Window(187000001, new Rect(config.ConfigX, config.ConfigY, 320.0f, 807.0f), settingsOnWindow, new GUIContent("Extra Song UI Settings"), settingsWindowStyle);
+				var outputRect = GUILayout.Window(187000001, new Rect(config.ConfigX, config.ConfigY, 320.0f, 807.0f), OnWindow, new GUIContent("Extra Song UI Settings"), settingsWindowStyle);
 				config.ConfigX = outputRect.x;
 				config.ConfigY = outputRect.y;
-			}
-			if (versionCheck.IsShowingUpdateWindow) {
-				versionCheck.DrawUpdateWindow(settingsWindowStyle, settingsLabelStyle, settingsButtonStyle);
 			}
 			if (!config.SeenChangelog && config.TweakVersion != versionCheck.AssemblyVersion) {
 				changelogRect = GUILayout.Window(187000998, changelogRect, OnChangelogWindow, new GUIContent($"Extra Song UI Changelog"), settingsWindowStyle);
@@ -400,9 +422,68 @@ namespace ExtraSongUI {
 
 		#endregion
 
+		internal void HitNotePrefix(BasePlayerWrapper player, NoteWrapper note) {
+			int playerIndex = player.Player.PlayerIndex;
+			// The note flags are modified as the note is hit, so this must be detected as a prefix rather than postfix with the rest.
+			if (note.IsStarPowerEnd) {
+				++starPowersGotten[playerIndex];
+				++starPowersGotten[bandIndex];
+			}
+		}
+
+		internal void HitNotePostfix(BasePlayerWrapper player, NoteWrapper note) {
+			int playerIndex = player.Player.PlayerIndex;
+			++hitNotes[playerIndex];
+			++hitNotes[bandIndex];
+			++seenNotes[playerIndex];
+			++seenNotes[bandIndex];
+			++currentCombo[playerIndex];
+			highestCombo[playerIndex] = Math.Max(currentCombo[playerIndex], highestCombo[playerIndex]);
+			++currentCombo[bandIndex];
+			highestCombo[bandIndex] = Math.Max(currentCombo[bandIndex], highestCombo[bandIndex]);
+
+			UpdateNotePercentages(playerIndex);
+			UpdateNotePercentages(bandIndex);
+		}
+
+		internal void MissNote(BasePlayerWrapper player, NoteWrapper note) {
+			int playerIndex = player.Player.PlayerIndex;
+			++missedNotes[playerIndex];
+			++missedNotes[bandIndex];
+			++seenNotes[playerIndex];
+			++seenNotes[bandIndex];
+			//TODO: Handle star powers missed.
+			currentCombo[playerIndex] = 0;
+			currentCombo[bandIndex] = 0;
+			fcIndicator[playerIndex] = seenNotes[playerIndex] == hitNotes[playerIndex] ? (!player.FirstNoteMissed ? "FC" : "100%") : $"-{missedNotes[playerIndex]}";
+			fcIndicator[bandIndex] = seenNotes[bandIndex] == hitNotes[bandIndex] ? (!basePlayers.Any(b => b.FirstNoteMissed) ? "FC" : "100%") : $"-{missedNotes[bandIndex]}";
+
+			UpdateNotePercentages(playerIndex);
+			UpdateNotePercentages(bandIndex);
+		}
+
+		internal void OverStrum(BasePlayerWrapper player, bool strummed) {
+			int playerIndex = player.Player.PlayerIndex;
+			//TODO: Handle star powers missed.
+			currentCombo[playerIndex] = 0;
+			currentCombo[bandIndex] = 0;
+			if (seenNotes[playerIndex] == hitNotes[playerIndex]) {
+				fcIndicator[playerIndex] = "100%";
+			}
+			if (seenNotes[bandIndex] == hitNotes[bandIndex]) {
+				fcIndicator[bandIndex] = "100%";
+			}
+		}
+
+		internal void UpdateNotePercentages(int index) {
+			hitNotesPercentage[index] = totalNoteCount[index] == 0 ? 100.0 : hitNotes[index] * 100.0 / totalNoteCount[index];
+			seenNotesPercentage[index] = seenNotes[index] == 0 ? 100.0 : hitNotes[index] * 100.0 / seenNotes[index];
+			starPowerPercentage[index] = totalStarPowers[index] == 0 ? 100.0 : starPowersGotten[index] * 100.0 / totalStarPowers[index];
+		}
+
 		#region OnWindow Methods
 
-		private void OnWindowHead(int id) {
+		private void OnWindow(int id) {
 			var smallLabelStyle = new GUIStyle {
 				fontSize = 14,
 				alignment = TextAnchor.UpperLeft,
@@ -430,380 +511,137 @@ namespace ExtraSongUI {
 				HorizontalSlider = settingsHorizontalSliderStyle,
 				HorizontalSliderThumb = settingsHorizontalSliderThumbStyle
 			};
+			if (settingsCurrentlyEditing == null) {
+				settingsScrollPosition = GUILayout.BeginScrollView(settingsScrollPosition);
+				GUILayout.Label("Settings", largeLabelStyle);
 
-			GUILayout.Label("Settings", largeLabelStyle);
-			if (GUILayout.Button("Time", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowTime;
-			}
-			if (GUILayout.Button("Current Star", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowCurrentStar;
-			}
-			if (GUILayout.Button("Seven Star", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowSevenStar;
-			}
-			if (GUILayout.Button("Notes", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowNotes;
-			}
-			if (GUILayout.Button("Star Power", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowStarPower;
-			}
-			if (GUILayout.Button("Combo", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowCombo;
-			}
+				GUILayout.Space(25.0f);
+				GUILayout.Label("Enable/Disable Keybind", largeLabelStyle);
+				config.EnabledKeyBind.ConfigureGUI(styles);
 
-			GUILayout.Space(25.0f);
-			GUILayout.Label("Enable/Disable Keybind", largeLabelStyle);
-			config.EnabledKeyBind.ConfigureGUI(styles);
+				GUILayout.Space(25.0f);
+				GUILayout.Label("Configuration Keybind", largeLabelStyle);
+				config.ConfigKeyBind.ConfigureGUI(styles);
 
-			GUILayout.Space(25.0f);
-			GUILayout.Label("Configuration Keybind", largeLabelStyle);
-			config.ConfigKeyBind.ConfigureGUI(styles);
+				GUILayout.Space(25.0f);
+				GUILayout.Label("Debugging Tools", largeLabelStyle);
+				config.DraggableLabelsEnabled = GUILayout.Toggle(config.DraggableLabelsEnabled, "Draggable Labels", styles.Toggle);
+				GUILayout.Label("Allows you to drag each label with a window", new GUIStyle(styles.SmallLabel) {
+					fontStyle = FontStyle.Italic
+				});
+				GUILayout.Label("(this disables some options in this window)", new GUIStyle(styles.SmallLabel) {
+					fontStyle = FontStyle.Italic
+				});
 
-			GUILayout.Space(25.0f);
-			GUILayout.Label("Debugging Tools", largeLabelStyle);
-			config.DraggableLabelsEnabled = GUILayout.Toggle(config.DraggableLabelsEnabled, "Draggable Labels", styles.Toggle);
-			GUILayout.Label("Allows you to drag each label with a window", new GUIStyle(styles.SmallLabel) {
-				fontStyle = FontStyle.Italic
-			});
-			GUILayout.Label("(this disables some options in this window)", new GUIStyle(styles.SmallLabel) {
-				fontStyle = FontStyle.Italic
-			});
-			config.TimeName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.SongTime.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.SongLength.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.SongTimePercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.CurrentStarProgressName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.CurrentStarProgressScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.CurrentStarProgressEndScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.CurrentStarProgressPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.SevenStarProgressName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.SevenStarProgressScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.SevenStarProgressEndScore.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.SevenStarProgressPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.NotesName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.NotesHitCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.NotesPassedCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.TotalNotesCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.SeenNotesHitPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.NotesHitPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.NotesMissedCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.StarPowerName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.StarPowersGottenCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.TotalStarPowersCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.StarPowerPercentage.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.CurrentStarPower.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.ComboName.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.CurrentComboCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-			config.HighestComboCounter.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
-
-			GUILayout.Space(20.0f);
-			config.Enabled = !GUILayout.Toggle(!config.Enabled, "Hide all extra UI", settingsToggleStyle);
-			GUILayout.Space(20.0f);
-			if (GUILayout.Button("Save Config", settingsButtonStyle)) config.SaveConfig();
-			GUILayout.Space(50.0f);
-
-			GUILayout.Label($"Extra Song UI v{versionCheck.AssemblyVersion}");
-			GUILayout.Label("Tweak by Biendeo");
-			GUILayout.Label("Thankyou for using this!");
-			GUI.DragWindow();
-		}
-
-		private void OnWindowTime(int id) {
-			var largeLabelStyle = new GUIStyle {
-				fontSize = 20,
-				alignment = TextAnchor.UpperLeft,
-				fontStyle = FontStyle.Bold,
-				normal = new GUIStyleState {
-					textColor = Color.white,
+				foreach (var layout in config.Layout) {
+					foreach (var label in layout) {
+						label.DraggableWindowsEnabled = config.DraggableLabelsEnabled;
+					}
 				}
-			};
-			GUILayout.Label("Time", largeLabelStyle);
-			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.TimeName;
-				settingsCurrentlyEditingName = "Time Name Label";
-				settingsCurrentBack = OnWindowTime;
-			}
-			if (GUILayout.Button("Song Time", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.SongTime;
-				settingsCurrentlyEditingName = "Song Time";
-				settingsCurrentBack = OnWindowTime;
-			}
-			if (GUILayout.Button("Song Length", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.SongLength;
-				settingsCurrentlyEditingName = "Song Length";
-				settingsCurrentBack = OnWindowTime;
-			}
-			if (GUILayout.Button("Song Time Percentage", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.SongTimePercentage;
-				settingsCurrentlyEditingName = "Song Time Percentage";
-				settingsCurrentBack = OnWindowTime;
-			}
-			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowHead;
-			}
-			GUI.DragWindow();
-		}
 
-		private void OnWindowCurrentStar(int id) {
-			var largeLabelStyle = new GUIStyle {
-				fontSize = 20,
-				alignment = TextAnchor.UpperLeft,
-				fontStyle = FontStyle.Bold,
-				normal = new GUIStyleState {
-					textColor = Color.white,
-				}
-			};
-			GUILayout.Label("Current Star", largeLabelStyle);
-			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.CurrentStarProgressName;
-				settingsCurrentlyEditingName = "Current Star Name Label";
-				settingsCurrentBack = OnWindowCurrentStar;
-			}
-			if (GUILayout.Button("Current Score", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.CurrentStarProgressScore;
-				settingsCurrentlyEditingName = "Current Star Progress Score";
-				settingsCurrentBack = OnWindowCurrentStar;
-			}
-			if (GUILayout.Button("End Score", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.CurrentStarProgressEndScore;
-				settingsCurrentlyEditingName = "Current Star Progress End Score";
-				settingsCurrentBack = OnWindowCurrentStar;
-			}
-			if (GUILayout.Button("Percentage", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.CurrentStarProgressPercentage;
-				settingsCurrentlyEditingName = "Current Star Percentage";
-				settingsCurrentBack = OnWindowCurrentStar;
-			}
-			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowHead;
-			}
-			GUI.DragWindow();
-		}
+				GUILayout.Space(20.0f);
+				config.Enabled = !GUILayout.Toggle(!config.Enabled, "Hide all extra UI", settingsToggleStyle);
 
-		private void OnWindowSevenStar(int id) {
-			var largeLabelStyle = new GUIStyle {
-				fontSize = 20,
-				alignment = TextAnchor.UpperLeft,
-				fontStyle = FontStyle.Bold,
-				normal = new GUIStyleState {
-					textColor = Color.white,
+				GUILayout.Space(20.0f);
+				GUILayout.Label("Layout for the following players:");
+				GUILayout.BeginHorizontal();
+				for (int i = 0; i < bandIndex; ++i) {
+					if (GUILayout.Toggle(config.LayoutIndexSelected == i, $"{i + 1}", settingsToggleStyle)) {
+						config.LayoutIndexSelected = i;
+					}
 				}
-			};
-			GUILayout.Label("Seven Star", largeLabelStyle);
-			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.SevenStarProgressName;
-				settingsCurrentlyEditingName = "Seven Star Name Label";
-				settingsCurrentBack = OnWindowSevenStar;
-			}
-			if (GUILayout.Button("Current Score", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.SevenStarProgressScore;
-				settingsCurrentlyEditingName = "Seven Star Progress Score";
-				settingsCurrentBack = OnWindowSevenStar;
-			}
-			if (GUILayout.Button("End Score", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.SevenStarProgressEndScore;
-				settingsCurrentlyEditingName = "Seven Star Progress End Score";
-				settingsCurrentBack = OnWindowSevenStar;
-			}
-			if (GUILayout.Button("Percentage", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.SevenStarProgressPercentage;
-				settingsCurrentlyEditingName = "Seven Star Percentage";
-				settingsCurrentBack = OnWindowSevenStar;
-			}
-			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowHead;
-			}
-			GUI.DragWindow();
-		}
+				GUILayout.EndHorizontal();
+				config.Enabled = !GUILayout.Toggle(!config.Enabled, "Hide all extra UI", settingsToggleStyle);
 
-		private void OnWindowNotes(int id) {
-			var largeLabelStyle = new GUIStyle {
-				fontSize = 20,
-				alignment = TextAnchor.UpperLeft,
-				fontStyle = FontStyle.Bold,
-				normal = new GUIStyleState {
-					textColor = Color.white,
+				GUILayout.Space(20.0f);
+				for (int i = 0; i < config.Layout[config.LayoutIndexSelected].Count; ++i) {
+					GUILayout.Label($"#{i + 1}", styles.SmallLabel);
+					var layout = config.Layout[config.LayoutIndexSelected];
+					var label = layout[i];
+					if (GUILayout.Button($"Edit: {label.Name}", styles.Button)) {
+						settingsCurrentlyEditing = label;
+					}
+					GUILayout.BeginHorizontal();
+					if (i > 0 && GUILayout.Button("Shift up")) {
+						layout[i] = layout[i - 1];
+						layout[i - 1] = label;
+					}
+					if (i < layout.Count - 1 && GUILayout.Button("Shift down")) {
+						layout[i] = layout[i + 1];
+						layout[i + 1] = label;
+					}
+					GUILayout.EndHorizontal();
+					GUILayout.BeginHorizontal();
+					if (GUILayout.Button("Delete")) {
+						layout.RemoveAt(i);
+						var existingLabel = labels.FirstOrDefault(l => l.Item1 == label);
+						if (existingLabel != default) {
+							Destroy(existingLabel.Item2);
+							labels.Remove(existingLabel);
+						}
+					}
+					if (GUILayout.Button("Insert new")) {
+						layout.Insert(i + 1, new SongUILabel {
+							Name = "New Label",
+							Format = "EDIT ME",
+							X = Screen.width / 2,
+							Y = Screen.height / 2,
+							Size = 50,
+							Alignment = TextAnchor.MiddleCenter,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						});
+						if (SceneManager.GetActiveScene().name == "Gameplay") {
+							Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
+							CreateGameplayLabel(canvasTransform, layout[i + 1], uiFont);
+						}
+					}
+					GUILayout.EndHorizontal();
+					GUILayout.Space(15.0f);
 				}
-			};
-			GUILayout.Label("Notes", largeLabelStyle);
-			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.NotesName;
-				settingsCurrentlyEditingName = "Notes Name Label";
-				settingsCurrentBack = OnWindowNotes;
-			}
-			if (GUILayout.Button("Hit Counter", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.NotesHitCounter;
-				settingsCurrentlyEditingName = "Notes Hit Counter";
-				settingsCurrentBack = OnWindowNotes;
-			}
-			if (GUILayout.Button("Passed Counter", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.NotesPassedCounter;
-				settingsCurrentlyEditingName = "Notes Passed Counter";
-				settingsCurrentBack = OnWindowNotes;
-			}
-			if (GUILayout.Button("Total Counter", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.TotalNotesCounter;
-				settingsCurrentlyEditingName = "Total Notes Counter";
-				settingsCurrentBack = OnWindowNotes;
-			}
-			if (GUILayout.Button("Hit Percentage", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.SeenNotesHitPercentage;
-				settingsCurrentlyEditingName = "Seen Notes Hit Percentage";
-				settingsCurrentBack = OnWindowNotes;
-			}
-			if (GUILayout.Button("Total Percentage", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.NotesHitPercentage;
-				settingsCurrentlyEditingName = "Total Notes Hit Percentage";
-				settingsCurrentBack = OnWindowNotes;
-			}
-			if (GUILayout.Button("Missed Counter", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.NotesMissedCounter;
-				settingsCurrentlyEditingName = "Notes Missed Counter";
-				settingsCurrentBack = OnWindowNotes;
-			}
-			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowHead;
-			}
-			GUI.DragWindow();
-		}
+				if (config.Layout[config.LayoutIndexSelected].Count == 0) {
+					if (GUILayout.Button("Insert")) {
+						config.Layout[config.LayoutIndexSelected].Add(new SongUILabel {
+							Name = "New Label",
+							Format = "EDIT ME",
+							X = Screen.width / 2,
+							Y = Screen.height / 2,
+							Size = 50,
+							Alignment = TextAnchor.MiddleCenter,
+							Bold = true,
+							Italic = false,
+							Visible = true,
+							Color = new ColorARGB(Color.white)
+						});
+						if (SceneManager.GetActiveScene().name == "Gameplay") {
+							Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
+							CreateGameplayLabel(canvasTransform, config.Layout[config.LayoutIndexSelected][0], uiFont);
+						}
+					}
+				}
 
-		private void OnWindowStarPower(int id) {
-			var largeLabelStyle = new GUIStyle {
-				fontSize = 20,
-				alignment = TextAnchor.UpperLeft,
-				fontStyle = FontStyle.Bold,
-				normal = new GUIStyleState {
-					textColor = Color.white,
+				GUILayout.Space(20.0f);
+				if (GUILayout.Button("Reload Config", styles.Button)) {
+					DestroyLabels();
+					config.ReloadConfig(ConfigPath);
 				}
-			};
-			GUILayout.Label("Star Power", largeLabelStyle);
-			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.StarPowerName;
-				settingsCurrentlyEditingName = "Star Power Name Label";
-				settingsCurrentBack = OnWindowStarPower;
-			}
-			if (GUILayout.Button("Hit Counter", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.StarPowersGottenCounter;
-				settingsCurrentlyEditingName = "Star Powers Hit Counter";
-				settingsCurrentBack = OnWindowStarPower;
-			}
-			if (GUILayout.Button("Total Counter", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.TotalStarPowersCounter;
-				settingsCurrentlyEditingName = "Total Star Powers Counter";
-				settingsCurrentBack = OnWindowStarPower;
-			}
-			if (GUILayout.Button("Percentage", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.StarPowerPercentage;
-				settingsCurrentlyEditingName = "Star Powers Hit Percentage";
-				settingsCurrentBack = OnWindowStarPower;
-			}
-			if (GUILayout.Button("Current SP", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.CurrentStarPower;
-				settingsCurrentlyEditingName = "Current SP Percentage";
-				settingsCurrentBack = OnWindowStarPower;
-			}
-			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowHead;
-			}
-			GUI.DragWindow();
-		}
+				if (GUILayout.Button("Save Config", settingsButtonStyle)) {
+					config.SaveConfig(ConfigPath);
+				}
+				GUILayout.Space(50.0f);
 
-		private void OnWindowCombo(int id) {
-			var largeLabelStyle = new GUIStyle {
-				fontSize = 20,
-				alignment = TextAnchor.UpperLeft,
-				fontStyle = FontStyle.Bold,
-				normal = new GUIStyleState {
-					textColor = Color.white,
-				}
-			};
-			GUILayout.Label("Combo", largeLabelStyle);
-			if (GUILayout.Button("Name Label", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.ComboName;
-				settingsCurrentlyEditingName = "Combo Name Label";
-				settingsCurrentBack = OnWindowCombo;
-			}
-			if (GUILayout.Button("Current Combo Counter", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.CurrentComboCounter;
-				settingsCurrentlyEditingName = "Current Combo Counter";
-				settingsCurrentBack = OnWindowCombo;
-			}
-			if (GUILayout.Button("Highest Combo Counter", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowEdit;
-				settingsCurrentlyEditing = config.HighestComboCounter;
-				settingsCurrentlyEditingName = "Highest Combo Counter";
-				settingsCurrentBack = OnWindowCombo;
-			}
-			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back", settingsButtonStyle)) {
-				settingsOnWindow = OnWindowHead;
-			}
-			GUI.DragWindow();
-		}
+				GUILayout.Label($"Extra Song UI v{versionCheck.AssemblyVersion}");
+				GUILayout.Label("Tweak by Biendeo");
+				GUILayout.Label("Thankyou for using this!");
+				GUILayout.EndScrollView();
+			} else {
+				settingsCurrentlyEditing.ConfigureGUI(styles);
 
-		private void OnWindowEdit(int id) {
-			var smallLabelStyle = new GUIStyle {
-				fontSize = 14,
-				alignment = TextAnchor.UpperLeft,
-				normal = new GUIStyleState {
-					textColor = Color.white,
+				if (GUILayout.Button("Back", styles.Button)) {
+					settingsCurrentlyEditing = null;
 				}
-			};
-			var largeLabelStyle = new GUIStyle {
-				fontSize = 20,
-				alignment = TextAnchor.UpperLeft,
-				normal = new GUIStyleState {
-					textColor = Color.white,
-				}
-			};
-			GUILayout.Label(settingsCurrentlyEditingName, largeLabelStyle);
-			settingsCurrentlyEditing.ConfigureGUI(new GUIConfigurationStyles {
-				LargeLabel = largeLabelStyle,
-				SmallLabel = smallLabelStyle,
-				Window = settingsWindowStyle,
-				Toggle = settingsToggleStyle,
-				Button = settingsButtonStyle,
-				TextArea = settingsTextAreaStyle,
-				TextField = settingsTextFieldStyle,
-				Label = settingsLabelStyle,
-				Box = settingsBoxStyle,
-				HorizontalSlider = settingsHorizontalSliderStyle,
-				HorizontalSliderThumb = settingsHorizontalSliderThumbStyle
-			});
-			GUILayout.Space(50.0f);
-			if (GUILayout.Button("Back", settingsButtonStyle)) {
-				settingsOnWindow = settingsCurrentBack;
 			}
 			GUI.DragWindow();
 		}
@@ -836,38 +674,17 @@ namespace ExtraSongUI {
 			GUILayout.Space(15.0f);
 
 			GUILayout.Label("Changelog", largeLabelStyle);
-			GUILayout.Label("Performance improvements! Hopefully you enjoy the speed-ups.", smallLabelStyle);
+			GUILayout.Label("TODO", smallLabelStyle);
 			GUILayout.Label("Thanks E2 and MWisBest for the help.", smallLabelStyle);
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
 				config.TweakVersion = versionCheck.AssemblyVersion;
-				config.SaveConfig();
+				config.SaveConfig(ConfigPath);
 			}
 			GUI.DragWindow();
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Converts a time into a displayable string (m:ss.ms)
-		/// </summary>
-		/// <param name="t">The input time (as seconds)</param>
-		/// <returns></returns>
-		private static string DoubleToTimeString(double t) {
-			var sb = new StringBuilder();
-
-			if (t < 0.0) {
-				sb.Append("-");
-				t = Math.Abs(t);
-			}
-			sb.Append((int)(t / 60.0));
-			sb.Append(":");
-			sb.Append(((int)(t % 60.0)).ToString().PadLeft(2, '0'));
-			sb.Append(".");
-			sb.Append(((int)((t * 1000.0) % 1000.0)).ToString().PadLeft(3, '0'));
-
-			return sb.ToString();
-		}
 	}
 }
