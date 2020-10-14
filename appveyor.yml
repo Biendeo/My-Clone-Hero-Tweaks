@@ -7,6 +7,13 @@ cache:
   - BepInEx-Libraries
   - CH-Libraries
 
+branches:
+  only:
+    - master
+    - /v\d*\.\d*\.\d*/
+  except:
+    - /v\d*\.\d*\.\d*-pre/
+
 install:
   - echo Downloading Clone Hero
   - ps: |
@@ -47,7 +54,7 @@ before_package:
         @("AccuracyIndicator", "BiendeoCHLib", "ComboIndicator", "ExtraSongUI", "LegacyModLoader", "PerfectMode", "SplashTextEditor") | % {
             New-Item -Type Directory -Path ".\Artifacts\$_\BepInEx\plugins\$_"
             Copy-Item -Path ".\$_\bin\$env:CONFIGURATION\$_.dll" -Destination ".\Artifacts\$_\BepInEx\plugins\$_"
-            7z a .\Artifacts\$_.zip .\Artifacts\$_
+            7z a .\Artifacts\$_.zip .\Artifacts\$_\BepInEx
         }
 
 artifacts:
