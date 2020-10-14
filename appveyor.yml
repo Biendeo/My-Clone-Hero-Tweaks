@@ -10,7 +10,7 @@ cache:
 install:
   - echo Downloading Clone Hero
   - ps: |
-        if (-not Test-Path .\clonehero-win64) {
+        if (-not (Test-Path .\clonehero-win64)) {
             Start-FileDownload 'http://dl.clonehero.net/clonehero-v.23.2.2/clonehero-win64.7z'
             7z x clonehero-win64.7z
             New-Item -ItemType Directory -Path 'CH-Libraries'
@@ -18,7 +18,7 @@ install:
         }
   - echo Downloading BepInEx
   - ps: |
-        if (-not Test-Path .\BepInEx_x64_5.3.0.0) {
+        if (-not (Test-Path .\BepInEx_x64_5.3.0.0)) {
             Start-FileDownload 'https://github.com/BepInEx/BepInEx/releases/download/v5.3/BepInEx_x64_5.3.0.0.zip'
             7z x BepInEx_x64_5.3.0.0.zip
             New-Item -ItemType Directory -Path 'BepInEx-Libraries'
