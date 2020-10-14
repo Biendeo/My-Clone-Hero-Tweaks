@@ -18,8 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		versions.txt = versions.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncSongScan", "AsyncSongScan\AsyncSongScan.csproj", "{706A2C43-585E-4FE2-834F-AEAEA234735C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplashTextEditor", "SplashTextEditor\SplashTextEditor.csproj", "{BA46AC28-F9CA-48CC-8ABC-AEF87DD06F1D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiendeoCHLib", "BiendeoCHLib\BiendeoCHLib.csproj", "{9B89D9F0-9D7F-4AB0-863A-C9BDEEEC91BC}"
@@ -27,9 +25,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyModLoader", "LegacyModLoader\LegacyModLoader.csproj", "{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Common\Common.projitems*{706a2c43-585e-4fe2-834f-aeaea234735c}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -69,14 +64,6 @@ Global
 		{55140311-41D2-477C-9DD5-2CAB0C829EF7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55140311-41D2-477C-9DD5-2CAB0C829EF7}.Release|x64.ActiveCfg = Release|Any CPU
 		{55140311-41D2-477C-9DD5-2CAB0C829EF7}.Release|x64.Build.0 = Release|Any CPU
-		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Debug|x64.Build.0 = Debug|Any CPU
-		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Release|x64.ActiveCfg = Release|Any CPU
-		{706A2C43-585E-4FE2-834F-AEAEA234735C}.Release|x64.Build.0 = Release|Any CPU
 		{BA46AC28-F9CA-48CC-8ABC-AEF87DD06F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BA46AC28-F9CA-48CC-8ABC-AEF87DD06F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA46AC28-F9CA-48CC-8ABC-AEF87DD06F1D}.Debug|x64.ActiveCfg = Debug|Any CPU
