@@ -10,9 +10,7 @@ cache:
 branches:
   only:
     - master
-    - /v\d*\.\d*\.\d*/
-  except:
-    - /v\d*\.\d*\.\d*-pre/
+    - /^v\d*\.\d*\.\d*$/
 
 install:
   - echo Downloading Clone Hero
