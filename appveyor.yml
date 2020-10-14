@@ -74,6 +74,7 @@ deploy:
       secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
     artifact: AccuracyIndicator,BiendeoCHLib,ComboIndicator,ExtraSongUI,LegacyModLoader,PerfectMode,SplashTextEditor
     prerelease: true
+    skip_tags: true
     on:
       branch: master
 
