@@ -3,9 +3,9 @@ version: 1.5.0.{build}
 image: Visual Studio 2019
 clone_depth: 1
 
-#cache:
-  #- BepInEx-Libraries
-  #- CH-Libraries
+cache:
+  - BepInEx-Libraries
+  - CH-Libraries
 
 install:
   - echo Downloading Clone Hero
@@ -22,7 +22,7 @@ install:
             Start-FileDownload 'https://github.com/BepInEx/BepInEx/releases/download/v5.3/BepInEx_x64_5.3.0.0.zip'
             7z x BepInEx_x64_5.3.0.0.zip
             New-Item -ItemType Directory -Path 'BepInEx-Libraries'
-            Copy-Item -Path '.\BepInEx_x64_5.3.0.0\BepInEx\core\*' -Destination 'BepInEx-Libraries' -Recurse
+            Copy-Item -Path '.\BepInEx\core\*' -Destination 'BepInEx-Libraries' -Recurse
         }
 
 assembly_info:
