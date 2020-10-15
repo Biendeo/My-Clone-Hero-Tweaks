@@ -36,15 +36,15 @@ for:
 -
   branches:
     only:
-      - master
-  skip_tags: true
-  configuration: Debug
--
-  branches:
-    only:
       - /^v\d*\.\d*\.\d*$/
   skip_non_tags: true
   configuration: Release
+-
+  branches:
+    only:
+      - master
+  skip_tags: true
+  configuration: Debug
 
 
 before_package:
