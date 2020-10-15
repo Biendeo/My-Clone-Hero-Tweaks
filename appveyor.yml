@@ -37,14 +37,14 @@ for:
   branches:
     only:
       - master
-  skip_non_tags: true
-  configuration: Release
+  skip_tags: true
+  configuration: Debug
 -
   branches:
     only:
       - master
-  skip_tags: true
-  configuration: Debug
+  skip_non_tags: true
+  configuration: Release
 
 
 before_package:
