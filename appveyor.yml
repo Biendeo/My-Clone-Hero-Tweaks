@@ -7,9 +7,6 @@ cache:
   - BepInEx-Libraries
   - CH-Libraries
 
-only_commits:
-  author: Biendeo
-
 install:
   - echo Downloading Clone Hero
   - ps: |
@@ -35,19 +32,9 @@ assembly_info:
   assembly_file_version: "{version}"
 
 platform: Any CPU
-for:
--
-  branches:
-    only:
-      - master
-  skip_tags: true
-  configuration: Debug
--
-  branches:
-    only:
-      - master
-  skip_non_tags: true
-  configuration: Release
+configuration:
+  - Debug
+  - Release
 
 
 before_package:
@@ -75,18 +62,6 @@ artifacts:
     name: SplashTextEditor
 
 deploy:
-  - provider: GitHub
-    release: v$(APPVEYOR_BUILD_VERSION)-pre
-    description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
-    auth_token:
-      secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
-    artifact: AccuracyIndicator,BiendeoCHLib,ComboIndicator,ExtraSongUI,LegacyModLoader,PerfectMode,SplashTextEditor
-    prerelease: true
-    skip_tags: true
-    on:
-      branch: master
-      APPVEYOR_REPO_TAG: false
-
   - provider: GitHub
     tag: $(APPVEYOR_REPO_TAG_NAME)
     release: $(APPVEYOR_REPO_TAG_NAME)
