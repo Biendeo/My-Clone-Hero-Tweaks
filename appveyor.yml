@@ -7,11 +7,12 @@ cache:
   - BepInEx-Libraries
   - CH-Libraries
 
-branches:
-  only:
-    - /v\d*\.\d*\.\d*/
-  except:
-    - /v\d*\.\d*\.\d*-pre/
+-
+  branches:
+    only:
+      - /v\d*\.\d*\.\d*/
+    skip_non_tags: true
+    configuration: Release
 
 install:
   - echo Downloading Clone Hero
@@ -38,18 +39,6 @@ assembly_info:
   assembly_file_version: "{version}"
 
 platform: Any CPU
-for:
-#-
-#  branches:
-#    only:
-#      - master
-#  configuration: Debug
--
-  branches:
-    only:
-      - /^v\d+\.\d+\.\d+$/
-  configuration: Release
-
 
 before_package:
   - ps: |
