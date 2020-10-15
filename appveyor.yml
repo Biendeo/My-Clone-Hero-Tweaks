@@ -8,7 +8,10 @@ cache:
   - CH-Libraries
 
 branches:
-  - /^v\d+\.\d+\.\d+$/
+  only:
+    - /v\d*\.\d*\.\d*/
+  except:
+    - /v\d*\.\d*\.\d*-pre/
 
 install:
   - echo Downloading Clone Hero
