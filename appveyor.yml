@@ -7,6 +7,9 @@ cache:
   - BepInEx-Libraries
   - CH-Libraries
 
+branches:
+  - /^v\d+\.\d+\.\d+$/
+
 install:
   - echo Downloading Clone Hero
   - ps: |
