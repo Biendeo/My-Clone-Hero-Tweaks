@@ -7,12 +7,8 @@ cache:
   - BepInEx-Libraries
   - CH-Libraries
 
--
-  branches:
-    only:
-      - /v\d*\.\d*\.\d*/
-    skip_non_tags: true
-    configuration: Release
+only_commits:
+  author: Biendeo
 
 install:
   - echo Downloading Clone Hero
@@ -39,6 +35,20 @@ assembly_info:
   assembly_file_version: "{version}"
 
 platform: Any CPU
+for:
+-
+  branches:
+    only:
+      - master
+  skip_tags: true
+  configuration: Debug
+-
+  branches:
+    only:
+      - master
+  skip_non_tags: true
+  configuration: Release
+
 
 before_package:
   - ps: |
