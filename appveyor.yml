@@ -7,11 +7,6 @@ cache:
   - BepInEx-Libraries
   - CH-Libraries
 
-branches:
-  only:
-    - master
-    - /^v\d+\.\d+\.\d+$/
-
 install:
   - echo Downloading Clone Hero
   - ps: |
@@ -37,21 +32,26 @@ assembly_info:
   assembly_file_version: "{version}"
 
 platform: Any CPU
-configuration: 
-  - Debug
-  - Release
+for:
+#-
+#  branches:
+#    only:
+#      - master
+#  configuration: Debug
+-
+  branches:
+    only:
+      - /^v\d+\.\d+\.\d+$/
+  configuration: Release
 
 
 before_package:
   - ps: |
         @("AccuracyIndicator", "BiendeoCHLib", "ComboIndicator", "ExtraSongUI", "LegacyModLoader", "PerfectMode", "SplashTextEditor") | % {
             New-Item -Type Directory -Path ".\Artifacts\$_\BepInEx\plugins\$_"
-            New-Item -Type Directory -Path ".\Artifacts\Debug\BepInEx\plugins\$_"
-            Copy-Item -Path ".\$_\bin\Release\$_.dll" -Destination ".\Artifacts\$_\BepInEx\plugins\$_"
-            Copy-Item -Path ".\$_\bin\Debug\$_.dll" -Destination ".\Artifacts\Debug\BepInEx\plugins\$_"
+            Copy-Item -Path ".\$_\bin\$env:CONFIGURATION\$_.dll" -Destination ".\Artifacts\$_\BepInEx\plugins\$_"
             7z a .\Artifacts\$_.zip .\Artifacts\$_\BepInEx
         }
-        7z a .\Artifacts\Debug.zip .\Artifacts\Debug\BepInEx
 
 artifacts:
   - path: Artifacts\AccuracyIndicator.zip
@@ -60,8 +60,6 @@ artifacts:
     name: BiendeoCHLib
   - path: Artifacts\ComboIndicator.zip
     name: ComboIndicator
-  - path: Artifacts\Debug.zip
-    name: Debug
   - path: Artifacts\ExtraSongUI.zip
     name: ExtraSongUI
   - path: Artifacts\LegacyModLoader.zip
@@ -77,7 +75,7 @@ deploy:
     description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
     auth_token:
       secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
-    artifact: AccuracyIndicator,BiendeoCHLib,ComboIndicator,Debug,ExtraSongUI,LegacyModLoader,PerfectMode,SplashTextEditor
+    artifact: AccuracyIndicator,BiendeoCHLib,ComboIndicator,ExtraSongUI,LegacyModLoader,PerfectMode,SplashTextEditor
     prerelease: true
     skip_tags: true
     on:
