@@ -37,7 +37,9 @@ assembly_info:
   assembly_file_version: "{version}"
 
 platform: Any CPU
-configuration: Debug;Release
+configuration: 
+  - Debug
+  - Release
 
 
 before_package:
