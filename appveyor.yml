@@ -38,8 +38,11 @@ assembly_info:
   assembly_file_version: "{version}"
 
 platform: Any CPU
+configuration:
+  - Debug
+  - Release
 
-before_package:
+after_build:
   - ps: |
         @("AccuracyIndicator", "BiendeoCHLib", "ComboIndicator", "ExtraSongUI", "LegacyModLoader", "PerfectMode", "SplashTextEditor") | % {
             New-Item -Type Directory -Path ".\Artifacts\$env:CONFIGURATION\$_\BepInEx\plugins\$_"
