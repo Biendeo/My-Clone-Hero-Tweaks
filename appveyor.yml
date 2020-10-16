@@ -3,6 +3,12 @@ version: 1.5.0.{build}
 image: Visual Studio 2019
 clone_depth: 1
 
+only:
+  branches:
+    - master
+
+skip_tags: true
+
 cache:
   - BepInEx-Libraries
   - CH-Libraries
@@ -32,44 +38,54 @@ assembly_info:
   assembly_file_version: "{version}"
 
 platform: Any CPU
-configuration:
-  - Debug
-  - Release
-
 
 before_package:
   - ps: |
         @("AccuracyIndicator", "BiendeoCHLib", "ComboIndicator", "ExtraSongUI", "LegacyModLoader", "PerfectMode", "SplashTextEditor") | % {
-            New-Item -Type Directory -Path ".\Artifacts\$_\BepInEx\plugins\$_"
-            Copy-Item -Path ".\$_\bin\$env:CONFIGURATION\$_.dll" -Destination ".\Artifacts\$_\BepInEx\plugins\$_"
-            7z a .\Artifacts\$_.zip .\Artifacts\$_\BepInEx
+            New-Item -Type Directory -Path ".\Artifacts\$env:CONFIGURATION\$_\BepInEx\plugins\$_"
+            Copy-Item -Path ".\$_\bin\$env:CONFIGURATION\$_.dll" -Destination ".\Artifacts\$env:CONFIGURATION\$_\BepInEx\plugins\$_"
+            7z a .\Artifacts\$_$(if ($env:CONFIGURATION -eq "Release") { [string]::Empty } else { "-Debug" }).zip .\Artifacts\$env:CONFIGURATION\$_\BepInEx
         }
 
 artifacts:
   - path: Artifacts\AccuracyIndicator.zip
     name: AccuracyIndicator
+  - path: Artifacts\AccuracyIndicator-Debug.zip
+    name: AccuracyIndicator-Debug
   - path: Artifacts\BiendeoCHLib.zip
     name: BiendeoCHLib
+  - path: Artifacts\BiendeoCHLib-Debug.zip
+    name: BiendeoCHLib-Debug
   - path: Artifacts\ComboIndicator.zip
     name: ComboIndicator
+  - path: Artifacts\ComboIndicator-Debug.zip
+    name: ComboIndicator-Debug
   - path: Artifacts\ExtraSongUI.zip
     name: ExtraSongUI
+  - path: Artifacts\ExtraSongUI-Debug.zip
+    name: ExtraSongUI-Debug
   - path: Artifacts\LegacyModLoader.zip
     name: LegacyModLoader
+  - path: Artifacts\LegacyModLoader-Debug.zip
+    name: LegacyModLoader-Debug
   - path: Artifacts\PerfectMode.zip
     name: PerfectMode
+  - path: Artifacts\PerfectMode-Debug.zip
+    name: PerfectMode-Debug
   - path: Artifacts\SplashTextEditor.zip
     name: SplashTextEditor
+  - path: Artifacts\SplashTextEditor-Debug.zip
+    name: SplashTextEditor-Debug
 
 deploy:
   - provider: GitHub
-    tag: $(APPVEYOR_REPO_TAG_NAME)
-    release: $(APPVEYOR_REPO_TAG_NAME)
-    description: 'Placeholder description: maybe I should add install instructions here?'
+    release: v$(APPVEYOR_BUILD_VERSION)-pre
+    description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
     auth_token:
       secure: VZ3WQUK/e5R7Roa5Vl0SRnK1Z1lrkWv861LeOpomdmdhi1x8SQtqpc8Pa5gomgbc
-    artifact: AccuracyIndicator,BiendeoCHLib,ComboIndicator,ExtraSongUI,LegacyModLoader,PerfectMode,SplashTextEditor
-    prerelease: false
+    artifact: /.*/
+    prerelease: true
+    skip_tags: true
     on:
       branch: master
-      APPVEYOR_REPO_TAG: true
+      APPVEYOR_REPO_TAG: false
