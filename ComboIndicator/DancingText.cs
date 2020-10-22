@@ -1,4 +1,5 @@
-﻿using BiendeoCHLib.Wrappers;
+﻿using BiendeoCHLib.Settings;
+using BiendeoCHLib.Wrappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,11 @@ using UnityEngine.UI;
 
 namespace ComboIndicator {
 	public class DancingText : MonoBehaviour {
+		public bool IsTest;
 		public string Text;
 		public Font Font;
-		public bool RaisedForSolo;
 		internal GameManagerWrapper GameManager;
+		public ColorablePositionableLabel LabelSettings;
 		private Text text;
 
 		private float timeAlive;
@@ -69,17 +71,17 @@ namespace ComboIndicator {
 			text = gameObject.AddComponent<Text>();
 			text.text = Text;
 			text.font = Font;
-			text.fontStyle = FontStyle.Bold;
-			text.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-			text.fontSize = 100;
-			text.alignment = TextAnchor.MiddleCenter;
+			text.fontStyle = (LabelSettings.Bold ? FontStyle.Bold : FontStyle.Normal) | (LabelSettings.Italic ? FontStyle.Italic : FontStyle.Normal);
+			text.color = LabelSettings.Color.Color;
+			text.fontSize = LabelSettings.Size;
+			text.alignment = LabelSettings.Alignment;
 			text.horizontalOverflow = HorizontalWrapMode.Overflow;
 			text.verticalOverflow = VerticalWrapMode.Overflow;
 			timeAlive = 0.0f;
 		}
 
 		public void Update() {
-			if (!GameManager.IsPaused) {
+			if (IsTest || GameManager.IsNull() || !GameManager.IsPaused) {
 				timeAlive += Time.deltaTime;
 			}
 			if (timeAlive > timeToLive) {
@@ -98,10 +100,10 @@ namespace ComboIndicator {
 					float t = Mathf.SmoothStep(0.0f, 1.0f, (timeAlive - keyframes[foundIndex - 1, 0]) / (keyframes[foundIndex, 0] - keyframes[foundIndex - 1, 0]));
 					float oneMinusT = 1 - t;
 
-					transform.localPosition = new Vector3((keyframes[foundIndex - 1, 1] * oneMinusT + keyframes[foundIndex, 1] * t) * Screen.width, (keyframes[foundIndex - 1, 2] * oneMinusT + keyframes[foundIndex, 2] * t + (RaisedForSolo ? 0.1f : 0.0f)) * Screen.height);
+					transform.localPosition = new Vector3((keyframes[foundIndex - 1, 1] * oneMinusT + keyframes[foundIndex, 1] * t) * Screen.width + LabelSettings.X, (keyframes[foundIndex - 1, 2] * oneMinusT + keyframes[foundIndex, 2] * t) * Screen.height + LabelSettings.Y);
 					transform.localEulerAngles = new Vector3(0.0f, 0.0f, keyframes[foundIndex - 1, 3] * oneMinusT + keyframes[foundIndex, 3] * t);
 					transform.localScale = new Vector3((keyframes[foundIndex - 1, 4] * oneMinusT + keyframes[foundIndex, 4] * t) * Screen.width / 2560.0f, (keyframes[foundIndex - 1, 5] * oneMinusT + keyframes[foundIndex, 5] * t) * Screen.height / 1440.0f);
-					text.color = new Color(text.color.r, text.color.g, text.color.b, keyframes[foundIndex - 1, 6] * oneMinusT + keyframes[foundIndex, 6] * t);
+					text.color = new Color(LabelSettings.Color.Color.r, LabelSettings.Color.Color.g, LabelSettings.Color.Color.b, (keyframes[foundIndex - 1, 6] * oneMinusT + keyframes[foundIndex, 6] * t) * LabelSettings.Color.Color.a);
 				}
 			}
 		}
