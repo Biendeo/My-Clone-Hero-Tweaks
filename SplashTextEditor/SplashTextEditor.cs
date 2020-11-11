@@ -20,7 +20,7 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace SplashTextEditor {
-	[BepInPlugin("com.biendeo.splashtexteditor", "Splash Text Editor", "1.5.0.0")]
+	[BepInPlugin("com.biendeo.splashtexteditor", "Splash Text Editor", "1.5.0")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class SplashTextEditor : BaseUnityPlugin {
 		private bool sceneChanged;
@@ -44,7 +44,7 @@ namespace SplashTextEditor {
 		private GUIStyle settingsHorizontalSliderThumbStyle;
 		private Vector2 settingsScrollPosition;
 
-		private readonly VersionCheck versionCheck;
+		private VersionCheck versionCheck;
 		private Rect changelogRect;
 
 		private static readonly string[] aprilFoolsSplashMessages = new string[] {
@@ -54,8 +54,6 @@ namespace SplashTextEditor {
 		private static readonly string dragonforceSplashMessage = "NOT AS GOOD AS DOG ASMR";
 
 		public SplashTextEditor() {
-			versionCheck = gameObject.AddComponent<VersionCheck>();
-			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(500.0f, 500.0f, 100.0f, 100.0f);
 			randomGenerator = new System.Random();
 			splashTextComponent = null;
@@ -64,6 +62,11 @@ namespace SplashTextEditor {
 		}
 
 		#region Unity Methods
+
+		public void Awake() {
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
+		}
 
 		public void Start() {
 			config = Settings.Config.LoadConfig(ConfigPath);
@@ -262,6 +265,9 @@ namespace SplashTextEditor {
 			GUILayout.Label("Please refer to the README.md on the Github for more details or to submit bugs/new features.", smallLabelStyle);
 
 			GUILayout.Space(15.0f);
+
+			GUILayout.Label("Changelog", largeLabelStyle);
+			GUILayout.Label("BepInEx is used as the mod loading framework now. This should lead to more robust features for mod developers.", smallLabelStyle);
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;

@@ -40,7 +40,7 @@ namespace AccuracyIndicator {
 		}
 	}
 
-	[BepInPlugin("com.biendeo.accuracyindicator", "Accuracy Indicator", "1.5.0.0")]
+	[BepInPlugin("com.biendeo.accuracyindicator", "Accuracy Indicator", "1.5.0")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class AccuracyIndicator : BaseUnityPlugin {
 		public static AccuracyIndicator Instance { get; private set; }
@@ -48,8 +48,6 @@ namespace AccuracyIndicator {
 		private bool sceneChanged;
 
 		private GameManagerWrapper gameManager;
-
-		private Font uiFont;
 
 		private string ConfigPath => Path.Combine(Paths.ConfigPath, Info.Metadata.GUID + ".config.xml");
 		private Config config;
@@ -87,7 +85,7 @@ namespace AccuracyIndicator {
 		private GameObject accuracyMessageLabel;
 		private GameObject averageAccuracyLabel;
 
-		private readonly VersionCheck versionCheck;
+		private VersionCheck versionCheck;
 		private Rect changelogRect;
 
 		private Harmony Harmony;
@@ -98,8 +96,6 @@ namespace AccuracyIndicator {
 			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
 
 			lastSongTime = -5.0;
-			versionCheck = gameObject.AddComponent<VersionCheck>();
-			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
@@ -108,6 +104,11 @@ namespace AccuracyIndicator {
 		}
 
 		#region Unity Methods
+
+		public void Awake() {
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
+		}
 
 		public void Start() {
 			config = Settings.Config.LoadConfig(ConfigPath);
@@ -162,7 +163,7 @@ namespace AccuracyIndicator {
 					gameObjects[y].transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 					textComponents[y] = gameObjects[y].GetComponent<Text>();
 					textComponents[y].color = Color.white;
-					textComponents[y].font = uiFont;
+					textComponents[y].font = BiendeoCHLib.BiendeoCHLib.Instance.CloneHeroDefaultFont;
 					textComponents[y].fontSize = Screen.height * 30 / 1440;
 					textComponents[y].alignment = TextAnchor.MiddleRight;
 					textComponents[y].fontStyle = FontStyle.Bold;
@@ -338,7 +339,7 @@ namespace AccuracyIndicator {
 					accuracyIndicatorLabel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 					accuracyIndicatorLabel.GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
 					accuracyIndicatorLabel.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
-					accuracyIndicatorLabel.GetComponent<Text>().font = uiFont;
+					accuracyIndicatorLabel.GetComponent<Text>().font = BiendeoCHLib.BiendeoCHLib.Instance.CloneHeroDefaultFont;
 
 					accuracyMessageLabel = new GameObject($"Accuracy Message", new Type[] {
 						typeof(Text),
@@ -351,7 +352,7 @@ namespace AccuracyIndicator {
 					accuracyMessageLabel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 					accuracyMessageLabel.GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
 					accuracyMessageLabel.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
-					accuracyMessageLabel.GetComponent<Text>().font = uiFont;
+					accuracyMessageLabel.GetComponent<Text>().font = BiendeoCHLib.BiendeoCHLib.Instance.CloneHeroDefaultFont;
 
 					averageAccuracyLabel = new GameObject($"Average Accuracy", new Type[] {
 						typeof(Text),
@@ -364,7 +365,7 @@ namespace AccuracyIndicator {
 					averageAccuracyLabel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 					averageAccuracyLabel.GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
 					averageAccuracyLabel.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
-					averageAccuracyLabel.GetComponent<Text>().font = uiFont;
+					averageAccuracyLabel.GetComponent<Text>().font = BiendeoCHLib.BiendeoCHLib.Instance.CloneHeroDefaultFont;
 				} else {
 					DestroyAndNullGameplayLabels();
 				}
@@ -380,11 +381,6 @@ namespace AccuracyIndicator {
 				}
 				UpdateGreatestThresholds();
 				UpdateLabels();
-			} else if (sceneName == "Main Menu") {
-				if (uiFont is null) {
-					//TODO: Get the font directly from the bundle?
-					uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
-				}
 			}
 			config.HandleInput();
 			if (!gameManager.IsNull()) {
@@ -519,8 +515,8 @@ namespace AccuracyIndicator {
 			GUILayout.Space(15.0f);
 
 			GUILayout.Label("Changelog", largeLabelStyle);
-			GUILayout.Label("Performance improvements! Hopefully you enjoy the speed-ups.", smallLabelStyle);
-			GUILayout.Label("Thanks E2 and MWisBest for the help.", smallLabelStyle);
+			GUILayout.Label("BepInEx is used as the mod loading framework now. This should lead to more robust features for mod developers.", smallLabelStyle);
+			GUILayout.Label("Performance improvements (hopefully) by perform all the logic on note hits rather than polling every frame.", smallLabelStyle);
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;

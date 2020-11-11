@@ -28,7 +28,7 @@ namespace PerfectMode {
 		}
 	}
 
-	[BepInPlugin("com.biendeo.perfectmode", "Perfect Mode", "1.5.0.0")]
+	[BepInPlugin("com.biendeo.perfectmode", "Perfect Mode", "1.5.0")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class PerfectMode : BaseUnityPlugin {
 		public static PerfectMode Instance { get; private set; }
@@ -65,7 +65,7 @@ namespace PerfectMode {
 		private GameObject remainingNotesLeftLabel;
 		private GameObject restartIndicatorLabel;
 
-		private readonly VersionCheck versionCheck;
+		private VersionCheck versionCheck;
 		private Rect changelogRect;
 
 		private Harmony Harmony;
@@ -76,12 +76,15 @@ namespace PerfectMode {
 			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
 
 			settingsScrollPosition = new Vector2();
-			versionCheck = gameObject.AddComponent<VersionCheck>();
-			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 		}
 
 		#region Unity Methods
+
+		public void Awake() {
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
+		}
 
 		public void Start() {
 			config = Settings.Config.LoadConfig(ConfigPath);
@@ -329,8 +332,8 @@ namespace PerfectMode {
 			GUILayout.Space(15.0f);
 
 			GUILayout.Label("Changelog", largeLabelStyle);
-			GUILayout.Label("Performance improvements! Hopefully you enjoy the speed-ups.", smallLabelStyle);
-			GUILayout.Label("Thanks E2 and MWisBest for the help.", smallLabelStyle);
+			GUILayout.Label("BepInEx is used as the mod loading framework now. This should lead to more robust features for mod developers.", smallLabelStyle);
+			GUILayout.Label("Performance improvements (hopefully) by perform all the logic on note hits rather than polling every frame.", smallLabelStyle);
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;

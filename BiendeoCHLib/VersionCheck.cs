@@ -14,7 +14,7 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace BiendeoCHLib {
 	public class VersionCheck : MonoBehaviour {
-		private readonly int windowId;
+		private int windowId;
 		private string assemblyName;
 		public string AssemblyVersion;
 		private Rect updateWindowRect;
@@ -29,7 +29,6 @@ namespace BiendeoCHLib {
 		public bool IsShowingUpdateWindow;
 
 		public VersionCheck() {
-			windowId = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
 			updateWindowRect = new Rect(Screen.width / 2 - 150.0f, Screen.height / 2 - 100.0f, 300.0f, 200.0f);
 			HasVersionBeenChecked = false;
 			IsShowingUpdateWindow = false;
@@ -44,6 +43,10 @@ namespace BiendeoCHLib {
 			assemblyName = new FileInfo(assembly.Location).Name;
 
 			SilenceUpdates = config.Bind("VersionCheck", "SilenceUpdates", false, "Whether this mod prompts you for any available updates");
+		}
+
+		public void Awake() {
+			windowId = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
 		}
 
 		public void Start() {

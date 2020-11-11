@@ -19,6 +19,11 @@ Get that Guitar Hero 3 nostalgia by having an animated note streak indicator pop
 
 ## How to use
 ### Default usage
-Simply play the game as you usually would. When you hit 50, 100, 200, etc. notes, the indicator will show up for about three seconds. There's nothing more to this mod really at the moment.
+With the tweak loaded for the first time, you'll have a `com.biendeo.comboindicator.layout.xml` appear in your `BepInEx\config` folder. This file defines the layout used for all the elements in this tweak. If you begin playing any song, you should notice a "Hot Start" indicator if you hit the first 25 notes of the song without breaking a combo, a note streak indicator at 50, 100, 200, etc. notes, and a "Star Power Active" indicator when you can activate it.
 
-Currently the only way to disable the tweak is to rename or delete the tweak, I'll try and add more functionality soon! In the meantime, leave me some feedback on anything that could be improved on!
+### Configuring
+You can press `Ctrl + Shift + F8` to open the configuration menu at any time in Clone Hero. This lets you change several general settings of the program, such as where the indicator appears on screen, which events would trigger the indicator, and the keybind for opening this prompt.
+
+**The config is saved only when you press the `Save Config` button**, so if you decide to close your game before closing the window, your settings will not be saved. If you wish to reset the config, just simply delete `com.biendeo.comboindicator.config.xml` (or rename or changing anything such that the file doesn't exist with its original name), and run Clone Hero again. Several defaults of the tweak are based on your screen resolution at the time, so if elements are a bit oddly positioned, try resetting your config.
+
+Clicking `Test Indicator` will flash up a test messsage. This'll let you test how the indicator will look when it activates in-game.

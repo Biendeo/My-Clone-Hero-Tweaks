@@ -44,7 +44,6 @@ namespace LegacyModLoader {
 			enableUnloadFeature = Config.Bind("Features", "Enable Unload Feature", false);
 			showingLoaderMenu = false;
 			loaderMenuRect = new Rect(10.0f, 10.0f, 300.0f, 500.0f);
-			loaderMenuId = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
 			loaders = new List<LoaderInfo>();
 			LoadModInfo();
 			InitialiseMods();
@@ -113,6 +112,10 @@ namespace LegacyModLoader {
 		}
 
 		#region Unity Methods
+
+		public void Awake() {
+			loaderMenuId = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+		}
 
 		public void Start() {
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene destination) {

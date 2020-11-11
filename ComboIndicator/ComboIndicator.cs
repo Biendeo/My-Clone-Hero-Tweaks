@@ -53,7 +53,7 @@ namespace ComboIndicator {
 
 		private Vector2 settingsScrollPosition;
 
-		private readonly VersionCheck versionCheck;
+		private VersionCheck versionCheck;
 		private Rect changelogRect;
 
 		private Harmony Harmony;
@@ -63,8 +63,6 @@ namespace ComboIndicator {
 			Harmony = new Harmony("com.biendeo.comboindicator");
 			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
 
-			versionCheck = gameObject.AddComponent<VersionCheck>();
-			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 
 			starPowers = new float[4];
@@ -86,6 +84,11 @@ namespace ComboIndicator {
 		}
 
 		#region Unity Methods
+
+		public void Awake() {
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
+		}
 
 		public void Start() {
 			config = Settings.Config.LoadConfig(ConfigPath);
@@ -241,13 +244,16 @@ namespace ComboIndicator {
 			};
 			GUILayout.Label("Thankyou for downloading Combo Indicator!", largeLabelStyle);
 			GUILayout.Label("In gameplay, when you reach a note streak of 50, 100, 200, etc. you'll see the indicator show up above the highway.", smallLabelStyle);
+			GUILayout.Label("Press Ctrl + Shift + F8 to enable/disable the config window.", smallLabelStyle);
+			GUILayout.Label("The config window lets you change things such as the keys to enable/disable the mode, which indicators are active, and the layout of the indicator.", smallLabelStyle);
+			GUILayout.Label("Please make sure to press the \"Save Config\" button at the bottom of the config window so that your settings are saved for the next time you run Clone Hero.", smallLabelStyle);
 			GUILayout.Label("Please refer to the README.md on the Github for more details or to submit bugs/new features.", smallLabelStyle);
 
 			GUILayout.Space(15.0f);
 
 			GUILayout.Label("Changelog", largeLabelStyle);
-			GUILayout.Label("Performance improvements! Hopefully you enjoy the speed-ups.", smallLabelStyle);
-			GUILayout.Label("Thanks E2 and MWisBest for the help.", smallLabelStyle);
+			GUILayout.Label("BepInEx is used as the mod loading framework now. This should lead to more robust features for mod developers.", smallLabelStyle);
+			GUILayout.Label("Now supports \"Hot Start\" and \"Star Power Active\" indicators. You can now press Ctrl + Shift + F8 to change settings as well!", smallLabelStyle);
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;

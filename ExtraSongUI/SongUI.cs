@@ -60,7 +60,7 @@ namespace ExtraSongUI {
 		}
 	}
 
-	[BepInPlugin("com.biendeo.extrasongui", "Extra Song UI", "1.5.0.0")]
+	[BepInPlugin("com.biendeo.extrasongui", "Extra Song UI", "1.5.0")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class SongUI : BaseUnityPlugin {
 		public static SongUI Instance { get; private set; }
@@ -77,8 +77,6 @@ namespace ExtraSongUI {
 		private BasePlayerWrapper[] basePlayers;
 		private int[] totalNoteCount;
 		private int[] totalStarPowers;
-
-		private Font uiFont;
 
 		private string ConfigPath => Path.Combine(Paths.ConfigPath, Info.Metadata.GUID + ".layout.xml");
 		private Config config;
@@ -129,7 +127,7 @@ namespace ExtraSongUI {
 		private int[] currentCombo;
 		private int[] highestCombo;
 
-		private readonly VersionCheck versionCheck;
+		private VersionCheck versionCheck;
 		private Rect changelogRect;
 
 		private readonly Dictionary<string, Func<string, string>> formatActions;
@@ -140,9 +138,6 @@ namespace ExtraSongUI {
 			Instance = this;
 			Harmony = new Harmony("com.biendeo.extrasongui");
 			PatchBase.InitializePatches(Harmony, Assembly.GetExecutingAssembly(), Logger);
-
-			versionCheck = gameObject.AddComponent<VersionCheck>();
-			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
 			changelogRect = new Rect(400.0f, 400.0f, 100.0f, 100.0f);
 			labels = new List<Tuple<SongUILabel, GameObject, Text>>();
 
@@ -246,6 +241,11 @@ namespace ExtraSongUI {
 
 		#region Unity Methods
 
+		public void Awake() {
+			versionCheck = gameObject.AddComponent<VersionCheck>();
+			versionCheck.InitializeSettings(Assembly.GetExecutingAssembly(), Config);
+		}
+
 		public void Start() {
 			config = Settings.Config.LoadConfig(ConfigPath);
 			SceneManager.activeSceneChanged += delegate (Scene _, Scene __) {
@@ -260,7 +260,7 @@ namespace ExtraSongUI {
 			labels.Clear();
 		}
 
-		private void CreateGameplayLabel(Transform canvasTransform, SongUILabel labelDetails, Font uiFont) {
+		private void CreateGameplayLabel(Transform canvasTransform, SongUILabel labelDetails) {
 			var o = new GameObject($"Extra Song UI - {labelDetails.Name}");
 			var text = o.AddComponent<Text>();
 			o.layer = LayerMask.NameToLayer("UI");
@@ -270,7 +270,7 @@ namespace ExtraSongUI {
 			o.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 			text.horizontalOverflow = HorizontalWrapMode.Overflow;
 			text.verticalOverflow = VerticalWrapMode.Overflow;
-			text.font = uiFont;
+			text.font = BiendeoCHLib.BiendeoCHLib.Instance.CloneHeroDefaultFont;
 			labels.Add(new Tuple<SongUILabel, GameObject, Text>(labelDetails, o, text));
 		}
 
@@ -356,7 +356,7 @@ namespace ExtraSongUI {
 					Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
 
 					foreach (var label in config.Layout[numPlayers - 1]) {
-						CreateGameplayLabel(canvasTransform, label, uiFont);
+						CreateGameplayLabel(canvasTransform, label);
 					}
 
 				} else {
@@ -389,10 +389,6 @@ namespace ExtraSongUI {
 				foreach (var label in labels) {
 					UpdateGameplayLabel(label.Item1, label.Item2, label.Item3);
 				}
-			}
-			if (uiFont is null && sceneName == "Main Menu") {
-				//TODO: Get the font directly from the bundle?
-				uiFont = GameObject.Find("Profile Title").GetComponent<Text>().font;
 			}
 			config.HandleInput();
 		}
@@ -595,7 +591,7 @@ namespace ExtraSongUI {
 						});
 						if (SceneManager.GetActiveScene().name == "Gameplay") {
 							Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
-							CreateGameplayLabel(canvasTransform, layout[i + 1], uiFont);
+							CreateGameplayLabel(canvasTransform, layout[i + 1]);
 						}
 					}
 					GUILayout.EndHorizontal();
@@ -617,7 +613,7 @@ namespace ExtraSongUI {
 						});
 						if (SceneManager.GetActiveScene().name == "Gameplay") {
 							Transform canvasTransform = FadeBehaviourWrapper.Instance.FadeGraphic.canvas.transform;
-							CreateGameplayLabel(canvasTransform, config.Layout[config.LayoutIndexSelected][0], uiFont);
+							CreateGameplayLabel(canvasTransform, config.Layout[config.LayoutIndexSelected][0]);
 						}
 					}
 				}
@@ -674,8 +670,12 @@ namespace ExtraSongUI {
 			GUILayout.Space(15.0f);
 
 			GUILayout.Label("Changelog", largeLabelStyle);
-			GUILayout.Label("TODO", smallLabelStyle);
-			GUILayout.Label("Thanks E2 and MWisBest for the help.", smallLabelStyle);
+			GUILayout.Label("BepInEx is used as the mod loading framework now. This should lead to more robust features for mod developers.", smallLabelStyle);
+			GUILayout.Label("Massive reworking of the underlying config. Now, instead of a handful of pre-set labels, you can specify any number of labels with whatever you want!", smallLabelStyle);
+			GUILayout.Label("You can now edit each label's format, and substitute any exposed term into it (including your own numerical formatting).", smallLabelStyle);
+			GUILayout.Label("You can also specify a layout for various numbers of players, and access values of individual players.", smallLabelStyle);
+			GUILayout.Label("Please refer to the readme on GitHub for a list of all the available subtitute terms.", smallLabelStyle);
+			GUILayout.Label("Old configs are unfortunately very incompatible, but considering most people didn't change too much from the default, you're most likely not going to notice.", smallLabelStyle);
 
 			if (GUILayout.Button("Close this window", settingsButtonStyle)) {
 				config.SeenChangelog = true;
