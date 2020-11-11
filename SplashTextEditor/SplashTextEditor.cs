@@ -20,7 +20,7 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace SplashTextEditor {
-	[BepInPlugin("com.biendeo.splashtexteditor", "Splash Text Editor", "1.5.0")]
+	[BepInPlugin("com.biendeo.splashtexteditor", "Splash Text Editor", "1.5.1")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class SplashTextEditor : BaseUnityPlugin {
 		private bool sceneChanged;

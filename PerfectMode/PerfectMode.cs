@@ -28,7 +28,7 @@ namespace PerfectMode {
 		}
 	}
 
-	[BepInPlugin("com.biendeo.perfectmode", "Perfect Mode", "1.5.0")]
+	[BepInPlugin("com.biendeo.perfectmode", "Perfect Mode", "1.5.1")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class PerfectMode : BaseUnityPlugin {
 		public static PerfectMode Instance { get; private set; }

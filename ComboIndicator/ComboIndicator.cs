@@ -20,7 +20,7 @@ using UnityEngine.UI;
 using static UnityEngine.GUI;
 
 namespace ComboIndicator {
-	[BepInPlugin("com.biendeo.comboindicator", "Combo Indicator", "1.5.0")]
+	[BepInPlugin("com.biendeo.comboindicator", "Combo Indicator", "1.5.1")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class ComboIndicator : BaseUnityPlugin {
 		public static ComboIndicator Instance { get; private set; } 

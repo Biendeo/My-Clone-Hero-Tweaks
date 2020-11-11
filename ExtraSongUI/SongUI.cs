@@ -60,7 +60,7 @@ namespace ExtraSongUI {
 		}
 	}
 
-	[BepInPlugin("com.biendeo.extrasongui", "Extra Song UI", "1.5.0")]
+	[BepInPlugin("com.biendeo.extrasongui", "Extra Song UI", "1.5.1")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class SongUI : BaseUnityPlugin {
 		public static SongUI Instance { get; private set; }
@@ -322,7 +322,6 @@ namespace ExtraSongUI {
 					songLength = TimeSpan.FromSeconds(gameManager.SongLength);
 					numPlayers = basePlayers.Count(bp => !bp.IsNull());
 					for (int i = bandIndex; i >= 0; --i) {
-						fcIndicator[i] = "FC";
 						if (i == bandIndex) {
 							totalNoteCount[i] = 0;
 							totalStarPowers[i] = 0;
@@ -344,7 +343,7 @@ namespace ExtraSongUI {
 						seenNotes[i] = 0;
 						hitNotesPercentage[i] = 0.00;
 						seenNotesPercentage[i] = 0.00;
-						fcIndicator[i] = string.Empty;
+						fcIndicator[i] = "FC";
 						starPowersGotten[i] = 0;
 						starPowerPercentage[i] = 0.00;
 						currentStarPower[i] = 0.00;

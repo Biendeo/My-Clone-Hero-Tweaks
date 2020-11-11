@@ -13,7 +13,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace LegacyModLoader {
-	[BepInPlugin("com.biendeo.legacymodloader", "Legacy Mod Loader", "1.5.0.0")]
+	[BepInPlugin("com.biendeo.legacymodloader", "Legacy Mod Loader", "1.5.1")]
 	public class LegacyModLoader : BaseUnityPlugin {
 		public static LegacyModLoader Instance { get; private set; }
 
