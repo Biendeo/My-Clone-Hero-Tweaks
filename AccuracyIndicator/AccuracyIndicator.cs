@@ -431,6 +431,7 @@ namespace AccuracyIndicator {
 			} else {
 				hitAccuracy = (hitAccuracy * hitNotes + lastNoteHitDifference) / (hitNotes + 1);
 			}
+			++hitNotes;
 		}
 
 		internal void MissNote(NoteWrapper note) {
