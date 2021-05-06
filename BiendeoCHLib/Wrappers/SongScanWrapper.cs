@@ -168,10 +168,6 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperMethod("OnApplicationQuit")]
 		private static readonly FastInvokeHandler onApplicationQuitMethod;
 
-		public void AbortScan() => abortScanMethod(SongScan);
-		[WrapperMethod("\u0312\u0318\u0311\u0316\u0316\u0313\u0314\u030E\u031B\u0310\u0317")]
-		private static readonly FastInvokeHandler abortScanMethod;
-
 		public void InitializeScanSettings() => initializeScanSettingsMethod(SongScan);
 		[WrapperMethod("\u0319\u0317\u0316\u0314\u030F\u0319\u0318\u0319\u0311\u0310\u0314")]
 		private static readonly FastInvokeHandler initializeScanSettingsMethod;

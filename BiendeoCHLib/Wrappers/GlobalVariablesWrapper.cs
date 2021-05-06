@@ -73,12 +73,13 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u031B\u0310\u0313\u0315\u0313\u0318\u0313\u0318\u0319\u030D\u0313")]
 		private static readonly AccessTools.FieldRef<GlobalVariables, List<string>> uniqueSongPathsField;
 
-		public string CustomSongExport {
-			get => customSongExportField(GlobalVariables);
-			set => customSongExportField(GlobalVariables) = value;
-		}
-		[WrapperField("\u031C\u0317\u030F\u030E\u030D\u030F\u031C\u0318\u031C\u0318\u0315")]
-		private static readonly AccessTools.FieldRef<GlobalVariables, string> customSongExportField;
+		//! This is the same as SettingsPath!
+		//public string CustomSongExport {
+		//	get => customSongExportField(GlobalVariables);
+		//	set => customSongExportField(GlobalVariables) = value;
+		//}
+		//[WrapperField("\u031C\u0317\u030F\u030E\u030D\u030F\u031C\u0318\u031C\u0318\u0315")]
+		//private static readonly AccessTools.FieldRef<GlobalVariables, string> customSongExportField;
 
 		public string BuildVersion {
 			get => buildVersionField(GlobalVariables);

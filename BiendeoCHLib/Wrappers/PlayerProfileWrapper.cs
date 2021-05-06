@@ -31,6 +31,7 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u031A\u0311\u0312\u030D\u0315\u0310\u0311\u0316\u030D\u0311\u0312")]
 		private static readonly AccessTools.FieldRef<object, string> playerNameField;
 
+		//? Different enum, there's more fields there
 		public ControllerType Instrument {
 			get => (ControllerType)instrumentField(PlayerProfile);
 			set => instrumentField(PlayerProfile) = value;

@@ -55,9 +55,10 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperProperty("\u0314\u0316\u030F\u0319\u0315\u031B\u0318\u0318\u031B\u0315\u031B")]
 		private static readonly PropertyInfo unknownInt1Property;
 
-		public StarPowerWrapper[] StarPower => ((object[])starPowerProperty.GetValue(MoonChart)).Select(o => StarPowerWrapper.Wrap(o)).ToArray();
-		[WrapperProperty("\u0314\u0312\u0318\u031C\u031A\u0313\u0314\u0317\u030E\u0315\u031C")]
-		private static readonly PropertyInfo starPowerProperty;
+		//? This is not StarPower!
+		//public StarPowerWrapper[] StarPower => ((object[])starPowerProperty.GetValue(MoonChart)).Select(o => StarPowerWrapper.Wrap(o)).ToArray();
+		//[WrapperProperty("\u0314\u0312\u0318\u031C\u031A\u0313\u0314\u0317\u030E\u0315\u031C")]
+		//private static readonly PropertyInfo starPowerProperty;
 
 		#endregion
 	}

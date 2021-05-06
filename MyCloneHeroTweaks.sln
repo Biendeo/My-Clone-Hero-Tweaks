@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiendeoCHLib", "BiendeoCHLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyModLoader", "LegacyModLoader\LegacyModLoader.csproj", "{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GigChallenges", "GigChallenges\GigChallenges.csproj", "{6B3DA986-F066-4CF2-A1AA-90D2CFF14725}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,14 @@ Global
 		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Release|x64.ActiveCfg = Release|Any CPU
 		{77E79F76-E7BC-4ED8-9165-63DF611BC5BB}.Release|x64.Build.0 = Release|Any CPU
+		{6B3DA986-F066-4CF2-A1AA-90D2CFF14725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B3DA986-F066-4CF2-A1AA-90D2CFF14725}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B3DA986-F066-4CF2-A1AA-90D2CFF14725}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6B3DA986-F066-4CF2-A1AA-90D2CFF14725}.Debug|x64.Build.0 = Debug|Any CPU
+		{6B3DA986-F066-4CF2-A1AA-90D2CFF14725}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B3DA986-F066-4CF2-A1AA-90D2CFF14725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B3DA986-F066-4CF2-A1AA-90D2CFF14725}.Release|x64.ActiveCfg = Release|Any CPU
+		{6B3DA986-F066-4CF2-A1AA-90D2CFF14725}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
