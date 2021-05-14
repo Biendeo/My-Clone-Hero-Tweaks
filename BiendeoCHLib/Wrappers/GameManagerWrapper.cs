@@ -1,5 +1,6 @@
 ﻿using BiendeoCHLib.Wrappers.Attributes;
 using HarmonyLib;
+using Rewired;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -120,6 +121,10 @@ namespace BiendeoCHLib.Wrappers {
 		}
 		[WrapperMethod("\u0318\u030D\u031A\u031C\u031B\u0310\u031A\u030F\u030D\u0314\u031B")]
 		private static readonly FastInvokeHandler getNotesFromChartMethod;
+
+		public void OnControllerDisconnected(ControllerStatusChangedEventArgs args) => onControllerDisconnectedMethod(GameManager, args);
+		[WrapperMethod("\u0310\u030F\u0315\u030F\u0311\u0314\u0311\u0314\u0315\u0318\u0316")]
+		private static readonly FastInvokeHandler onControllerDisconnectedMethod;
 
 		#endregion
 	}

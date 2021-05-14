@@ -40,6 +40,10 @@
     <Reference Include="BepInEx">
       <HintPath>..\BepInEx-Libraries\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="Rewired_Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\Thomas\AppData\Local\DiscordGames\Fret Smasher - 611382152130723878\content\FretSmasher_Data\Managed\Rewired_Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -91,6 +95,7 @@
     <Compile Include="Wrappers\BaseGuitarPlayerWrapper.cs" />
     <Compile Include="Wrappers\BarrelRollWrapper.cs" />
     <Compile Include="Wrappers\Difficulty.cs" />
+    <Compile Include="Wrappers\Enums.cs" />
     <Compile Include="Wrappers\SpNeckRendererWrapper.cs" />
     <Compile Include="Wrappers\CameraShakeWrapper.cs" />
     <Compile Include="Wrappers\CountdownWrapper.cs" />

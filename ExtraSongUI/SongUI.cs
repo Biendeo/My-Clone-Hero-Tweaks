@@ -380,7 +380,7 @@ namespace ExtraSongUI {
 				for (int i = 0; i < bandIndex; ++i) {
 					var player = basePlayers[i];
 					if (!player.IsNull()) {
-						currentStarPower[i] = player.SPBar.SomeFloat * 100.0;
+						currentStarPower[i] = player.SPBar.LastFillAmount * 100.0;
 						currentStarPower[bandIndex] += currentStarPower[i];
 					}
 				}

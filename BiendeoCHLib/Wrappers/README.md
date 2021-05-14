@@ -77,6 +77,7 @@ private static readonly FastInvokeHandler scanSongsInternalMethod;
 ```
 
 ### Enumerations
+- If an enum exists outside a class, it should be recreated in Enums.cs.
 - If any enums are defined in this class, a region called `Enumerations` must be declared.
 - Inside this region, all enums inside this class must be declared, with the same matching names (as PascalCase) and values as the original enum.
 - Redefining enums is purely just so usable names can be used. If it's too much work, I guess these can be ignored and just the underlying enum type can be used.
