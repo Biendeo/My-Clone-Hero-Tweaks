@@ -162,10 +162,10 @@ namespace BiendeoCHLib.Wrappers {
 
 		public CacheState State {
 			get => (CacheState)stateField(Cache);
-			set => stateField(Cache) = value;
+			set => stateField(Cache) = (int)value;
 		}
 		[WrapperField("\u0314\u0314\u0313\u0311\u0311\u0314\u0318\u0314\u0311\u031C\u0312")]
-		private static readonly AccessTools.FieldRef<object, object> stateField;
+		private static readonly AccessTools.FieldRef<object, int> stateField;
 
 		public string BadSongsPath {
 			get => badSongsPathField(Cache);

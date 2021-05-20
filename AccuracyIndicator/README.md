@@ -7,7 +7,7 @@ By pressing `Ctrl + Shift + F7`, you can bring up a window that allows you to cu
 
 ## How to install
 - You will need Clone Hero **v0.23.2.2**. You can use any version from the website (i.e. Win64, Win32, Mac, or Linux), but your mileage with the launcher version may vary.
-- Install [BepInEx v5.3](https://github.com/BepInEx/BepInEx/releases/tag/v5.3) into your Clone Hero directory.
+- Install [BepInEx v5.4.11](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.11) into your Clone Hero directory.
   - Download the appropriate version and extract **all** of its files into your Clone Hero directory.
   - Please verify that BepInEx has initialised by running the game after extracting, and then checking that there are five folders and a `LogOutput.log` file inside the `BepInEx` folder. One of those folders will be named `plugins`, and you'll need that to run the mods.
 - Go to the [Releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and download the latest version of Accuracy Indicator you want for your version of Clone Hero.

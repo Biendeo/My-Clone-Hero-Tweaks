@@ -104,6 +104,13 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u0316\u031C\u0312\u0312\u031C\u0315\u0314\u0310\u031A\u0314\u0317")]
 		private static readonly AccessTools.FieldRef<GameManager, BasePlayer> unknownBasePlayerField;
 
+		public bool ErrorWhileLoading {
+			get => errorWhileLoadingField(GameManager);
+			set => errorWhileLoadingField(GameManager) = value;
+		}
+		[WrapperField("\u0311\u0312\u0310\u031C\u0311\u031A\u031B\u030D\u0313\u030F\u030D")]
+		private static readonly AccessTools.FieldRef<GameManager, bool> errorWhileLoadingField;
+
 		#endregion
 
 		#region Methods
@@ -125,6 +132,10 @@ namespace BiendeoCHLib.Wrappers {
 		public void OnControllerDisconnected(ControllerStatusChangedEventArgs args) => onControllerDisconnectedMethod(GameManager, args);
 		[WrapperMethod("\u0310\u030F\u0315\u030F\u0311\u0314\u0311\u0314\u0315\u0318\u0316")]
 		private static readonly FastInvokeHandler onControllerDisconnectedMethod;
+
+		public void LoadSong() => loadSongMethod(GameManager);
+		[WrapperMethod("\u0316\u0319\u0312\u031B\u0316\u0316\u031A\u0316\u030D\u0318\u0318")]
+		private static readonly FastInvokeHandler loadSongMethod;
 
 		#endregion
 	}

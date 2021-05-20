@@ -90,17 +90,17 @@ namespace BiendeoCHLib.Wrappers {
 
 		public MoonNoteWrapper.NoteType NoteType {
 			get => (MoonNoteWrapper.NoteType)noteTypeField(Note);
-			set => noteTypeField(Note) = value;
+			set => noteTypeField(Note) = (int)value;
 		}
 		[WrapperField("\u030F\u031A\u031B\u031B\u031A\u031A\u031C\u0310\u0315\u030E\u0319")]
-		private static readonly AccessTools.FieldRef<object, object> noteTypeField;
+		private static readonly AccessTools.FieldRef<object, int> noteTypeField;
 
 		public NoteFlags Flags {
 			get => (NoteFlags)flagsField(Note);
-			set => flagsField(Note) = value;
+			set => flagsField(Note) = (byte)value;
 		}
 		[WrapperField("\u030E\u031B\u0316\u0314\u031C\u0311\u031C\u030D\u0312\u0317\u0316")]
-		private static readonly AccessTools.FieldRef<object, object> flagsField;
+		private static readonly AccessTools.FieldRef<object, byte> flagsField;
 
 		public uint TickPosition {
 			get => tickPositionField(Note);

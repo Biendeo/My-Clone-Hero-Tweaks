@@ -46,6 +46,9 @@ private static readonly ConstructorInfo defaultConstructor;
 - Inside this region, all fields of the class must be exposed as public properties with getters and setters if non-constant.
 - The type of the field properties must match the original type. If the type uses an obfuscated typename, the wrapper type must be used (with appropriate work in the wrapper property to wrap the returned value in the getter and pass in the wrapped value in the setter). If it is a collection of obfuscated objects, again, additional work must be done to ensure that a collection of wrappers is returned and passed in. If it is another class with a generic of an obfuscated type, panic because I haven't thought that far in advance.
 - The name of the field **must** be PascalCase naming, and the underlying FieldInfo must be camelCase with `Field` at the end of its name.
+- For the underlying `FieldRef` objects, two generic parameters must be used: `T` and `F` respectively.
+  - The `T` parameter must be either the wrapped type is unobfuscated, or `object` if the wrapped type is obfuscated.
+  - The `F` parameter must match the field type as closely as possible. If any obfuscated types would appear in this type definition, then they should be replaced with `object`. Obfuscated enumerations however should be their underlying data type (e.g. `int`), but a cast should be used to turn a wrapper enumeration into that underlying value when setting the property. Field types with no obfuscation involved should match this value exactly.
 ```cs
 public int Int1 {
 	get => int1Field(Cache);
