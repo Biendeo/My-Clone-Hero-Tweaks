@@ -88,6 +88,48 @@ namespace BiendeoCHLib.Wrappers {
 		[WrapperField("\u030E\u030E\u0313\u030D\u0319\u031A\u030E\u0319\u0314\u0318\u031C")]
 		private static readonly AccessTools.FieldRef<GlobalVariables, string> buildVersionField;
 
+		public bool Failed {
+			get => failedField(GlobalVariables);
+			set => failedField(GlobalVariables) = value;
+		}
+		[WrapperField("\u030E\u0317\u031B\u030E\u0314\u030F\u0313\u030F\u030F\u0315\u0311")]
+		private static readonly AccessTools.FieldRef<GlobalVariables, bool> failedField;
+
+		public bool WasInQuickplay {
+			get => wasInQuickplayField(GlobalVariables);
+			set => wasInQuickplayField(GlobalVariables) = value;
+		}
+		[WrapperField("\u0312\u0313\u030F\u0310\u030D\u0310\u0310\u0316\u0314\u0310\u031C")]
+		private static readonly AccessTools.FieldRef<GlobalVariables, bool> wasInQuickplayField;
+
+		public bool IsInPracticeMode {
+			get => isInPracticeModeField(GlobalVariables);
+			set => isInPracticeModeField(GlobalVariables) = value;
+		}
+		[WrapperField("\u0318\u030E\u0310\u0315\u0313\u0318\u031C\u0318\u030E\u0313\u031A")]
+		private static readonly AccessTools.FieldRef<GlobalVariables, bool> isInPracticeModeField;
+
+		public bool IsPlayingSetlist {
+			get => isPlayingSetlistField(GlobalVariables);
+			set => isPlayingSetlistField(GlobalVariables) = value;
+		}
+		[WrapperField("\u031C\u0311\u0317\u031A\u0316\u0313\u0317\u0311\u031C\u0315\u0319")]
+		private static readonly AccessTools.FieldRef<GlobalVariables, bool> isPlayingSetlistField;
+
+		public bool IsReturningToSongSelect {
+			get => isReturningToSongSelectField(GlobalVariables);
+			set => isReturningToSongSelectField(GlobalVariables) = value;
+		}
+		[WrapperField("\u0317\u0319\u030D\u0317\u0314\u0314\u0312\u0311\u0310\u0318\u031C")]
+		private static readonly AccessTools.FieldRef<GlobalVariables, bool> isReturningToSongSelectField;
+
+		public bool ReturnToMainMenuError {
+			get => returnToMainMenuErrorField(GlobalVariables);
+			set => returnToMainMenuErrorField(GlobalVariables) = value;
+		}
+		[WrapperField("\u031C\u0318\u030F\u030F\u0317\u0311\u0310\u0317\u030E\u031A\u0311")]
+		private static readonly AccessTools.FieldRef<GlobalVariables, bool> returnToMainMenuErrorField;
+
 		public string[] Languages {
 			get => languagesField(GlobalVariables);
 			set => languagesField(GlobalVariables) = value;
@@ -490,13 +532,6 @@ namespace BiendeoCHLib.Wrappers {
 		}
 		[WrapperField("\u031B\u0315\u031B\u0319\u030D\u0313\u0319\u0317\u031A\u0318\u0312")]
 		private static readonly AccessTools.FieldRef<GlobalVariables, object[]> volumeStemsField;
-
-		public bool IsInPracticeMode {
-			get => isInPracticeModeField(GlobalVariables);
-			set => isInPracticeModeField(GlobalVariables) = value;
-		}
-		[WrapperField("\u0318\u030E\u0310\u0315\u0313\u0318\u031C\u0318\u030E\u0313\u031A")]
-		private static readonly AccessTools.FieldRef<GlobalVariables, bool> isInPracticeModeField;
 
 		public string CachePath {
 			get => cachePathField(GlobalVariables);

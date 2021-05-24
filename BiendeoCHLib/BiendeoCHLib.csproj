@@ -37,6 +37,10 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\CH-Libraries\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\CH-Libraries\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\BepInEx-Libraries\BepInEx.dll</HintPath>
     </Reference>
@@ -94,7 +98,7 @@
     <Compile Include="Wrappers\Attributes\WrapperProperty.cs" />
     <Compile Include="Wrappers\BaseGuitarPlayerWrapper.cs" />
     <Compile Include="Wrappers\BarrelRollWrapper.cs" />
-    <Compile Include="Wrappers\Difficulty.cs" />
+    <Compile Include="Wrappers\ConfirmationMenuWrapper.cs" />
     <Compile Include="Wrappers\Enums.cs" />
     <Compile Include="Wrappers\SpNeckRendererWrapper.cs" />
     <Compile Include="Wrappers\CameraShakeWrapper.cs" />

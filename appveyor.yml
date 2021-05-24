@@ -10,7 +10,7 @@ branches:
 skip_tags: true
 
 cache:
-  #- BepInEx-Libraries
+  - BepInEx-Libraries
   - CH-Libraries
 
 install:

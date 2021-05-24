@@ -456,4 +456,14 @@
   <MethodDef original="System.Void HealthContainer::̛̛̙̗̒̎̔̔̍̓̐(System.Single)" mapped="SetState_DUPLICATE_19" />
   <MethodDef original="System.Void SPBar::̗̒̍̒̑̒̏̚̚̕̕(System.Single,System.Boolean)" mapped="SetFill" />
   <MethodDef original="System.Void GameManager::̘̖̐̏̏̑̔̑̔̕̕(Rewired.ControllerStatusChangedEventArgs)" mapped="OnControllerDisconnected" />
+  <MethodDef original="System.Void GameManager::̛̖̙̖̖̖̘̘̒̍̚()" mapped="LoadSong" />
+  <FieldDef original="System.Boolean GameManager::̛̜̑̒̐̑̍̓̏̍̚" mapped="ErrorWhileLoading" />
+  <MethodDef original="System.Boolean SongEntry::̛̙̗̖̙̖̘̒̏̔̔()" mapped="ReadMetadataForSong" />
+  <MethodDef original="̛̛̗̖̙̖̐̓̒̓̐ SongEntry::̖̘̗̐̔̒̑̐̑̚̕(System.Boolean)" mapped="GetSongObject" />
+  <FieldDef original="System.Boolean GlobalVariables::̛̗̎̎̔̏̓̏̏̑̕" mapped="Failed" />
+  <FieldDef original="System.Boolean GlobalVariables::̖̜̒̓̏̐̍̐̐̔̐" mapped="WasInQuickplay" />
+  <FieldDef original="System.Boolean GlobalVariables::̜̗̖̗̜̙̑̓̑̚̕" mapped="IsPlayingSetlist" />
+  <FieldDef original="System.Boolean GlobalVariables::̗̙̗̘̜̍̔̔̒̑̐" mapped="IsReturningToSongSelect" />
+  <FieldDef original="System.Boolean GlobalVariables::̜̘̗̗̏̏̑̐̎̑̚" mapped="ReturnToMainMenuError" />
+  <MethodDef original="System.Void ConfirmationMenu::̛̙̙̜̗̐̏̓̓̑̕(System.String,System.String,System.String,ConfirmationMenu/̛̛̙̙̗̗̗̑̏̚̕,ConfirmationMenu/̛̛̙̙̗̗̗̑̏̚̕,System.String)" mapped="Enable" />
 </SourceMap>
