@@ -51,7 +51,32 @@ namespace GigChallenges {
 		}
 
 		public void SetState(IChallenge challenge) {
-			
+			var functionsToBar = new (Func<float> Func, SpriteRenderer LowerBar)[] {
+				(() => challenge.PercentageToBronze, lowerBar)
+			};
+			foreach (var f in functionsToBar) {
+				float fillAmount = f.Func();
+				if (fillAmount <= 0.0f) {
+					f.LowerBar.size = Vector2.zero;
+					GigChallenges.InstanceLogger.LogDebug($"0.75 - 1 ({f.LowerBar.size})");
+				} else if (fillAmount >= 0.75f) {
+					float num = (fillAmount - 0.75f) * 4.0f;
+					f.LowerBar.size = new Vector2(0.04f, 0.196f);
+					GigChallenges.InstanceLogger.LogDebug($"0.75 - 1 ({f.LowerBar.size})");
+				} else if (fillAmount >= 0.5f) {
+					float num = (fillAmount - 0.5f) * 4.0f;
+					f.LowerBar.size = new Vector2(0.04f, 0.196f);
+					GigChallenges.InstanceLogger.LogDebug($"0.5 - 0.75 ({f.LowerBar.size})");
+				} else if (fillAmount >= 0.25f) {
+					float num = (fillAmount - 0.25f) * 4.0f;
+					f.LowerBar.size = new Vector2(0.04f, 0.091f * num + 0.105f);
+					GigChallenges.InstanceLogger.LogDebug($"0.25 - 0.5 ({f.LowerBar.size})");
+				} else {
+					float num = fillAmount * 4.0f;
+					f.LowerBar.size = new Vector2(0.04f, 0.07f * num + 0.035f);
+					GigChallenges.InstanceLogger.LogDebug($"0 - 0.25 ({f.LowerBar.size})");
+				}
+			}
 		}
 
 		public static ChallengeBar InstantiatePrefab(Transform parent) {

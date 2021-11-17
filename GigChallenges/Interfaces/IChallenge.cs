@@ -43,10 +43,22 @@ namespace GigChallenges.Interfaces {
 		float PercentageToSilver { get; }
 
 		/// <summary>
+		/// The percentage from the bronze target to the silver target [0, 1].
+		/// </summary>
+		/// <returns></returns>
+		float PercentageFromBronzeToSilver { get; }
+
+		/// <summary>
 		/// The percentage from zero to the gold target [0, 1].
 		/// </summary>
 		/// <returns></returns>
 		float PercentageToGold { get; }
+
+		/// <summary>
+		/// The percentage from the silver target to the gold target [0, 1].
+		/// </summary>
+		/// <returns></returns>
+		float PercentageFromSilverToGold { get; }
 
 		/// <summary>
 		/// The percentage from zero to the bronze target where gold is 1 [0, 1].

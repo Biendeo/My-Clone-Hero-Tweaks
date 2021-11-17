@@ -33,6 +33,10 @@ namespace GigChallenges.Challenges {
 
 		public float PercentageToGold => Mathf.Clamp(score * 1.0f / goldScore, 0.0f, 1.0f);
 
+		public float PercentageFromBronzeToSilver => Mathf.Clamp((score - bronzeScore) * 1.0f / (silverScore - bronzeScore), 0.0f, 1.0f);
+
+		public float PercentageFromSilverToGold => Mathf.Clamp((score - silverScore) * 1.0f / (goldScore - silverScore), 0.0f, 1.0f);
+
 		public float PercentageOfGoldIsBronze => bronzeScore * 1.0f / goldScore;
 
 		public float PercentageOfGoldIsSilver => silverScore * 1.0f / goldScore;

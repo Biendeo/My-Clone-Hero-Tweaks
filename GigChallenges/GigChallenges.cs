@@ -53,6 +53,7 @@ namespace GigChallenges {
 
 		private IChallenge activeChallenge;
 
+		private bool isBot;
 		private HealthContainerWrapper healthContainer;
 		private SPBarWrapper spBar;
 		private ChallengeBar challengeBar;
@@ -81,30 +82,32 @@ namespace GigChallenges {
 				sceneChanged = false;
 				if (isGameplay) {
 					var gameManager = GameManagerWrapper.Wrap(GameObject.Find("Game Manager").GetComponent<GameManager>());
-					var challengeFactory = new ChallengeFactory();
-					activeChallenge = challengeFactory.CreateChallenge(gameManager);
-					Logger.LogDebug(activeChallenge.ChallengeGoal);
-					healthContainer = gameManager.BasePlayers[0].HealthContainer;
-					healthContainer.CastToMonoBehaviour().gameObject.SetActive(true);
-					Logger.LogDebug("Updated!");
+					if (!(isBot = gameManager.BasePlayers[0].Player.PlayerProfile.Bot.GetBoolValue)) {
+						var challengeFactory = new ChallengeFactory();
+						activeChallenge = challengeFactory.CreateChallenge(gameManager);
+						Logger.LogDebug(activeChallenge.ChallengeGoal);
+						healthContainer = gameManager.BasePlayers[0].HealthContainer;
+						healthContainer.CastToMonoBehaviour().gameObject.SetActive(true);
+						Logger.LogDebug("Updated!");
 
-					var clonedSPBar = Instantiate(GameObject.Find("SPBar"));
-					clonedSPBar.transform.localPosition = new Vector3(0.016f, 0.0f, 5.0f);
-					clonedSPBar.transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-					clonedSPBar.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
-					Destroy(clonedSPBar.transform.GetChild(4).gameObject);
-					clonedSPBar.transform.GetChild(6).GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.6f);
-					clonedSPBar.transform.GetChild(7).GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.6f);
-					spBar = SPBarWrapper.Wrap(clonedSPBar.GetComponent<SPBar>());
-					challengeBar = ChallengeBar.InstantiatePrefab(GameObject.Find("SPBar").transform.parent);
-					
+						var clonedSPBar = Instantiate(GameObject.Find("SPBar"));
+						clonedSPBar.transform.localPosition = new Vector3(0.016f, 0.0f, 5.0f);
+						clonedSPBar.transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+						clonedSPBar.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+						Destroy(clonedSPBar.transform.GetChild(4).gameObject);
+						clonedSPBar.transform.GetChild(6).GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.6f);
+						clonedSPBar.transform.GetChild(7).GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.6f);
+						spBar = SPBarWrapper.Wrap(clonedSPBar.GetComponent<SPBar>());
+						challengeBar = ChallengeBar.InstantiatePrefab(GameObject.Find("SPBar").transform.parent);
+					}
 				} else {
 					activeChallenge = null;
 				}
 			}
-			if (isGameplay && hasSetupChallenge) {
+			if (isGameplay && hasSetupChallenge && !isBot) {
 				activeChallenge.Update();
 				//Logger.LogDebug($"Just before I run SetState, I have value {Mathf.Clamp(activeChallenge.PercentageToGold, 0.00001f, 1.0f)}, last {healthContainer.LastHealth}, RYT {healthContainer.RedYellowThreshold}, YGT {healthContainer.YellowGreenThreshold}");
+				challengeBar.SetState(activeChallenge);
 				healthContainer.SetState(activeChallenge.PercentageToGold);
 				spBar.SetFill(activeChallenge.PercentageToBronze, false);
 			}
