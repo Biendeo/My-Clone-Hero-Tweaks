@@ -342,3 +342,7 @@ healthchecksdb
 # User Libraries
 BepInEx-Libraries/
 CH-Libraries/
+CH-Launcher-Libraries/
+
+# User data
+MissingMethodCounts.json
