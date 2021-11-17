@@ -147,6 +147,7 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Enumerations
 
+		[WrapperEnum("PLACEHOLDER")]
 		public enum ControllerType : byte {
 			Guitar,
 			GHLGuitar,

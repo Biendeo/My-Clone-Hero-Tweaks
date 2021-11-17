@@ -113,7 +113,7 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Enumerations
 
-		// \u030F\u0312\u031A\u0318\u0311\u030F\u031B\u0313\u0311\u030E\u0310
+		[WrapperEnum("\u030F\u0312\u031A\u0318\u0311\u030F\u031B\u0313\u0311\u030E\u0310")]
 		public enum Difficulty {
 			Expert,
 			Hard,
@@ -121,7 +121,7 @@ namespace BiendeoCHLib.Wrappers {
 			Easy
 		}
 
-		// \u0315\u031C\u0313\u0319\u0310\u0313\u030F\u0311\u030F\u0319\u030F
+		[WrapperEnum("\u0315\u031C\u0313\u0319\u0310\u0313\u030F\u0311\u030F\u0319\u030F")]
 		public enum Instrument {
 			Guitar,
 			GuitarCoop,

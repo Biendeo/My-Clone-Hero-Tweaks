@@ -93,6 +93,7 @@
     <Compile Include="VersionCheck.cs" />
     <Compile Include="Wrappers\Attributes\Wrapper.cs" />
     <Compile Include="Wrappers\Attributes\WrapperConstructor.cs" />
+    <Compile Include="Wrappers\Attributes\WrapperEnum.cs" />
     <Compile Include="Wrappers\Attributes\WrapperField.cs" />
     <Compile Include="Wrappers\Attributes\WrapperMethod.cs" />
     <Compile Include="Wrappers\Attributes\WrapperProperty.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Wrappers\BarrelRollWrapper.cs" />
     <Compile Include="Wrappers\ConfirmationMenuWrapper.cs" />
     <Compile Include="Wrappers\Enums.cs" />
+    <Compile Include="Wrappers\SoundEffectsManagerWrapper.cs" />
     <Compile Include="Wrappers\SpNeckRendererWrapper.cs" />
     <Compile Include="Wrappers\CameraShakeWrapper.cs" />
     <Compile Include="Wrappers\CountdownWrapper.cs" />

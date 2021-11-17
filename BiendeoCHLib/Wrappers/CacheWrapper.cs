@@ -213,7 +213,7 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Enumerations
 
-		// \u0315\u0310\u0319\u0315\u0312\u030D\u0312\u0313\u0312\u0314\u0311
+		[WrapperEnum("\u0315\u0310\u0319\u0315\u0312\u030D\u0312\u0313\u0312\u0314\u0311")]
 		public enum CacheState {
 			ReadingCache,
 			GettingPaths,

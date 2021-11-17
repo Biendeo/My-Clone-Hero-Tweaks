@@ -356,11 +356,11 @@ namespace BiendeoCHLib.Wrappers {
 		private static readonly AccessTools.FieldRef<BasePlayer, int> comboField;
 
 		public int HittableNotesThisFrame {
-			get => hittableNotesThisFrameName(BasePlayer);
-			set => hittableNotesThisFrameName(BasePlayer) = value;
+			get => hittableNotesThisFrameField(BasePlayer);
+			set => hittableNotesThisFrameField(BasePlayer) = value;
 		}
 		[WrapperField("\u0312\u0310\u031B\u0315\u031A\u0313\u030D\u031C\u0314\u031B\u0312")]
-		private static readonly AccessTools.FieldRef<BasePlayer, int> hittableNotesThisFrameName;
+		private static readonly AccessTools.FieldRef<BasePlayer, int> hittableNotesThisFrameField;
 
 		public int Score {
 			get => scoreField(BasePlayer);

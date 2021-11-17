@@ -11,13 +11,18 @@ using UnityEngine;
 namespace BiendeoCHLib.Wrappers.Attributes {
 	public sealed class Wrapper : Attribute {
 		public readonly Type WrappedType;
+		public static readonly Assembly CHAssembly;
+
+		static Wrapper() {
+			CHAssembly = typeof(GameManager).Assembly;
+		}
 
 		public Wrapper(Type type) {
 			WrappedType = type;
 		}
 
 		public Wrapper(string typeName) {
-			WrappedType = Assembly.Load("Assembly-CSharp.dll").GetType(typeName);
+			WrappedType = CHAssembly.GetType(typeName);
 		}
 
 		public void InitializeSingletons(Type wrapperType, ManualLogSource logger) {

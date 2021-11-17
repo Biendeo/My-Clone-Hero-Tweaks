@@ -28,12 +28,7 @@ namespace BiendeoCHLib.Wrappers {
 	}
 
 	public static class StringExtensions {
-		public static string DecodeUnicode(this string s) {
-			if (s.Any(c => c >= '\u0300')) {
-				return string.Join("", s.Select(c => $"\\u{((int)c).ToString("X4")}"));
-			} else {
-				return s;
-			}
-		}
+		public static string DecodeUnicode(this string s) => string.Join(string.Empty, s.Select(c => (c >= '\u0200' ? $"\\u{(int)c:X4}" : $"{c}")));
+		public static bool HasObfuscation(this string s) => s.DecodeUnicode() != s;
 	}
 }

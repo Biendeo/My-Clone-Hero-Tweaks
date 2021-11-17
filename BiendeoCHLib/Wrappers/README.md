@@ -7,20 +7,21 @@ All wrappers must abide by the following structure:
 ### Declaration
 - Wrappers must be declared as `public struct`.
 - Wrapper names must be the PascalCase name of the type (often matching it if it is not an obfuscated name), with `Wrapper` afterwards (for example, a wrapper for `Cache` would be `CacheWrapper`).
-- Wrappers must include the `Wrapper` attribute, and use the type constructor when possible (for unobfuscated names).
-- Wrappers must contain a property with a public getter and private setter for the underlying object it wraps. The object must be its original type if unobfuscated, or `object` otherwise. The name of the underlying type must be the original typename.
-- Wrappers must implement a static method called `Wrap` which takes in its appropriate type object and returns a new wrapper:
-```cs
-public static CacheWrapper Wrap(object cache) => new CacheWrapper {
-	Cache = cache
-};
-```
-- Wrappers should also implement `Equals`, `GetHashCode` and `IsNull` as such:
-```cs
-public override bool Equals(object obj) => Cache.Equals(obj);
-public override int GetHashCode() => Cache.GetHashCode();
-public bool IsNull() => Cache == null;
-```
+- Wrappers must include the `Wrapper` attribute, and use the type constructor when possible (for unobfuscated names). If the count of obfuscated methods is known (i.e. by comparing the launcher and standalone versions of the assembly), then the count should be written in the attribute.
+- The following rules are only for instanced types, static classes can ignore these:
+  - Wrappers must contain a property with a public getter and private setter for the underlying object it wraps. The object must be its original type if unobfuscated, or `object` otherwise. The name of the underlying type must be the original typename.
+  - Wrappers must implement a static method called `Wrap` which takes in its appropriate type object and returns a new wrapper:
+  ```cs
+  public static CacheWrapper Wrap(object cache) => new CacheWrapper {
+  	Cache = cache
+  };
+  ```
+  - Wrappers should also implement `Equals`, `GetHashCode` and `IsNull` as such:
+  ```cs
+  public override bool Equals(object obj) => Cache.Equals(obj);
+  public override int GetHashCode() => Cache.GetHashCode();
+  public bool IsNull() => Cache == null;
+  ```
 
 ### Casts
 - Any wrappers where the underlying class directly inherits or is directly inherited by another class must contain a cast method for each type.
@@ -84,9 +85,8 @@ private static readonly FastInvokeHandler scanSongsInternalMethod;
 - If any enums are defined in this class, a region called `Enumerations` must be declared.
 - Inside this region, all enums inside this class must be declared, with the same matching names (as PascalCase) and values as the original enum.
 - Redefining enums is purely just so usable names can be used. If it's too much work, I guess these can be ignored and just the underlying enum type can be used.
-- The original obfuscated name if it exists can just be a comment.
 ```cs
-// \u0315\u0310\u0319\u0315\u0312\u030D\u0312\u0313\u0312\u0314\u0311
+[WrapperEnum("\u0315\u0310\u0319\u0315\u0312\u030D\u0312\u0313\u0312\u0314\u0311")]
 public enum CacheState {
 	ReadingCache,
 	GettingPaths,
@@ -101,6 +101,7 @@ public enum CacheState {
 ```
 
 ### Duplicate Methods
+- Duplicate methods from
 - If any duplicate methods are defined in this class, a region called `Duplicate Methods` must be declared.
 - The region should have IDE0051 and CS0169 warnings disabled because these fields are intentionally unused.
 - Inside this region, all methods that exist purely for obfuscation should only exist as FastInvokeHandlers with the `WrapperMethod` attribute. This is so the wrapper search knows that these methods exist without exposing them.

@@ -194,6 +194,7 @@ namespace BiendeoCHLib.Wrappers {
 		#region Enumerations
 
 		[Flags]
+		[WrapperEnum("PLACEHOLDER")]
 		public enum NoteFlags : byte {
 			None = 0,
 			Chord = 1,
@@ -207,6 +208,7 @@ namespace BiendeoCHLib.Wrappers {
 		}
 
 		[Flags]
+		[WrapperEnum("PLACEHOLDER")]
 		public enum GHL_NoteType {
 			W1 = 1,
 			W2 = 2,
@@ -218,6 +220,7 @@ namespace BiendeoCHLib.Wrappers {
 		}
 
 		[Flags]
+		[WrapperEnum("PLACEHOLDER")]
 		public enum SomeEnum {
 			Lane1 = 1,
 			Lane2 = 2,
@@ -226,6 +229,7 @@ namespace BiendeoCHLib.Wrappers {
 		}
 
 		[Flags]
+		[WrapperEnum("PLACEHOLDER")]
 		public enum Modifier {
 			None = 1,
 			AllStrums = 2,

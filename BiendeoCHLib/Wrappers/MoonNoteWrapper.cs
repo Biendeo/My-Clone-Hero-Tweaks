@@ -22,7 +22,7 @@ namespace BiendeoCHLib.Wrappers {
 
 		#region Enumerations
 
-		// \u0317\u0312\u031C\u0314\u030E\u0311\u0319\u0313\u0317\u0317\u0317
+		[WrapperEnum("\u0317\u0312\u031C\u0314\u030E\u0311\u0319\u0313\u0317\u0317\u0317")]
 		public enum FretType {
 			Green,
 			Red,
@@ -38,7 +38,7 @@ namespace BiendeoCHLib.Wrappers {
 			B3
 		}
 
-		// \u031B\u031B\u0316\u030D\u0310\u0318\u0311\u0312\u031B\u0311\u030D
+		[WrapperEnum("\u031B\u031B\u0316\u030D\u0310\u0318\u0311\u0312\u031B\u0311\u030D")]
 		public enum NoteType {
 			Natural,
 			Strum,
@@ -50,8 +50,8 @@ namespace BiendeoCHLib.Wrappers {
 			Shuffle
 		}
 
-		// \u0317\u0310\u031B\u030E\u0314\u0313\u0313\u030D\u0311\u0317\u031A
 		[Flags]
+		[WrapperEnum("\u0317\u0310\u031B\u030E\u0314\u0313\u0313\u030D\u0311\u0317\u031A")]
 		public enum Flags {
 			None = 0,
 			Forced = 1,
