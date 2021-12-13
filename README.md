@@ -11,13 +11,13 @@ A bunch of Clone Hero tweaks I have made!
 
 ## How to install
 - You will need Clone Hero **v0.23.2.2**. You can use any version from the website (i.e. Win64, Win32, Mac, or Linux), but your mileage with the launcher version may vary.
-- Install [BepInEx v5.4.11](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.11) into your Clone Hero directory.
+- Install [BepInEx v5.4.17](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.17) into your Clone Hero directory.
   - Download the appropriate version and extract **all** of its files into your Clone Hero directory.
   - Please verify that BepInEx has initialised by running the game after extracting, and then checking that there are five folders and a `LogOutput.log` file inside the `BepInEx` folder. One of those folders will be named `plugins`, and you'll need that to run the mods.
 - Go to the [Releases page](https://github.com/Biendeo/My-Clone-Hero-Tweaks/releases) and download the latest versions of the mods you want for your version of Clone Hero.
     - Almost all the mods will require `Biendeo CH Lib` to also be installed so please also download that. If you are missing it, the log will inform you.
     - All the downloads are `.zip` files and will need to be extracted to your Clone Hero directory. They should merge with the existing `BepInEx` folder.
-    - To ensure that the mods have been extracted properly, check that `LogOutput.log` (or `LogOutput.log.1`, whichever is newer) has a line in this format for each mod: `[Info   :   BepInEx] Loading [Biendeo CH Lib 1.5.0.0]`
+    - To ensure that the mods have been extracted properly, check that `LogOutput.log` (or `LogOutput.log.1`, whichever is newer) has a line in this format for each mod: `[Info   :   BepInEx] Loading [Biendeo CH Lib 1.5.2.0]`
 
 ## How to reset configs
 - All mod configs are in `BepInEx\config`, so just delete the appropriate files. All mods have confings in the format `com.biendeo.MODNAME.*`. For example, to reset `Extra Song UI`, delete `com.biendeo.extrasongui.xml` and `com.biendeo.extrasongui.layout.xml`.

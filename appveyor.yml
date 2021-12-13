@@ -26,7 +26,7 @@ install:
   - ps: |
         if (-not (Test-Path .\BepInEx-Libraries)) {
             Start-FileDownload 'https://github.com/BepInEx/BepInEx/releases/download/v5.4.17/BepInEx_x64_5.4.17.0.zip'
-            7z x BepInEx_x64_5.4.11.0.zip
+            7z x BepInEx_x64_5.4.17.0.zip
             New-Item -ItemType Directory -Path 'BepInEx-Libraries'
             Copy-Item -Path '.\BepInEx\core\*' -Destination 'BepInEx-Libraries' -Recurse
         }
