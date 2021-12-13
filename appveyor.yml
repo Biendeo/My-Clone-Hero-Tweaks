@@ -30,8 +30,6 @@ install:
             New-Item -ItemType Directory -Path 'BepInEx-Libraries'
             Copy-Item -Path '.\BepInEx\core\*' -Destination 'BepInEx-Libraries' -Recurse
         }
-  - echo Restoring NuGet
-  - ps: dotnet restore
 
 assembly_info:
   patch: true
@@ -43,6 +41,9 @@ platform: Any CPU
 configuration:
   - Debug
   - Release
+
+before_build:
+  - nuget restore
 
 after_build:
   - ps: |
