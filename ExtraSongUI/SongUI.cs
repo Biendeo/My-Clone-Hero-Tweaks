@@ -60,7 +60,7 @@ namespace ExtraSongUI {
 		}
 	}
 
-	[BepInPlugin("com.biendeo.extrasongui", "Extra Song UI", "1.5.1")]
+	[BepInPlugin("com.biendeo.extrasongui", "Extra Song UI", "1.5.2")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class SongUI : BaseUnityPlugin {
 		public static SongUI Instance { get; private set; }

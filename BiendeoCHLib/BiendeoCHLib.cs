@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace BiendeoCHLib {
-	[BepInPlugin("com.biendeo.biendeochlib", "Biendeo CH Lib", "1.5.1")]
+	[BepInPlugin("com.biendeo.biendeochlib", "Biendeo CH Lib", "1.5.2")]
 	public class BiendeoCHLib : BaseUnityPlugin {
 		public static BiendeoCHLib Instance { get; private set; }
 		public string[] SystemFonts { get; private set; }

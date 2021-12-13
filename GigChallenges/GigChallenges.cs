@@ -36,7 +36,7 @@ namespace GigChallenges {
 		}
 	}
 
-	[BepInPlugin("com.biendeo.gigchallenges", "Gig Challenges", "1.5.1")]
+	[BepInPlugin("com.biendeo.gigchallenges", "Gig Challenges", "1.5.2")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class GigChallenges : BaseUnityPlugin {
 		public static GigChallenges Instance { get; private set; }

@@ -40,7 +40,7 @@ namespace AccuracyIndicator {
 		}
 	}
 
-	[BepInPlugin("com.biendeo.accuracyindicator", "Accuracy Indicator", "1.5.1")]
+	[BepInPlugin("com.biendeo.accuracyindicator", "Accuracy Indicator", "1.5.2")]
 	[BepInDependency("com.biendeo.biendeochlib")]
 	public class AccuracyIndicator : BaseUnityPlugin {
 		public static AccuracyIndicator Instance { get; private set; }
